@@ -1,5 +1,24 @@
 const $ = (id) => document.getElementById(id);
 
+let lang = 'es';
+let lastState = null;
+const tr = (key, vars) => i18n.t(lang, key, vars);
+
+// Traduce todos los textos marcados en el HTML y los que dependen del estado.
+function applyLanguage(newLang) {
+  lang = newLang;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = tr(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = tr(el.dataset.i18nHtml); });
+  document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = tr(el.dataset.i18nTitle); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => { el.placeholder = tr(el.dataset.i18nPlaceholder); });
+  document.querySelectorAll('[data-i18n-aria]').forEach((el) => el.setAttribute('aria-label', tr(el.dataset.i18nAria)));
+  document.querySelectorAll('[data-lang]').forEach((b) => b.classList.toggle('active', b.dataset.lang === lang));
+  for (const key of Object.keys(FIELDS)) showValue(key);
+  if ($('channelError').textContent) $('channelError').textContent = tr('channelInvalid');
+  if (lastState) applyState(lastState);
+}
+
 // Cada ajuste: tipo de control y cómo se muestra su valor.
 const FIELDS = {
   fontSize: { type: 'range', show: (v) => `${v} px` },
@@ -14,8 +33,9 @@ const FIELDS = {
   maxMessages: { type: 'range', show: (v) => String(v) },
   animatedEmotes: { type: 'check' },
   hideBots: { type: 'check' },
+  showHeader: { type: 'check' },
   autoStart: { type: 'check' },
-  fadeAfter: { type: 'range', show: (v) => (Number(v) === 0 ? 'nunca' : `${v} s`) },
+  fadeAfter: { type: 'range', show: (v) => (Number(v) === 0 ? tr('never') : `${v} s`) },
 };
 
 function readField(el, type) {
@@ -31,6 +51,7 @@ function showValue(key) {
 
 // Rellena los controles con los ajustes (al abrir y tras "Restablecer aspecto").
 function fillFields(settings) {
+  if (settings.language !== lang) applyLanguage(settings.language);
   if (document.activeElement !== $('channel')) $('channel').value = settings.channel;
   for (const [key, { type }] of Object.entries(FIELDS)) {
     if (type === 'check') $(key).checked = settings[key];
@@ -51,7 +72,7 @@ function normalizeChannel(value) {
 function connect() {
   const channel = normalizeChannel($('channel').value);
   if (channel && !/^[a-z0-9_]{1,25}$/.test(channel)) {
-    $('channelError').textContent = 'Nombre de canal no válido: solo letras, números y guion bajo.';
+    $('channelError').textContent = tr('channelInvalid');
     return;
   }
   $('channelError').textContent = '';
@@ -59,10 +80,12 @@ function connect() {
   api.setSettings({ channel });
 }
 
-function applyState({ editMode, visible, testMode, bounds, maxSize, version, updateReady, shortcutErrors, canAutoStart }) {
-  $('edit').textContent = editMode ? 'Fijar posición (Ctrl+Shift+L)' : 'Mover y cambiar tamaño (Ctrl+Shift+L)';
-  $('visible').textContent = visible ? 'Ocultar chat (Ctrl+Shift+H)' : 'Mostrar chat (Ctrl+Shift+H)';
-  $('test').textContent = testMode ? 'Salir del modo prueba' : 'Modo prueba (ver cómo queda)';
+function applyState(state) {
+  lastState = state;
+  const { editMode, visible, testMode, bounds, maxSize, version, updateReady, shortcutErrors, canAutoStart } = state;
+  $('edit').textContent = tr(editMode ? 'editOn' : 'editOff');
+  $('visible').textContent = tr(visible ? 'hideChat' : 'showChat');
+  $('test').textContent = tr(testMode ? 'testOn' : 'testOff');
   $('test').classList.toggle('primary', testMode);
 
   $('width').max = maxSize.width;
@@ -74,10 +97,10 @@ function applyState({ editMode, visible, testMode, bounds, maxSize, version, upd
 
   $('version').textContent = `v${version}`;
   $('update').classList.toggle('show', Boolean(updateReady));
-  if (updateReady) $('updateText').textContent = `Nueva versión ${updateReady} lista para instalar.`;
+  if (updateReady) $('updateText').textContent = tr('updateReady', { version: updateReady });
 
   $('shortcutWarn').textContent = shortcutErrors.length
-    ? `Otro programa ya usa ${shortcutErrors.join(' y ')}. Ese atajo no funcionará; usa los botones de esta ventana o el icono de la bandeja.`
+    ? tr('shortcutWarn', { keys: shortcutErrors.join(tr('and')) })
     : '';
   $('startupSection').hidden = !canAutoStart; // solo tiene sentido en la versión instalada
 }
@@ -98,11 +121,14 @@ $('visible').addEventListener('click', () => api.toggleVisible());
 $('test').addEventListener('click', () => api.toggleTest());
 $('reset').addEventListener('click', () => api.resetLook());
 $('repo').addEventListener('click', () => api.openRepo());
+document.querySelectorAll('[data-lang]').forEach((b) => b.addEventListener('click', () => api.setSettings({ language: b.dataset.lang })));
 document.querySelectorAll('[data-pos]').forEach((b) => b.addEventListener('click', () => api.setPosition(b.dataset.pos)));
 
 const sendSize = () => api.setSize(Number($('width').value), Number($('height').value));
 $('width').addEventListener('input', sendSize);
 $('height').addEventListener('input', sendSize);
+
+applyLanguage(lang); // textos en español mientras llegan los ajustes guardados
 
 api.onSettings(fillFields);
 api.onState(applyState);

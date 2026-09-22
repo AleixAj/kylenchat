@@ -4,11 +4,13 @@ const {
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
+const { t, LANGUAGES } = require('./i18n');
 
 const REPO_URL = 'https://github.com/AleixAj/kylentwitchchat';
 const FONTS = ['Segoe UI', 'Arial', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Georgia', 'Consolas', 'Impact', 'Comic Sans MS'];
 
 const DEFAULTS = {
+  language: 'es',
   channel: '',
   fontSize: 16,
   fontFamily: 'Segoe UI',
@@ -23,6 +25,7 @@ const DEFAULTS = {
   fadeAfter: 0,
   animatedEmotes: false,
   hideBots: false,
+  showHeader: true,
   autoStart: false,
   bounds: null,
 };
@@ -32,6 +35,7 @@ const isBool = (v) => typeof v === 'boolean';
 const isHex = (v) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v);
 const inRange = (min, max) => (v) => Number.isFinite(v) && v >= min && v <= max;
 const SCHEMA = {
+  language: (v) => LANGUAGES.includes(v),
   channel: (v) => typeof v === 'string' && /^[a-z0-9_]{0,25}$/.test(v),
   fontSize: inRange(10, 48),
   fontFamily: (v) => FONTS.includes(v),
@@ -46,6 +50,7 @@ const SCHEMA = {
   fadeAfter: inRange(0, 120),
   animatedEmotes: isBool,
   hideBots: isBool,
+  showHeader: isBool,
   autoStart: isBool,
   bounds: (v) => v === null || (v && ['x', 'y', 'width', 'height'].every((k) => Number.isFinite(v[k]))),
 };
@@ -115,6 +120,7 @@ function updateSettings(patch) {
   if (!Object.keys(clean).length) return;
   Object.assign(settings, clean);
   if ('autoStart' in clean) applyAutoStart();
+  if ('language' in clean) applyLanguage();
   saveSettings();
   broadcastSettings();
 }
@@ -122,6 +128,13 @@ function updateSettings(patch) {
 function broadcastSettings() {
   overlay.webContents.send('settings', settings);
   if (panel && !panel.isDestroyed()) panel.webContents.send('settings', settings);
+}
+
+const tr = (key, vars) => t(settings.language, key, vars);
+
+function applyLanguage() {
+  updateTrayMenu();
+  if (panel && !panel.isDestroyed()) panel.setTitle(tr('panelTitle'));
 }
 
 // "Iniciar con Windows": arranca escondida en la bandeja, sin abrir los ajustes.
@@ -239,7 +252,7 @@ function createPanel() {
   panel = new BrowserWindow({
     width: 460,
     height: 860,
-    title: 'Kylen Chat for Twitch · Ajustes',
+    title: tr('panelTitle'),
     icon: APP_ICON,
     autoHideMenuBar: true,
     backgroundColor: '#18181b',
@@ -278,12 +291,12 @@ function sendState() {
 function updateTrayMenu() {
   if (!tray) return;
   tray.setContextMenu(Menu.buildFromTemplate([
-    ...(updateReady ? [{ label: `Reiniciar para actualizar a v${updateReady}`, click: installUpdate }, { type: 'separator' }] : []),
-    { label: 'Ajustes', click: createPanel },
-    { label: editMode ? 'Fijar posición' : 'Mover y cambiar tamaño', accelerator: SHORTCUT_EDIT, click: () => setEditMode(!editMode) },
-    { label: visible ? 'Ocultar chat' : 'Mostrar chat', accelerator: SHORTCUT_HIDE, click: () => setVisible(!visible) },
+    ...(updateReady ? [{ label: tr('trayUpdate', { version: updateReady }), click: installUpdate }, { type: 'separator' }] : []),
+    { label: tr('traySettings'), click: createPanel },
+    { label: tr(editMode ? 'trayEditOn' : 'trayEditOff'), accelerator: SHORTCUT_EDIT, click: () => setEditMode(!editMode) },
+    { label: tr(visible ? 'trayHide' : 'trayShow'), accelerator: SHORTCUT_HIDE, click: () => setVisible(!visible) },
     { type: 'separator' },
-    { label: 'Salir', click: () => app.quit() },
+    { label: tr('trayQuit'), click: () => app.quit() },
   ]));
 }
 
@@ -315,8 +328,8 @@ ipcMain.handle('get-settings', () => settings);
 ipcMain.handle('get-state', () => state());
 ipcMain.on('set-settings', (_e, patch) => updateSettings(patch));
 ipcMain.on('reset-look', () => {
-  const { channel, bounds, autoStart } = settings;
-  settings = { ...DEFAULTS, channel, bounds, autoStart };
+  const { language, channel, bounds, autoStart } = settings;
+  settings = { ...DEFAULTS, language, channel, bounds, autoStart };
   saveSettings();
   broadcastSettings();
 });

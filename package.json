@@ -27,6 +27,7 @@
     "files": [
       "main.js",
       "preload.js",
+      "i18n.js",
       "overlay.html",
       "overlay.js",
       "panel.html",

@@ -38,6 +38,7 @@
 - Opción para **ocultar bots y comandos** (Nightbot, `!discord`…).
 - Los nombres con colores muy oscuros se aclaran para que se lean sobre el juego.
 - Puede **iniciarse con Windows**, oculta en la bandeja.
+- En **español e inglés** (se cambia con las banderas de los ajustes).
 - Se **actualiza sola** cuando sale una versión nueva.
 - No necesitas iniciar sesión en Twitch.
 
@@ -104,6 +105,7 @@ npm start
 | `main.js` | Proceso principal: ventanas, bandeja, atajos, ajustes y actualizaciones |
 | `overlay.html` / `overlay.js` | La ventana transparente con el chat (conexión a Twitch y emotes) |
 | `panel.html` / `panel.js` | La ventana de ajustes |
+| `i18n.js` | Textos en español e inglés |
 | `preload.js` | Puente seguro entre las ventanas y el proceso principal |
 | `assets/` | Iconos |
 

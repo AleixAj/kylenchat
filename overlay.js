@@ -2,6 +2,7 @@ const chat = document.getElementById('chat');
 const grip = document.getElementById('grip');
 
 let settings = null;
+const tr = (key, vars) => i18n.t(settings ? settings.language : 'es', key, vars);
 
 // ---------- Colores ----------
 
@@ -52,6 +53,9 @@ function applySettings(s) {
     ? '0 0 2px #000, 1px 1px 1px #000, -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000'
     : 'none');
   root.setProperty('--opacity', String(s.opacity / 100));
+  document.documentElement.lang = s.language;
+  document.body.classList.toggle('header', s.showHeader);
+  document.getElementById('hint').textContent = tr('editHint');
   trim();
 
   if (s.channel !== joined) connect(s.channel);
@@ -80,11 +84,12 @@ function connect(channel) {
     retries = 0;
   }
   joined = channel;
+  document.getElementById('barChannel').textContent = channel ? `#${channel}` : '';
   if (!channel) {
-    system('Escribe el nombre de un canal en Ajustes.');
+    system(tr('enterChannel'));
     return;
   }
-  if (retries === 0) system(`Conectando a #${channel}…`);
+  if (retries === 0) system(tr('connecting', { channel }));
 
   const sock = new WebSocket('wss://irc-ws.chat.twitch.tv:443');
   let inRoom = false;
@@ -96,7 +101,7 @@ function connect(channel) {
     sock.send(`NICK justinfan${Math.floor(10000 + Math.random() * 80000)}`);
     sock.send(`JOIN #${channel}`);
     // Twitch no da error si el canal no existe; simplemente nunca manda ROOMSTATE.
-    notFoundTimer = setTimeout(() => system(`No se encuentra el canal "${channel}". ¿Está bien escrito?`), 6000);
+    notFoundTimer = setTimeout(() => system(tr('notFound', { channel })), 6000);
   };
   sock.onmessage = (e) => {
     lastData = Date.now();
@@ -115,7 +120,7 @@ function connect(channel) {
   sock.onclose = () => {
     if (ws !== sock) return;
     ws = null;
-    if (retries === 0) system('Conexión perdida, reintentando…');
+    if (retries === 0) system(tr('connectionLost'));
     const delay = Math.min(30000, 2000 * 2 ** retries);
     retries++;
     reconnectTimer = setTimeout(() => connect(joined), delay);
@@ -125,7 +130,7 @@ function connect(channel) {
 function onJoined(roomId) {
   clearTimeout(notFoundTimer);
   retries = 0;
-  system(`Conectado al chat de #${joined}`);
+  system(tr('connected', { channel: joined }));
   if (roomId && roomId !== emotesRoomId) loadChannelEmotes(roomId);
 }
 
@@ -454,6 +459,7 @@ function removeWhere(fn) {
 }
 
 function system(text) {
+  if (testMode) return; // en modo prueba solo se ven los ejemplos
   const el = document.createElement('div');
   el.className = 'msg system';
   el.textContent = text;
@@ -464,21 +470,8 @@ function system(text) {
 // Llena el chat con mensajes de ejemplo que siguen llegando solos, para poder
 // ajustar el aspecto viendo cómo quedará. Mientras está activo se ignora el chat real.
 
-const SAMPLES = [
-  ['Faker', '#FF4A80', '¡Qué jugada! Kappa'],
-  ['ElMagoDelBot', '', 'baron en 30 segundos, cuidado monkaS'],
-  ['Pepita_22', '#00BBF9', 'ese flash ha sido de cine Clap Clap'],
-  ['xX_Jungla_Xx', '#5FFF77', 'gg EZ'],
-  ['Moderadora', '#FEE440', 'Recordad ser respetuosos en el chat 💜'],
-  ['TopMain_99', '#FA8E4B', '\x01ACTION se va a por un café mientras reaparece\x01'],
-  ['SoporteFeliz', '#1A1A7A', 'peepoHappy RainTime'],
-  ['LaNoviaDelADC', '#F670DD', 'esa build no la entiendo pero si funciona... LUL'],
-  ['AnalistaDeSofá', '#00F5D4', 'Un mensaje largo de ejemplo para ver cómo se parten las líneas cuando alguien escribe mucho en el chat, que siempre hay alguien que lo hace FeelsGoodMan'],
-  { notice: 'Kylen se ha suscrito con Prime. ¡Lleva 12 meses suscrito!', msg: ['Kylen', '#A970FF', 'PepePls PepePls PepePls'] },
-  ['nuevo_por_aquí', '', 'hola! primera vez que veo el directo'],
-  ['Pentakill', '#FF7070', 'PENTAAAAA PogChamp'],
-  { notice: 'StreamerAmigo está haciendo raid con 57 espectadores' },
-];
+// Los ejemplos están en i18n.js, en el idioma elegido.
+const samples = () => i18n.SAMPLES[settings.language] || i18n.SAMPLES.es;
 // Emotes oficiales de Twitch que aparecen en los ejemplos (el resto los pone 7TV/BTTV).
 const TWITCH_TEST_EMOTES = { Kappa: 25, LUL: 425618, PogChamp: 305954156 };
 
@@ -500,7 +493,8 @@ function sampleMessage([name, color, text]) {
 }
 
 function testMessage() {
-  const sample = SAMPLES[sampleIndex++ % SAMPLES.length];
+  const list = samples();
+  const sample = list[sampleIndex++ % list.length];
   if (Array.isArray(sample)) addMessage(sampleMessage(sample));
   else addNotice(sample.notice, sample.msg ? sampleMessage(sample.msg) : null);
 }
@@ -516,11 +510,11 @@ function setTestMode(on) {
   clearInterval(testTimer);
   clearChat();
   if (on) {
-    const first = Math.min(settings ? settings.maxMessages : 30, SAMPLES.length);
+    const first = Math.min(settings.maxMessages, samples().length);
     for (let i = 0; i < first; i++) testMessage();
     testTimer = setInterval(testMessage, 1500);
   } else {
-    system(joined ? `Chat de #${joined}` : 'Escribe el nombre de un canal en Ajustes.');
+    system(joined ? tr('chatOf', { channel: joined }) : tr('enterChannel'));
   }
 }
 
