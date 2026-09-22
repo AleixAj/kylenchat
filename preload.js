@@ -7,6 +7,12 @@ contextBridge.exposeInMainWorld('api', {
   getState: () => ipcRenderer.invoke('get-state'),
   setSettings: (patch) => ipcRenderer.send('set-settings', patch),
   resetLook: () => ipcRenderer.send('reset-look'),
+  saveProfile: (name) => ipcRenderer.send('save-profile', name),
+  loadProfile: (name) => ipcRenderer.send('load-profile', name),
+  deleteProfile: (name) => ipcRenderer.send('delete-profile', name),
+  exportSettings: () => ipcRenderer.invoke('export-settings'),
+  importSettings: () => ipcRenderer.invoke('import-settings'),
+  dismissWhatsNew: () => ipcRenderer.send('dismiss-whats-new'),
   installUpdate: () => ipcRenderer.send('install-update'),
   openRepo: () => ipcRenderer.send('open-repo'),
   toggleEdit: () => ipcRenderer.send('toggle-edit'),
@@ -22,4 +28,5 @@ contextBridge.exposeInMainWorld('api', {
   onState: on('state'),
   onTestMode: on('test-mode'),
   onReconnect: on('reconnect'),
+  onToast: on('toast'),
 });

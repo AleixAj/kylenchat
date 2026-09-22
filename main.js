@@ -1,5 +1,5 @@
 const {
-  app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, screen, shell, session, powerMonitor,
+  app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, screen, shell, session, powerMonitor, dialog,
 } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
@@ -7,7 +7,6 @@ const fs = require('fs');
 const { t, LANGUAGES } = require('./i18n');
 
 const REPO_URL = 'https://github.com/AleixAj/kylentwitchchat';
-const FONTS = ['Segoe UI', 'Arial', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Georgia', 'Consolas', 'Impact', 'Comic Sans MS'];
 
 const DEFAULTS = {
   language: 'es',
@@ -30,20 +29,41 @@ const DEFAULTS = {
   highlightFirst: true,
   showBadges: true,
   timestamps: false,
+  mutedUsers: '',
+  blockedWords: '',
+  align: 'left',
+  newestOnTop: false,
+  idleHide: 0,
+  emoteScale: 1.6,
   showHeader: true,
   autoStart: false,
   bounds: null,
+  profiles: [],
+  activeProfile: '',
+  onboarded: false,
+  lastVersion: '',
 };
+
+// Lo que guarda un perfil: el aspecto y la posición. El canal, el idioma y los filtros son comunes.
+const PROFILE_KEYS = [
+  'fontSize', 'fontFamily', 'bold', 'textColor', 'userColors', 'bgColor', 'bgOpacity', 'outline', 'opacity',
+  'maxMessages', 'fadeAfter', 'animatedEmotes', 'showBadges', 'timestamps', 'align', 'newestOnTop', 'idleHide',
+  'emoteScale', 'showHeader', 'bounds',
+];
+// Lo que no se exporta ni se importa: depende de cada PC.
+const LOCAL_KEYS = ['autoStart', 'onboarded', 'lastVersion'];
 
 // Qué valores acepta cada ajuste. Lo que no encaje se descarta, venga del disco o de las ventanas.
 const isBool = (v) => typeof v === 'boolean';
 const isHex = (v) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v);
 const inRange = (min, max) => (v) => Number.isFinite(v) && v >= min && v <= max;
+const isText = (max) => (v) => typeof v === 'string' && v.length <= max && !/[\u0000-\u001f]/.test(v);
 const SCHEMA = {
   language: (v) => LANGUAGES.includes(v),
   channel: (v) => typeof v === 'string' && /^[a-z0-9_]{0,25}$/.test(v),
   fontSize: inRange(10, 48),
-  fontFamily: (v) => FONTS.includes(v),
+  // Cualquier fuente instalada, pero sin caracteres que puedan romper el CSS.
+  fontFamily: (v) => typeof v === 'string' && /^[^"'\\;{}<>\u0000-\u001f]{1,64}$/.test(v),
   bold: isBool,
   textColor: isHex,
   userColors: isBool,
@@ -56,12 +76,21 @@ const SCHEMA = {
   animatedEmotes: isBool,
   hideBots: isBool,
   highlightMentions: isBool,
-  keywords: (v) => typeof v === 'string' && v.length <= 300 && !/[\u0000-\u001f]/.test(v),
+  keywords: isText(300),
   highlightFirst: isBool,
   showBadges: isBool,
   timestamps: isBool,
+  mutedUsers: isText(1000),
+  blockedWords: isText(1000),
+  align: (v) => v === 'left' || v === 'right',
+  newestOnTop: isBool,
+  idleHide: inRange(0, 300),
+  emoteScale: inRange(1, 3),
   showHeader: isBool,
   autoStart: isBool,
+  activeProfile: isText(30),
+  onboarded: isBool,
+  lastVersion: isText(20),
   bounds: (v) => v === null || (v && ['x', 'y', 'width', 'height'].every((k) => Number.isFinite(v[k]))),
 };
 
@@ -69,9 +98,23 @@ function sanitize(patch) {
   const clean = {};
   if (!patch || typeof patch !== 'object') return clean;
   for (const [key, value] of Object.entries(patch)) {
-    if (SCHEMA[key] && SCHEMA[key](value)) clean[key] = value;
+    if (key === 'profiles') {
+      if (Array.isArray(value)) clean.profiles = cleanProfiles(value);
+    } else if (SCHEMA[key] && SCHEMA[key](value)) {
+      clean[key] = value;
+    }
   }
   return clean;
+}
+
+const pick = (obj, keys) => Object.fromEntries(keys.filter((k) => k in obj).map((k) => [k, obj[k]]));
+const isProfileName = isText(30);
+
+function cleanProfiles(list) {
+  return list
+    .filter((p) => p && isProfileName(p.name) && p.name.trim())
+    .slice(0, 10)
+    .map((p) => ({ name: p.name.trim(), data: pick(sanitize(p.data), PROFILE_KEYS) }));
 }
 
 const APP_ICON = path.join(__dirname, 'assets', 'icon.ico');
@@ -80,6 +123,7 @@ const TRAY_ICON = path.join(__dirname, 'assets', 'tray.png');
 
 const SHORTCUT_EDIT = 'CommandOrControl+Shift+L';
 const SHORTCUT_HIDE = 'CommandOrControl+Shift+H';
+const SHORTCUT_PROFILE = 'CommandOrControl+Alt+P';
 
 let settings;
 let overlay;
@@ -90,6 +134,7 @@ let visible = true;
 let testMode = false;
 let resizeStartBounds = null;
 let updateReady = null; // versión nueva ya descargada, lista para instalar
+let whatsNew = null; // versión recién actualizada cuyas novedades hay que enseñar
 const shortcutErrors = [];
 
 // El chat es solo texto: se pinta con la CPU para no quitarle tarjeta gráfica al juego.
@@ -127,6 +172,7 @@ function writeSettings() {
 
 function updateSettings(patch) {
   const clean = sanitize(patch);
+  delete clean.profiles; // los perfiles solo se tocan con sus propias acciones
   if (!Object.keys(clean).length) return;
   Object.assign(settings, clean);
   if ('autoStart' in clean) applyAutoStart();
@@ -292,6 +338,7 @@ function state() {
     updateReady,
     shortcutErrors,
     canAutoStart: app.isPackaged,
+    whatsNew,
   };
 }
 function sendState() {
@@ -305,6 +352,12 @@ function updateTrayMenu() {
     { label: tr('traySettings'), click: createPanel },
     { label: tr(editMode ? 'trayEditOn' : 'trayEditOff'), accelerator: SHORTCUT_EDIT, click: () => setEditMode(!editMode) },
     { label: tr(visible ? 'trayHide' : 'trayShow'), accelerator: SHORTCUT_HIDE, click: () => setVisible(!visible) },
+    ...(settings.profiles.length ? [{
+      label: tr('trayProfiles'),
+      submenu: settings.profiles.map((p) => ({
+        label: p.name, type: 'radio', checked: p.name === settings.activeProfile, click: () => loadProfile(p.name),
+      })),
+    }] : []),
     { type: 'separator' },
     { label: tr('trayQuit'), click: () => app.quit() },
   ]));
@@ -332,16 +385,115 @@ function installUpdate() {
   autoUpdater.quitAndInstall(true, true);
 }
 
+// ---------- Perfiles (una configuración por juego) ----------
+
+function applyBounds(bounds) {
+  const b = boundsOnScreen(bounds);
+  if (b) overlay.setBounds(b);
+  settings.bounds = overlay.getBounds();
+}
+
+function saveProfile(name) {
+  if (!isProfileName(name) || !name.trim()) return;
+  name = name.trim();
+  settings.bounds = overlay.getBounds();
+  const data = pick(settings, PROFILE_KEYS);
+  const existing = settings.profiles.find((p) => p.name === name);
+  if (existing) existing.data = data;
+  else if (settings.profiles.length < 10) settings.profiles.push({ name, data });
+  else return;
+  settings.activeProfile = name;
+  afterProfileChange();
+}
+
+function loadProfile(name) {
+  const profile = settings.profiles.find((p) => p.name === name);
+  if (!profile) return;
+  const { bounds, ...look } = profile.data;
+  Object.assign(settings, look);
+  if (bounds) applyBounds(bounds);
+  settings.activeProfile = name;
+  afterProfileChange();
+  overlay.webContents.send('toast', `${tr('profile')}: ${name}`);
+}
+
+function deleteProfile(name) {
+  settings.profiles = settings.profiles.filter((p) => p.name !== name);
+  if (settings.activeProfile === name) settings.activeProfile = '';
+  afterProfileChange();
+}
+
+// Atajo: pasa al siguiente perfil guardado.
+function nextProfile() {
+  const { profiles, activeProfile } = settings;
+  if (!profiles.length) return;
+  const i = profiles.findIndex((p) => p.name === activeProfile);
+  loadProfile(profiles[(i + 1) % profiles.length].name);
+}
+
+function afterProfileChange() {
+  saveSettings();
+  broadcastSettings();
+  sendState();
+  updateTrayMenu();
+}
+
+// ---------- Exportar e importar la configuración ----------
+
+async function exportSettings() {
+  const { canceled, filePath } = await dialog.showSaveDialog(panel, {
+    defaultPath: 'kylen-chat-config.json',
+    filters: [{ name: 'Kylen Chat', extensions: ['json'] }],
+  });
+  if (canceled || !filePath) return 'canceled';
+  settings.bounds = overlay.getBounds();
+  const data = { app: 'kylen-chat-for-twitch', version: app.getVersion(), settings: { ...settings } };
+  for (const key of LOCAL_KEYS) delete data.settings[key];
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  return 'ok';
+}
+
+async function importSettings() {
+  const { canceled, filePaths } = await dialog.showOpenDialog(panel, {
+    properties: ['openFile'],
+    filters: [{ name: 'Kylen Chat', extensions: ['json'] }],
+  });
+  if (canceled || !filePaths.length) return 'canceled';
+  try {
+    const data = JSON.parse(fs.readFileSync(filePaths[0], 'utf8'));
+    const clean = sanitize(data && data.settings);
+    for (const key of LOCAL_KEYS) delete clean[key];
+    if (!Object.keys(clean).length) return 'invalid';
+    const { bounds, ...rest } = clean;
+    Object.assign(settings, rest);
+    if (bounds) applyBounds(bounds);
+    applyLanguage();
+    afterProfileChange();
+    return 'ok';
+  } catch {
+    return 'invalid';
+  }
+}
+
 // ---------- Comunicación con las ventanas ----------
 
 ipcMain.handle('get-settings', () => settings);
 ipcMain.handle('get-state', () => state());
 ipcMain.on('set-settings', (_e, patch) => updateSettings(patch));
+// Solo vuelve el aspecto a como venía; el canal, los filtros, los perfiles, etc. se mantienen.
 ipcMain.on('reset-look', () => {
-  const { language, channel, bounds, autoStart } = settings;
-  settings = { ...DEFAULTS, language, channel, bounds, autoStart };
+  Object.assign(settings, pick(DEFAULTS, PROFILE_KEYS.filter((k) => k !== 'bounds')));
   saveSettings();
   broadcastSettings();
+});
+ipcMain.on('save-profile', (_e, name) => saveProfile(name));
+ipcMain.on('load-profile', (_e, name) => loadProfile(name));
+ipcMain.on('delete-profile', (_e, name) => deleteProfile(name));
+ipcMain.handle('export-settings', exportSettings);
+ipcMain.handle('import-settings', importSettings);
+ipcMain.on('dismiss-whats-new', () => {
+  whatsNew = null;
+  sendState();
 });
 ipcMain.on('install-update', installUpdate);
 ipcMain.on('open-repo', () => shell.openExternal(REPO_URL));
@@ -386,9 +538,17 @@ if (!app.requestSingleInstanceLock()) {
   app.on('second-instance', createPanel);
 
   app.whenReady().then(() => {
-    session.defaultSession.setPermissionRequestHandler((_wc, _perm, cb) => cb(false));
+    // Solo se permite leer la lista de fuentes instaladas, y solo a la ventana de ajustes.
+    const allowFonts = (wc, perm) => perm === 'local-fonts' && Boolean(panel) && wc === panel.webContents;
+    session.defaultSession.setPermissionRequestHandler((wc, perm, cb) => cb(allowFonts(wc, perm)));
+    session.defaultSession.setPermissionCheckHandler((wc, perm) => allowFonts(wc, perm));
 
+    const hadSettings = fs.existsSync(settingsFile());
     settings = loadSettings();
+    // Tras actualizar se enseñan las novedades una vez. En una instalación nueva, no.
+    if (hadSettings && settings.lastVersion !== app.getVersion()) whatsNew = app.getVersion();
+    settings.lastVersion = app.getVersion();
+    saveSettings();
     applyAutoStart();
     createOverlay();
     if (!process.argv.includes('--hidden')) createPanel();
@@ -401,6 +561,7 @@ if (!app.requestSingleInstanceLock()) {
     // Si otro programa ya usa el atajo, se avisa en los ajustes.
     if (!globalShortcut.register(SHORTCUT_EDIT, () => setEditMode(!editMode))) shortcutErrors.push('Ctrl+Shift+L');
     if (!globalShortcut.register(SHORTCUT_HIDE, () => setVisible(!visible))) shortcutErrors.push('Ctrl+Shift+H');
+    if (!globalShortcut.register(SHORTCUT_PROFILE, nextProfile)) shortcutErrors.push('Ctrl+Alt+P');
 
     // Al volver de suspensión la conexión suele quedar muerta: se reconecta al momento.
     powerMonitor.on('resume', () => overlay.webContents.send('reconnect'));

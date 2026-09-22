@@ -1,8 +1,68 @@
 const $ = (id) => document.getElementById(id);
 
 let lang = 'es';
+let settings = null;
 let lastState = null;
 const tr = (key, vars) => i18n.t(lang, key, vars);
+const secondsOrNever = (v) => (Number(v) === 0 ? tr('never') : `${v} s`);
+
+// Cada ajuste: tipo de control y cómo se muestra su valor.
+const FIELDS = {
+  fontSize: { type: 'range', show: (v) => `${v} px` },
+  fontFamily: { type: 'select' },
+  bold: { type: 'check' },
+  textColor: { type: 'color' },
+  userColors: { type: 'check' },
+  outline: { type: 'check' },
+  emoteScale: { type: 'range', show: (v) => `${Number(v).toFixed(1)}×` },
+  bgColor: { type: 'color' },
+  bgOpacity: { type: 'range', show: (v) => `${v} %` },
+  opacity: { type: 'range', show: (v) => `${v} %` },
+  showHeader: { type: 'check' },
+  align: { type: 'select' },
+  newestOnTop: { type: 'boolSelect' },
+  highlightMentions: { type: 'check' },
+  keywords: { type: 'text' },
+  highlightFirst: { type: 'check' },
+  showBadges: { type: 'check' },
+  timestamps: { type: 'check' },
+  hideBots: { type: 'check' },
+  mutedUsers: { type: 'text' },
+  blockedWords: { type: 'text' },
+  maxMessages: { type: 'range', show: (v) => String(v) },
+  fadeAfter: { type: 'range', show: secondsOrNever },
+  idleHide: { type: 'range', show: secondsOrNever },
+  animatedEmotes: { type: 'check' },
+  autoStart: { type: 'check' },
+};
+
+// Estilos rápidos: cambian varios ajustes de aspecto de golpe.
+const PRESETS = {
+  default: { fontSize: 16, fontFamily: 'Segoe UI', bold: false, textColor: '#ffffff', bgColor: '#000000', bgOpacity: 35, outline: true, opacity: 100, emoteScale: 1.6, showHeader: true },
+  minimal: { bgOpacity: 0, outline: true, bold: false, showHeader: false },
+  twitch: { fontFamily: 'Segoe UI', fontSize: 14, bold: false, textColor: '#efeff1', bgColor: '#18181b', bgOpacity: 85, outline: false },
+  contrast: { fontSize: 18, bold: true, textColor: '#ffffff', bgColor: '#000000', bgOpacity: 80, outline: true },
+  big: { fontSize: 24, bold: true, emoteScale: 1.8 },
+};
+
+function readField(el, type) {
+  if (type === 'check') return el.checked;
+  if (type === 'range') return Number(el.value);
+  if (type === 'boolSelect') return el.value === 'true';
+  return el.value;
+}
+
+function writeField(el, type, value) {
+  if (type === 'check') el.checked = value;
+  else el.value = String(value);
+}
+
+function showValue(key) {
+  const f = FIELDS[key];
+  if (f.show) $(`${key}Val`).textContent = f.show($(key).value);
+}
+
+// ---------- Idioma ----------
 
 // Traduce todos los textos marcados en el HTML y los que dependen del estado.
 function applyLanguage(newLang) {
@@ -16,55 +76,27 @@ function applyLanguage(newLang) {
   document.querySelectorAll('[data-lang]').forEach((b) => b.classList.toggle('active', b.dataset.lang === lang));
   for (const key of Object.keys(FIELDS)) showValue(key);
   if ($('channelError').textContent) $('channelError').textContent = tr('channelInvalid');
+  $('backupStatus').textContent = '';
+  if (settings) renderProfiles();
   if (lastState) applyState(lastState);
 }
 
-// Cada ajuste: tipo de control y cómo se muestra su valor.
-const FIELDS = {
-  fontSize: { type: 'range', show: (v) => `${v} px` },
-  fontFamily: { type: 'select' },
-  bold: { type: 'check' },
-  textColor: { type: 'color' },
-  userColors: { type: 'check' },
-  outline: { type: 'check' },
-  bgColor: { type: 'color' },
-  bgOpacity: { type: 'range', show: (v) => `${v} %` },
-  opacity: { type: 'range', show: (v) => `${v} %` },
-  maxMessages: { type: 'range', show: (v) => String(v) },
-  animatedEmotes: { type: 'check' },
-  hideBots: { type: 'check' },
-  showHeader: { type: 'check' },
-  highlightMentions: { type: 'check' },
-  keywords: { type: 'text' },
-  highlightFirst: { type: 'check' },
-  showBadges: { type: 'check' },
-  timestamps: { type: 'check' },
-  autoStart: { type: 'check' },
-  fadeAfter: { type: 'range', show: (v) => (Number(v) === 0 ? tr('never') : `${v} s`) },
-};
+// ---------- Ajustes ----------
 
-function readField(el, type) {
-  if (type === 'check') return el.checked;
-  if (type === 'range') return Number(el.value);
-  return el.value;
-}
-
-function showValue(key) {
-  const f = FIELDS[key];
-  if (f.show) $(`${key}Val`).textContent = f.show($(key).value);
-}
-
-// Rellena los controles con los ajustes (al abrir y tras "Restablecer aspecto").
-function fillFields(settings) {
+// Rellena los controles con los ajustes (al abrir, tras un perfil, una importación, etc.).
+function fillFields(newSettings) {
+  settings = newSettings;
   if (settings.language !== lang) applyLanguage(settings.language);
   if (document.activeElement !== $('channel')) $('channel').value = settings.channel;
+  ensureFontOption(settings.fontFamily);
   for (const [key, { type }] of Object.entries(FIELDS)) {
     const el = $(key);
     if (el === document.activeElement && type === 'text') continue; // no pisar lo que se está escribiendo
-    if (type === 'check') el.checked = settings[key];
-    else el.value = settings[key];
+    writeField(el, type, settings[key]);
     showValue(key);
   }
+  renderProfiles();
+  $('welcome').classList.toggle('show', !settings.onboarded);
 }
 
 // Acepta "nombre", "#nombre" o el enlace completo de twitch.tv.
@@ -87,9 +119,83 @@ function connect() {
   api.setSettings({ channel });
 }
 
+// ---------- Fuentes instaladas ----------
+
+const BASIC_FONTS = ['Segoe UI', 'Arial', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Georgia', 'Consolas', 'Impact', 'Comic Sans MS'];
+
+function fillFontList(families) {
+  const select = $('fontFamily');
+  select.replaceChildren(...families.map((f) => {
+    const opt = document.createElement('option');
+    opt.value = opt.textContent = f;
+    return opt;
+  }));
+  if (settings) {
+    ensureFontOption(settings.fontFamily);
+    select.value = settings.fontFamily;
+  }
+}
+
+function ensureFontOption(family) {
+  const select = $('fontFamily');
+  if (![...select.options].some((o) => o.value === family)) {
+    const opt = document.createElement('option');
+    opt.value = opt.textContent = family;
+    select.prepend(opt);
+  }
+}
+
+// Pide a Windows la lista de fuentes; si no se puede, se queda con las básicas.
+async function loadFonts() {
+  fillFontList(BASIC_FONTS);
+  try {
+    const fonts = await window.queryLocalFonts();
+    const families = [...new Set(fonts.map((f) => f.family))]
+      .filter((f) => /^[^"'\\;{}<>]{1,64}$/.test(f))
+      .sort((a, b) => a.localeCompare(b));
+    if (families.length) fillFontList(families);
+  } catch {
+    // sin permiso o sin soporte: lista básica
+  }
+}
+
+// ---------- Perfiles ----------
+
+function renderProfiles() {
+  const list = $('profileList');
+  const { profiles, activeProfile } = settings;
+  if (!profiles.length) {
+    const opt = document.createElement('option');
+    opt.textContent = tr('noProfiles');
+    list.replaceChildren(opt);
+  } else {
+    list.replaceChildren(...profiles.map((p) => {
+      const opt = document.createElement('option');
+      opt.value = opt.textContent = p.name;
+      return opt;
+    }));
+    if (activeProfile) list.value = activeProfile;
+  }
+  list.disabled = !profiles.length;
+  $('profileLoad').disabled = !profiles.length;
+  $('profileDelete').disabled = !profiles.length;
+}
+
+function saveProfile() {
+  const name = $('profileName').value.trim();
+  if (!name) {
+    $('profileName').focus();
+    return;
+  }
+  api.saveProfile(name);
+  $('profileName').value = '';
+}
+
+// ---------- Estado (botones, versión, avisos) ----------
+
 function applyState(state) {
   lastState = state;
-  const { editMode, visible, testMode, bounds, maxSize, version, updateReady, shortcutErrors, canAutoStart } = state;
+  const { editMode, visible, testMode, bounds, maxSize, version, updateReady, shortcutErrors, canAutoStart, whatsNew } = state;
   $('edit').textContent = tr(editMode ? 'editOn' : 'editOff');
   $('visible').textContent = tr(visible ? 'hideChat' : 'showChat');
   $('test').textContent = tr(testMode ? 'testOn' : 'testOff');
@@ -106,15 +212,39 @@ function applyState(state) {
   $('update').classList.toggle('show', Boolean(updateReady));
   if (updateReady) $('updateText').textContent = tr('updateReady', { version: updateReady });
 
+  const notes = whatsNew && ((i18n.CHANGELOG[lang] || {})[whatsNew] || (i18n.CHANGELOG.es || {})[whatsNew]);
+  $('whatsNew').classList.toggle('show', Boolean(notes));
+  if (notes) {
+    $('whatsNewTitle').textContent = tr('whatsNewTitle', { version: whatsNew });
+    $('whatsNewList').replaceChildren(...notes.map((n) => {
+      const li = document.createElement('li');
+      li.textContent = n;
+      return li;
+    }));
+  }
+
   $('shortcutWarn').textContent = shortcutErrors.length
     ? tr('shortcutWarn', { keys: shortcutErrors.join(tr('and')) })
     : '';
   $('startupSection').hidden = !canAutoStart; // solo tiene sentido en la versión instalada
 }
 
+// ---------- Pestañas ----------
+
+function showTab(name) {
+  document.querySelectorAll('[data-tab]').forEach((b) => {
+    b.classList.toggle('active', b.dataset.tab === name);
+    b.setAttribute('aria-selected', String(b.dataset.tab === name));
+  });
+  document.querySelectorAll('[data-panel]').forEach((p) => { p.hidden = p.dataset.panel !== name; });
+  try { localStorage.setItem('tab', name); } catch { /* sin almacenamiento: da igual */ }
+}
+
+// ---------- Eventos ----------
+
 for (const [key, { type }] of Object.entries(FIELDS)) {
   const el = $(key);
-  el.addEventListener('input', () => {
+  el.addEventListener(type === 'select' || type === 'boolSelect' ? 'change' : 'input', () => {
     showValue(key);
     api.setSettings({ [key]: readField(el, type) });
   });
@@ -123,21 +253,48 @@ for (const [key, { type }] of Object.entries(FIELDS)) {
 $('connect').addEventListener('click', connect);
 $('channel').addEventListener('keydown', (e) => e.key === 'Enter' && connect());
 $('installUpdate').addEventListener('click', () => api.installUpdate());
+$('whatsNewOk').addEventListener('click', () => api.dismissWhatsNew());
 $('edit').addEventListener('click', () => api.toggleEdit());
 $('visible').addEventListener('click', () => api.toggleVisible());
 $('test').addEventListener('click', () => api.toggleTest());
 $('reset').addEventListener('click', () => api.resetLook());
 $('repo').addEventListener('click', () => api.openRepo());
+$('welcomeStart').addEventListener('click', () => {
+  $('welcome').classList.remove('show');
+  api.setSettings({ onboarded: true });
+  $('channel').focus();
+});
+$('profileSave').addEventListener('click', saveProfile);
+$('profileName').addEventListener('keydown', (e) => e.key === 'Enter' && saveProfile());
+$('profileLoad').addEventListener('click', () => api.loadProfile($('profileList').value));
+$('profileDelete').addEventListener('click', () => api.deleteProfile($('profileList').value));
+$('exportSettings').addEventListener('click', async () => {
+  const result = await api.exportSettings();
+  $('backupStatus').classList.remove('bad');
+  $('backupStatus').textContent = result === 'ok' ? tr('exportOk') : '';
+});
+$('importSettings').addEventListener('click', async () => {
+  const result = await api.importSettings();
+  $('backupStatus').classList.toggle('bad', result === 'invalid');
+  $('backupStatus').textContent = { ok: tr('importOk'), invalid: tr('importInvalid') }[result] || '';
+});
 document.querySelectorAll('[data-lang]').forEach((b) => b.addEventListener('click', () => api.setSettings({ language: b.dataset.lang })));
 document.querySelectorAll('[data-pos]').forEach((b) => b.addEventListener('click', () => api.setPosition(b.dataset.pos)));
+document.querySelectorAll('[data-preset]').forEach((b) => b.addEventListener('click', () => api.setSettings(PRESETS[b.dataset.preset])));
+document.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
 
 const sendSize = () => api.setSize(Number($('width').value), Number($('height').value));
 $('width').addEventListener('input', sendSize);
 $('height').addEventListener('input', sendSize);
 
+// ---------- Inicio ----------
+
+let savedTab = 'look';
+try { savedTab = localStorage.getItem('tab') || 'look'; } catch { /* sin almacenamiento */ }
+showTab(document.querySelector(`[data-tab="${savedTab}"]`) ? savedTab : 'look');
 applyLanguage(lang); // textos en español mientras llegan los ajustes guardados
 
 api.onSettings(fillFields);
 api.onState(applyState);
-api.getSettings().then(fillFields);
+api.getSettings().then(fillFields).then(loadFonts);
 api.getState().then(applyState);

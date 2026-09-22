@@ -5,43 +5,77 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
 <title>Kylen Chat for Twitch</title>
 <style>
-  :root { color-scheme: dark; --accent: #9146ff; --line: #2f2f35; --muted: #adadb8; }
+  :root { color-scheme: dark; --accent: #9146ff; --accent-2: #a970ff; --line: #2f2f35; --muted: #adadb8; --panel: #1f1f23; }
   * { box-sizing: border-box; }
   body { margin: 0; padding: 18px 20px 24px; background: #18181b; color: #efeff1; font: 14px "Segoe UI", sans-serif; }
   header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
   h1 { font-size: 18px; margin: 0 0 4px; display: flex; align-items: center; gap: 10px; }
   h1 img { width: 32px; height: 32px; }
-  .sub { color: var(--muted); margin: 0 0 16px; font-size: 13px; }
+  .sub { color: var(--muted); margin: 0 0 14px; font-size: 13px; }
   .langs { display: flex; gap: 6px; flex-shrink: 0; margin-top: 2px; }
   .langs button { padding: 3px; background: transparent; border: 2px solid transparent; border-radius: 9px; line-height: 0; opacity: .45; filter: grayscale(.6); transition: opacity .15s, filter .15s, border-color .15s; }
   .langs button:hover { opacity: .85; filter: none; background: transparent; }
   .langs button.active { opacity: 1; filter: none; border-color: var(--accent); }
   .langs img { width: 26px; height: 27px; }
+
   section { border-top: 1px solid var(--line); padding: 14px 0 6px; }
+  .tab-panel > section:first-child { border-top: 0; padding-top: 4px; }
   h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
   .row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
   .row > label:first-child { width: 150px; flex-shrink: 0; }
-  .row input[type=range] { flex: 1; accent-color: var(--accent); }
-  .val { width: 56px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
-  input[type=text], select { flex: 1; background: #0e0e10; color: inherit; border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font: inherit; }
+  .row input[type=range] { flex: 1; accent-color: var(--accent); min-width: 0; }
+  .val { width: 56px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+  input[type=text], select { flex: 1; min-width: 0; background: #0e0e10; color: inherit; border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font: inherit; }
   input[type=text]:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
   input[type=color] { width: 44px; height: 30px; border: 1px solid var(--line); border-radius: 6px; background: none; padding: 2px; }
-  input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent); }
+  input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent); flex-shrink: 0; }
   button { background: #2f2f35; color: inherit; border: 0; border-radius: 6px; padding: 8px 12px; font: inherit; cursor: pointer; }
   button:hover { background: #3a3a42; }
+  button:disabled { opacity: .45; cursor: default; }
   button.primary { background: var(--accent); color: #fff; }
-  button.primary:hover { background: #a970ff; }
+  button.primary:hover { background: var(--accent-2); }
   button.wide { width: 100%; margin-bottom: 8px; }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 2px 0 14px; }
   .grid { display: grid; grid-template-columns: repeat(3, 44px); gap: 6px; }
   .grid button { height: 32px; padding: 0; font-size: 16px; }
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .presets button { padding: 6px 11px; font-size: 13px; border-radius: 999px; }
   .note { color: var(--muted); font-size: 12px; line-height: 1.5; }
-  #update { display: none; align-items: center; gap: 10px; background: #2b1d4a; border: 1px solid var(--accent); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; }
-  #update.show { display: flex; }
+  .status { font-size: 12px; margin: 0 0 8px; color: #8fe3a8; }
+  .status.bad { color: #ff8a8a; }
+  .status:empty { display: none; }
+
+  /* Pestañas */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: 0 -20px 14px; padding: 0 20px; }
+  .tabs button { background: transparent; border-radius: 6px 6px 0 0; padding: 9px 14px; color: var(--muted); font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tabs button:hover { color: #efeff1; background: transparent; }
+  .tabs button.active { color: #efeff1; border-bottom-color: var(--accent); }
+  .tab-panel[hidden] { display: none; }
+
+  .banner { display: none; gap: 10px; background: #2b1d4a; border: 1px solid var(--accent); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; }
+  .banner.show { display: flex; }
+  #update { align-items: center; }
   #update span { flex: 1; }
+  #whatsNew { flex-direction: column; }
+  #whatsNew b { font-size: 14px; }
+  #whatsNew ul { margin: 0; padding-left: 18px; color: #d9d4e6; font-size: 13px; line-height: 1.5; }
+  #whatsNew button { align-self: flex-end; }
   .error { color: #ff8a8a; font-size: 12px; margin: -4px 0 8px; }
   .error:empty { display: none; }
   .warn { background: #3a2a12; border: 1px solid #b7791f; border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 10px; }
   .warn:empty { display: none; }
+
+  /* Guía de la primera vez */
+  #welcome { position: fixed; inset: 0; z-index: 10; background: rgba(10, 10, 12, .82); display: none; align-items: center; justify-content: center; padding: 20px; }
+  #welcome.show { display: flex; }
+  .welcome-card { background: var(--panel); border: 1px solid #3a3a42; border-radius: 14px; padding: 24px 22px 20px; max-width: 380px; box-shadow: 0 20px 60px rgba(0, 0, 0, .5); }
+  .welcome-card img { width: 48px; height: 48px; display: block; margin: 0 auto 10px; }
+  .welcome-card h3 { text-align: center; margin: 0 0 16px; font-size: 18px; }
+  .welcome-card ol { margin: 0 0 14px; padding: 0; list-style: none; counter-reset: step; }
+  .welcome-card li { counter-increment: step; display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; line-height: 1.45; }
+  .welcome-card li::before { content: counter(step); flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 13px; display: grid; place-items: center; }
+  .welcome-card .note { margin: 0 0 16px; }
+
   footer { border-top: 1px solid var(--line); margin-top: 14px; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 12px; }
   footer b { color: #efeff1; font-weight: 600; }
   footer a { color: #bf94ff; text-decoration: none; cursor: pointer; }
@@ -62,7 +96,8 @@
     </div>
   </header>
 
-  <div id="update"><span id="updateText"></span><button class="primary" id="installUpdate" data-i18n="restart"></button></div>
+  <div class="banner" id="update"><span id="updateText"></span><button class="primary" id="installUpdate" data-i18n="restart"></button></div>
+  <div class="banner" id="whatsNew"><b id="whatsNewTitle"></b><ul id="whatsNewList"></ul><button class="primary" id="whatsNewOk" data-i18n="gotIt"></button></div>
 
   <section>
     <h2 data-i18n="sectionChannel"></h2>
@@ -73,98 +108,173 @@
     <p class="error" id="channelError"></p>
   </section>
 
-  <section>
-    <h2 data-i18n="sectionPosition"></h2>
-    <button class="wide primary" id="edit"></button>
-    <button class="wide" id="test"></button>
-    <div class="row">
-      <label data-i18n="placeAt"></label>
-      <div class="grid">
-        <button data-pos="top-left" data-i18n-title="posTopLeft">↖</button>
-        <button data-pos="top-center" data-i18n-title="posTopCenter">↑</button>
-        <button data-pos="top-right" data-i18n-title="posTopRight">↗</button>
-        <button data-pos="middle-left" data-i18n-title="posMiddleLeft">←</button>
-        <button data-pos="middle-center" data-i18n-title="posMiddleCenter">•</button>
-        <button data-pos="middle-right" data-i18n-title="posMiddleRight">→</button>
-        <button data-pos="bottom-left" data-i18n-title="posBottomLeft">↙</button>
-        <button data-pos="bottom-center" data-i18n-title="posBottomCenter">↓</button>
-        <button data-pos="bottom-right" data-i18n-title="posBottomRight">↘</button>
+  <div class="actions">
+    <button class="primary" id="edit"></button>
+    <button id="test"></button>
+  </div>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="look" data-i18n="tabLook"></button>
+    <button role="tab" data-tab="messages" data-i18n="tabMessages"></button>
+    <button role="tab" data-tab="general" data-i18n="tabGeneral"></button>
+  </nav>
+
+  <!-- ======================= APARIENCIA ======================= -->
+  <div class="tab-panel" data-panel="look">
+    <section>
+      <h2 data-i18n="sectionPresets"></h2>
+      <div class="presets">
+        <button data-preset="default" data-i18n="presetDefault"></button>
+        <button data-preset="minimal" data-i18n="presetMinimal"></button>
+        <button data-preset="twitch" data-i18n="presetTwitch"></button>
+        <button data-preset="contrast" data-i18n="presetContrast"></button>
+        <button data-preset="big" data-i18n="presetBig"></button>
       </div>
-    </div>
-    <div class="row"><label for="width" data-i18n="width"></label><input type="range" id="width" min="160" max="2560" step="10"><span class="val" id="widthVal"></span></div>
-    <div class="row"><label for="height" data-i18n="height"></label><input type="range" id="height" min="80" max="1440" step="10"><span class="val" id="heightVal"></span></div>
-  </section>
+    </section>
 
-  <section>
-    <h2 data-i18n="sectionFont"></h2>
-    <div class="row"><label for="fontSize" data-i18n="fontSize"></label><input type="range" id="fontSize" min="10" max="48"><span class="val" id="fontSizeVal"></span></div>
-    <div class="row">
-      <label for="fontFamily" data-i18n="font"></label>
-      <select id="fontFamily">
-        <option>Segoe UI</option>
-        <option>Arial</option>
-        <option>Verdana</option>
-        <option>Tahoma</option>
-        <option>Trebuchet MS</option>
-        <option>Georgia</option>
-        <option>Consolas</option>
-        <option>Impact</option>
-        <option>Comic Sans MS</option>
-      </select>
-    </div>
-    <div class="row"><label for="bold" data-i18n="bold"></label><input type="checkbox" id="bold"></div>
-    <div class="row"><label for="textColor" data-i18n="textColor"></label><input type="color" id="textColor"></div>
-    <div class="row"><label for="userColors" data-i18n="userColors"></label><input type="checkbox" id="userColors"></div>
-    <div class="row"><label for="outline" data-i18n="outline"></label><input type="checkbox" id="outline"></div>
-  </section>
+    <section>
+      <h2 data-i18n="sectionPosition"></h2>
+      <div class="row">
+        <label data-i18n="placeAt"></label>
+        <div class="grid">
+          <button data-pos="top-left" data-i18n-title="posTopLeft">↖</button>
+          <button data-pos="top-center" data-i18n-title="posTopCenter">↑</button>
+          <button data-pos="top-right" data-i18n-title="posTopRight">↗</button>
+          <button data-pos="middle-left" data-i18n-title="posMiddleLeft">←</button>
+          <button data-pos="middle-center" data-i18n-title="posMiddleCenter">•</button>
+          <button data-pos="middle-right" data-i18n-title="posMiddleRight">→</button>
+          <button data-pos="bottom-left" data-i18n-title="posBottomLeft">↙</button>
+          <button data-pos="bottom-center" data-i18n-title="posBottomCenter">↓</button>
+          <button data-pos="bottom-right" data-i18n-title="posBottomRight">↘</button>
+        </div>
+      </div>
+      <div class="row"><label for="width" data-i18n="width"></label><input type="range" id="width" min="160" max="2560" step="10"><span class="val" id="widthVal"></span></div>
+      <div class="row"><label for="height" data-i18n="height"></label><input type="range" id="height" min="80" max="1440" step="10"><span class="val" id="heightVal"></span></div>
+      <div class="row">
+        <label for="align" data-i18n="align"></label>
+        <select id="align"><option value="left" data-i18n="alignLeft"></option><option value="right" data-i18n="alignRight"></option></select>
+      </div>
+      <div class="row">
+        <label for="newestOnTop" data-i18n="newestOnTop"></label>
+        <select id="newestOnTop"><option value="false" data-i18n="newestBottom"></option><option value="true" data-i18n="newestTop"></option></select>
+      </div>
+    </section>
 
-  <section>
-    <h2 data-i18n="sectionBackground"></h2>
-    <div class="row"><label for="bgColor" data-i18n="bgColor"></label><input type="color" id="bgColor"></div>
-    <div class="row"><label for="bgOpacity" data-i18n="bgOpacity"></label><input type="range" id="bgOpacity" min="0" max="100"><span class="val" id="bgOpacityVal"></span></div>
-    <div class="row"><label for="opacity" data-i18n="opacity"></label><input type="range" id="opacity" min="10" max="100"><span class="val" id="opacityVal"></span></div>
-    <div class="row"><label for="showHeader" data-i18n="showHeader"></label><input type="checkbox" id="showHeader"><span class="note" data-i18n="showHeaderNote"></span></div>
-  </section>
+    <section>
+      <h2 data-i18n="sectionFont"></h2>
+      <div class="row"><label for="fontSize" data-i18n="fontSize"></label><input type="range" id="fontSize" min="10" max="48"><span class="val" id="fontSizeVal"></span></div>
+      <div class="row"><label for="fontFamily" data-i18n="font"></label><select id="fontFamily"></select></div>
+      <div class="row"><label for="bold" data-i18n="bold"></label><input type="checkbox" id="bold"></div>
+      <div class="row"><label for="textColor" data-i18n="textColor"></label><input type="color" id="textColor"></div>
+      <div class="row"><label for="userColors" data-i18n="userColors"></label><input type="checkbox" id="userColors"></div>
+      <div class="row"><label for="outline" data-i18n="outline"></label><input type="checkbox" id="outline"></div>
+      <div class="row"><label for="emoteScale" data-i18n="emoteScale"></label><input type="range" id="emoteScale" min="1" max="3" step="0.1"><span class="val" id="emoteScaleVal"></span></div>
+    </section>
 
-  <section>
-    <h2 data-i18n="sectionHighlights"></h2>
-    <div class="row"><label for="highlightMentions" data-i18n="highlightMentions"></label><input type="checkbox" id="highlightMentions"><span class="note" data-i18n="highlightMentionsNote"></span></div>
-    <div class="row"><label for="keywords" data-i18n="keywords"></label><input type="text" id="keywords" maxlength="300" data-i18n-placeholder="keywordsPlaceholder"></div>
-    <div class="row"><label for="highlightFirst" data-i18n="highlightFirst"></label><input type="checkbox" id="highlightFirst"></div>
-    <div class="row"><label for="showBadges" data-i18n="showBadges"></label><input type="checkbox" id="showBadges"><span class="note" data-i18n="showBadgesNote"></span></div>
-    <div class="row"><label for="timestamps" data-i18n="timestamps"></label><input type="checkbox" id="timestamps"></div>
-  </section>
+    <section>
+      <h2 data-i18n="sectionBackground"></h2>
+      <div class="row"><label for="bgColor" data-i18n="bgColor"></label><input type="color" id="bgColor"></div>
+      <div class="row"><label for="bgOpacity" data-i18n="bgOpacity"></label><input type="range" id="bgOpacity" min="0" max="100"><span class="val" id="bgOpacityVal"></span></div>
+      <div class="row"><label for="opacity" data-i18n="opacity"></label><input type="range" id="opacity" min="10" max="100"><span class="val" id="opacityVal"></span></div>
+      <div class="row"><label for="showHeader" data-i18n="showHeader"></label><input type="checkbox" id="showHeader"><span class="note" data-i18n="showHeaderNote"></span></div>
+    </section>
+  </div>
 
-  <section>
-    <h2 data-i18n="sectionMessages"></h2>
-    <div class="row"><label for="maxMessages" data-i18n="maxMessages"></label><input type="range" id="maxMessages" min="3" max="100"><span class="val" id="maxMessagesVal"></span></div>
-    <div class="row"><label for="fadeAfter" data-i18n="fadeAfter"></label><input type="range" id="fadeAfter" min="0" max="120" step="5"><span class="val" id="fadeAfterVal"></span></div>
-    <div class="row"><label for="animatedEmotes" data-i18n="animatedEmotes"></label><input type="checkbox" id="animatedEmotes"><span class="note" data-i18n="animatedEmotesNote"></span></div>
-    <div class="row"><label for="hideBots" data-i18n="hideBots"></label><input type="checkbox" id="hideBots"><span class="note" data-i18n="hideBotsNote"></span></div>
-    <button class="wide" id="visible"></button>
-    <button class="wide" id="reset" data-i18n="reset"></button>
-  </section>
+  <!-- ======================= MENSAJES ======================= -->
+  <div class="tab-panel" data-panel="messages" hidden>
+    <section>
+      <h2 data-i18n="sectionHighlights"></h2>
+      <div class="row"><label for="highlightMentions" data-i18n="highlightMentions"></label><input type="checkbox" id="highlightMentions"><span class="note" data-i18n="highlightMentionsNote"></span></div>
+      <div class="row"><label for="keywords" data-i18n="keywords"></label><input type="text" id="keywords" maxlength="300" data-i18n-placeholder="keywordsPlaceholder"></div>
+      <div class="row"><label for="highlightFirst" data-i18n="highlightFirst"></label><input type="checkbox" id="highlightFirst"></div>
+      <div class="row"><label for="showBadges" data-i18n="showBadges"></label><input type="checkbox" id="showBadges"><span class="note" data-i18n="showBadgesNote"></span></div>
+      <div class="row"><label for="timestamps" data-i18n="timestamps"></label><input type="checkbox" id="timestamps"></div>
+    </section>
 
-  <section id="startupSection">
-    <h2 data-i18n="sectionStartup"></h2>
-    <div class="row"><label for="autoStart" data-i18n="autoStart"></label><input type="checkbox" id="autoStart"><span class="note" data-i18n="autoStartNote"></span></div>
-  </section>
+    <section>
+      <h2 data-i18n="sectionFilters"></h2>
+      <div class="row"><label for="hideBots" data-i18n="hideBots"></label><input type="checkbox" id="hideBots"><span class="note" data-i18n="hideBotsNote"></span></div>
+      <div class="row"><label for="mutedUsers" data-i18n="mutedUsers"></label><input type="text" id="mutedUsers" maxlength="1000" data-i18n-placeholder="mutedUsersPlaceholder"></div>
+      <div class="row"><label for="blockedWords" data-i18n="blockedWords"></label><input type="text" id="blockedWords" maxlength="1000" data-i18n-placeholder="blockedWordsPlaceholder"></div>
+    </section>
 
-  <section>
-    <h2 data-i18n="sectionShortcuts"></h2>
-    <div class="warn" id="shortcutWarn"></div>
-    <p class="note">
-      <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> <span data-i18n="shortcutEdit"></span><br>
-      <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> <span data-i18n="shortcutHide"></span><br><br>
-      <span data-i18n-html="shortcutsNote"></span>
-    </p>
-  </section>
+    <section>
+      <h2 data-i18n="sectionMessages"></h2>
+      <div class="row"><label for="maxMessages" data-i18n="maxMessages"></label><input type="range" id="maxMessages" min="3" max="100"><span class="val" id="maxMessagesVal"></span></div>
+      <div class="row"><label for="fadeAfter" data-i18n="fadeAfter"></label><input type="range" id="fadeAfter" min="0" max="120" step="5"><span class="val" id="fadeAfterVal"></span></div>
+      <div class="row"><label for="idleHide" data-i18n="idleHide"></label><input type="range" id="idleHide" min="0" max="300" step="10"><span class="val" id="idleHideVal"></span></div>
+      <div class="row"><label for="animatedEmotes" data-i18n="animatedEmotes"></label><input type="checkbox" id="animatedEmotes"><span class="note" data-i18n="animatedEmotesNote"></span></div>
+    </section>
+  </div>
+
+  <!-- ======================= GENERAL ======================= -->
+  <div class="tab-panel" data-panel="general" hidden>
+    <section>
+      <h2 data-i18n="sectionProfiles"></h2>
+      <p class="note" data-i18n="profilesNote"></p>
+      <div class="row">
+        <select id="profileList"></select>
+        <button id="profileLoad" data-i18n="loadProfile"></button>
+        <button id="profileDelete" data-i18n="deleteProfile"></button>
+      </div>
+      <div class="row">
+        <input type="text" id="profileName" maxlength="30" data-i18n-placeholder="profileNamePlaceholder">
+        <button class="primary" id="profileSave" data-i18n="saveProfile"></button>
+      </div>
+    </section>
+
+    <section>
+      <h2 data-i18n="sectionBackup"></h2>
+      <p class="note" data-i18n="backupNote"></p>
+      <p class="status" id="backupStatus"></p>
+      <div class="actions">
+        <button id="exportSettings" data-i18n="exportSettings"></button>
+        <button id="importSettings" data-i18n="importSettings"></button>
+      </div>
+    </section>
+
+    <section id="startupSection">
+      <h2 data-i18n="sectionStartup"></h2>
+      <div class="row"><label for="autoStart" data-i18n="autoStart"></label><input type="checkbox" id="autoStart"><span class="note" data-i18n="autoStartNote"></span></div>
+    </section>
+
+    <section>
+      <h2 data-i18n="sectionOther"></h2>
+      <button class="wide" id="visible"></button>
+      <button class="wide" id="reset" data-i18n="reset"></button>
+    </section>
+
+    <section>
+      <h2 data-i18n="sectionShortcuts"></h2>
+      <div class="warn" id="shortcutWarn"></div>
+      <p class="note">
+        <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> <span data-i18n="shortcutEdit"></span><br>
+        <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> <span data-i18n="shortcutHide"></span><br>
+        <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>P</kbd> <span data-i18n="shortcutProfile"></span><br><br>
+        <span data-i18n-html="shortcutsNote"></span>
+      </p>
+    </section>
+  </div>
 
   <footer>
     <span><span data-i18n="createdBy"></span> <b>Aleix Aj</b> · <a id="repo">GitHub</a></span>
     <span id="version"></span>
   </footer>
   <p class="disclaimer" data-i18n="disclaimer"></p>
+
+  <div id="welcome">
+    <div class="welcome-card">
+      <img src="assets/icon.png" alt="">
+      <h3 data-i18n="welcomeTitle"></h3>
+      <ol>
+        <li><span data-i18n-html="welcomeStep1"></span></li>
+        <li><span data-i18n-html="welcomeStep2"></span></li>
+        <li><span data-i18n-html="welcomeStep3"></span></li>
+      </ol>
+      <p class="note" data-i18n-html="welcomeTip"></p>
+      <button class="primary wide" id="welcomeStart" data-i18n="welcomeStart"></button>
+    </div>
+  </div>
 
   <script src="i18n.js"></script>
   <script src="panel.js"></script>

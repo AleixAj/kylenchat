@@ -31,16 +31,28 @@
 
 - Muestra el chat de cualquier canal de Twitch en una ventana **transparente** que queda **siempre encima** del juego.
 - Los clics **atraviesan** el chat, así que no molesta mientras juegas.
-- Puedes elegir **posición, tamaño, fuente, tamaño de letra, colores, fondo y transparencia**.
 - Muestra los emotes de **Twitch, 7TV, BTTV y FFZ**.
-- Destaca las **suscripciones, regalos y raids**.
-- **Modo prueba** con mensajes de ejemplo para ajustar el aspecto viendo el resultado final.
-- Opción para **ocultar bots y comandos** (Nightbot, `!discord`…).
-- Los nombres con colores muy oscuros se aclaran para que se lean sobre el juego.
+
+**Para no perderte lo importante**
+- **Menciones y palabras clave destacadas**: si alguien escribe tu nombre o una palabra que elijas, el mensaje sale resaltado.
+- Marca el **primer mensaje** de cada persona, para que puedas saludarla.
+- **Insignias** de streamer, moderador, VIP y suscriptor.
+- Destaca **subs, regalos, raids, bits, canjes de puntos y mensajes destacados**, y muestra a quién responde cada mensaje.
+
+**A tu gusto**
+- **Estilos rápidos** (Minimalista, Clásico Twitch, Alto contraste, Texto grande…) y control total de posición, tamaño, fuente (cualquiera instalada), colores, fondo, transparencia y tamaño de emotes.
+- Mensajes **alineados a la derecha** y **nuevos arriba**, si lo prefieres.
+- **Perfiles por juego**: guarda el aspecto y la posición para cada juego y cambia con `Ctrl + Alt + P`.
+- **Filtros**: usuarios silenciados, palabras prohibidas y ocultar bots y comandos.
+- El chat puede **ocultarse cuando está tranquilo** y volver con el siguiente mensaje.
+- **Modo prueba** con mensajes de ejemplo para ajustarlo viendo el resultado final.
+
+**Y además**
+- En **español e inglés**.
+- **Guía rápida** la primera vez y aviso de **novedades** tras cada actualización.
+- **Exporta e importa** tu configuración.
 - Puede **iniciarse con Windows**, oculta en la bandeja.
-- En **español e inglés** (se cambia con las banderas de los ajustes).
-- Se **actualiza sola** cuando sale una versión nueva.
-- No necesitas iniciar sesión en Twitch.
+- Se **actualiza sola** y no necesitas iniciar sesión en Twitch.
 
 ## Descarga e instalación
 
@@ -69,6 +81,7 @@ Si cierras la ventana de ajustes, la app sigue funcionando en la bandeja (junto 
 | --- | --- |
 | `Ctrl + Shift + L` | Mover y cambiar el tamaño del chat / fijarlo |
 | `Ctrl + Shift + H` | Ocultar o mostrar el chat |
+| `Ctrl + Alt + P` | Pasar al siguiente perfil |
 
 ### Importante para juegos (League of Legends, etc.)
 

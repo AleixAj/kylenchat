@@ -53,8 +53,12 @@ function applySettings(s) {
     ? '0 0 2px #000, 1px 1px 1px #000, -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000'
     : 'none');
   root.setProperty('--opacity', String(s.opacity / 100));
+  root.setProperty('--emote', String(s.emoteScale));
   document.documentElement.lang = s.language;
   document.body.classList.toggle('header', s.showHeader);
+  document.body.classList.toggle('align-right', s.align === 'right');
+  document.body.classList.toggle('newest-top', s.newestOnTop);
+  resetIdle();
   document.getElementById('hint').textContent = tr('editHint');
   trim();
 
@@ -298,6 +302,31 @@ const findEmote = (word) => channelEmotes.get(word) || globalEmotes.get(word);
 const BOTS = new Set(['nightbot', 'streamelements', 'streamlabs', 'moobot', 'fossabot', 'wizebot', 'soundalerts', 'sery_bot', 'botrixoficial', 'kofistreambot', 'pokemoncommunitygame']);
 const isBotMessage = ({ user, text }) => BOTS.has(user) || text.startsWith('!');
 
+const escapeRegex = (w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const splitList = (text) => (text || '').split(',').map((w) => w.trim().toLowerCase()).filter(Boolean);
+// Palabra completa (sin cortar "pregunta" dentro de "preguntas"), con o sin @ delante.
+const wordsRegex = (words) => (words.length
+  ? new RegExp(`(^|[^\\p{L}\\p{N}_])@?(${words.map(escapeRegex).join('|')})(?=$|[^\\p{L}\\p{N}_])`, 'iu')
+  : null);
+
+// ---------- Filtros: usuarios silenciados, palabras prohibidas y bots ----------
+
+let filterKey = null;
+let mutedUsers = new Set();
+let blockedRegex = null;
+
+function isFiltered(msg) {
+  const key = `${settings.mutedUsers}|${settings.blockedWords}`;
+  if (key !== filterKey) {
+    filterKey = key;
+    mutedUsers = new Set(splitList(settings.mutedUsers).map((u) => u.replace(/^@/, '')));
+    blockedRegex = wordsRegex(splitList(settings.blockedWords));
+  }
+  return mutedUsers.has(msg.user)
+    || Boolean(blockedRegex && blockedRegex.test(msg.text))
+    || (settings.hideBots && isBotMessage(msg));
+}
+
 // ---------- Destacados: menciones y palabras clave ----------
 
 // Se vuelve a construir solo cuando cambian los ajustes o el canal, no con cada mensaje.
@@ -305,16 +334,12 @@ let mentionRegex = null;
 let mentionKey = '';
 function getMentionRegex() {
   const target = joined || (testMode ? 'streamer' : '');
-  const words = (settings.keywords || '').split(',').map((w) => w.trim().toLowerCase()).filter(Boolean);
+  const words = splitList(settings.keywords);
   if (settings.highlightMentions && target) words.push(target);
   const key = words.join(',');
   if (key !== mentionKey) {
     mentionKey = key;
-    const escape = (w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    // Palabra completa (sin cortar "pregunta" en "preguntas"), con o sin @ delante.
-    mentionRegex = words.length
-      ? new RegExp(`(^|[^\\p{L}\\p{N}_])@?(${words.map(escape).join('|')})(?=$|[^\\p{L}\\p{N}_])`, 'iu')
-      : null;
+    mentionRegex = wordsRegex(words);
   }
   return mentionRegex;
 }
@@ -325,7 +350,7 @@ function isMention(text) {
 }
 
 function addMessage(msg) {
-  if (settings.hideBots && isBotMessage(msg)) return;
+  if (isFiltered(msg)) return;
   const el = document.createElement('div');
   el.className = 'msg';
   if (isMention(msg.text)) el.classList.add('mention');
@@ -338,6 +363,7 @@ function addMessage(msg) {
 
 // Aviso destacado: "X se ha suscrito", "Y está haciendo raid con 50 espectadores"...
 function addNotice(systemText, msg) {
+  if (msg && isFiltered(msg)) msg = null; // el aviso se ve, pero sin el mensaje filtrado
   if (!systemText && !msg) return;
   const el = document.createElement('div');
   el.className = 'msg notice';
@@ -516,12 +542,35 @@ function flush() {
   batch.forEach((el) => frag.append(el));
   chat.append(frag);
   trim();
+  if (batch.length) resetIdle();
   if (settings && settings.fadeAfter > 0) {
     setTimeout(() => {
       batch.forEach((el) => el.classList.add('fade'));
       setTimeout(() => batch.forEach((el) => el.remove()), 700);
     }, settings.fadeAfter * 1000);
   }
+}
+
+// "Ocultar si no hay mensajes": el chat se desvanece tras un rato sin actividad y vuelve con el siguiente.
+let idleTimer = null;
+function resetIdle() {
+  document.body.classList.remove('idle');
+  clearTimeout(idleTimer);
+  if (!settings || !settings.idleHide) return;
+  idleTimer = setTimeout(() => {
+    if (!testMode && !document.body.classList.contains('edit')) document.body.classList.add('idle');
+  }, settings.idleHide * 1000);
+}
+
+// Aviso breve encima del chat, p. ej. al cambiar de perfil con el atajo.
+let toastTimer = null;
+function showToast(text) {
+  const toast = document.getElementById('toast');
+  toast.textContent = text;
+  toast.classList.add('show');
+  resetIdle();
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
 }
 
 function trim() {
@@ -618,7 +667,11 @@ grip.addEventListener('pointerdown', (e) => {
 // ---------- Inicio ----------
 
 api.onSettings(applySettings);
-api.onEditMode((on) => document.body.classList.toggle('edit', on));
+api.onEditMode((on) => {
+  document.body.classList.toggle('edit', on);
+  resetIdle();
+});
+api.onToast(showToast);
 api.onTestMode(setTestMode);
 api.onReconnect(reconnectNow);
 api.getSettings().then(applySettings);

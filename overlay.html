@@ -21,23 +21,28 @@
     position: absolute; inset: 0;
     display: flex; flex-direction: column; justify-content: flex-end; gap: 4px;
     padding: 6px; box-sizing: border-box; overflow: hidden;
-    opacity: var(--opacity);
+    opacity: var(--opacity); transition: opacity .8s;
   }
+  body.newest-top #chat { flex-direction: column-reverse; justify-content: flex-end; }
+  body.idle #chat, body.idle #bar { opacity: 0; }
   .msg {
+    --edge: transparent; --dir: 90deg;
     align-self: flex-start; max-width: 100%; box-sizing: border-box;
-    padding: 3px 8px; border-radius: 6px; background: var(--bg);
+    padding: 3px 8px 3px 5px; border-left: 3px solid var(--edge); border-radius: 6px; background: var(--bg);
     line-height: 1.35; overflow-wrap: anywhere; text-shadow: var(--shadow);
     transition: opacity .6s;
   }
   .msg.fade { opacity: 0; }
   .msg.system { font-style: italic; opacity: .75; font-size: .85em; }
-  .msg.notice { border-left: 3px solid #a970ff; background: linear-gradient(90deg, rgba(145, 70, 255, .45), var(--bg)); }
+  .msg.notice { --edge: #a970ff; background: linear-gradient(var(--dir), rgba(145, 70, 255, .45), var(--bg)); }
   .notice-title { font-weight: 700; font-size: .9em; }
   /* Destacados */
-  .msg.mention { border-left: 3px solid #ffc400; background: linear-gradient(90deg, rgba(255, 196, 0, .38), var(--bg)); }
-  .msg.first { border-left: 3px solid #3ddc84; }
-  .msg.highlighted { background: linear-gradient(90deg, rgba(145, 70, 255, .55), var(--bg)); }
-  .msg.bits { border-left: 3px solid #ff9df5; }
+  .msg.mention { --edge: #ffc400; background: linear-gradient(var(--dir), rgba(255, 196, 0, .38), var(--bg)); }
+  .msg.first { --edge: #3ddc84; }
+  .msg.highlighted { background: linear-gradient(var(--dir), rgba(145, 70, 255, .55), var(--bg)); }
+  .msg.bits { --edge: #ff9df5; }
+  /* Alineado a la derecha (para cuando el chat está en ese lado de la pantalla) */
+  body.align-right .msg { --dir: 270deg; align-self: flex-end; text-align: right; border-left: 0; border-right: 3px solid var(--edge); padding: 3px 5px 3px 8px; }
   .pill {
     display: inline-block; margin-right: 5px; padding: 0 6px; border-radius: 999px;
     font-size: .68em; font-weight: 700; line-height: 1.6; vertical-align: .15em; text-shadow: none; color: #fff;
@@ -51,7 +56,7 @@
   .time { font-size: .75em; opacity: .6; margin-right: 5px; font-variant-numeric: tabular-nums; }
   .name { font-weight: 700; }
   .action .text { font-style: italic; }
-  .emote { height: 1.6em; vertical-align: middle; margin: -.2em 0; }
+  .emote { height: calc(var(--emote, 1.6) * 1em); vertical-align: middle; margin: -.2em 0; }
   .stack { display: inline-grid; vertical-align: middle; }
   .stack > .emote { grid-area: 1 / 1; place-self: center; }
 
@@ -65,7 +70,14 @@
     border-radius: 6px 6px 0 0;
     opacity: var(--opacity);
   }
+  #bar { transition: opacity .8s; }
   #bar img { width: 16px; height: 16px; }
+  #toast {
+    position: absolute; top: 32px; left: 50%; transform: translateX(-50%); z-index: 4;
+    background: #9146ff; color: #fff; font: 600 12px "Segoe UI", sans-serif; text-shadow: none;
+    padding: 4px 12px; border-radius: 999px; white-space: nowrap; opacity: 0; transition: opacity .3s;
+  }
+  #toast.show { opacity: 1; }
   #barChannel { margin-left: auto; font-weight: 400; color: rgba(255, 255, 255, .6); }
   body.header #bar { display: flex; }
   body.header #chat { top: 24px; }
@@ -89,6 +101,7 @@
   <div id="bar"><img src="assets/tray@2x.png" alt="">Kylen Chat<span id="barChannel"></span></div>
   <div id="chat"></div>
   <div id="hint"></div>
+  <div id="toast"></div>
   <div id="grip"></div>
   <script src="i18n.js"></script>
   <script src="overlay.js"></script>
