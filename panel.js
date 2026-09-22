@@ -34,6 +34,11 @@ const FIELDS = {
   animatedEmotes: { type: 'check' },
   hideBots: { type: 'check' },
   showHeader: { type: 'check' },
+  highlightMentions: { type: 'check' },
+  keywords: { type: 'text' },
+  highlightFirst: { type: 'check' },
+  showBadges: { type: 'check' },
+  timestamps: { type: 'check' },
   autoStart: { type: 'check' },
   fadeAfter: { type: 'range', show: (v) => (Number(v) === 0 ? tr('never') : `${v} s`) },
 };
@@ -54,8 +59,10 @@ function fillFields(settings) {
   if (settings.language !== lang) applyLanguage(settings.language);
   if (document.activeElement !== $('channel')) $('channel').value = settings.channel;
   for (const [key, { type }] of Object.entries(FIELDS)) {
-    if (type === 'check') $(key).checked = settings[key];
-    else $(key).value = settings[key];
+    const el = $(key);
+    if (el === document.activeElement && type === 'text') continue; // no pisar lo que se está escribiendo
+    if (type === 'check') el.checked = settings[key];
+    else el.value = settings[key];
     showValue(key);
   }
 }

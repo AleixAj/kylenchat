@@ -66,7 +66,22 @@
       createdBy: 'Creada por',
       disclaimer: 'Proyecto independiente, no afiliado a Twitch.',
 
+      sectionHighlights: 'Destacados',
+      highlightMentions: 'Cuando te mencionen',
+      highlightMentionsNote: 'tu canal o @tu canal',
+      keywords: 'Palabras a destacar',
+      keywordsPlaceholder: 'separadas por comas: ayuda, pregunta, gg',
+      highlightFirst: 'Primer mensaje de alguien',
+      showBadges: 'Insignias',
+      showBadgesNote: 'streamer, mod, VIP, sub',
+      timestamps: 'Hora en cada mensaje',
+
       // Chat
+      replyingTo: 'respondiendo a @{name}',
+      firstMessage: 'Primer mensaje',
+      bits: '{n} bits',
+      highlightedMessage: 'Destacado',
+      redeemed: 'Canje',
       editHint: 'Arrastra para mover · esquina para cambiar tamaño · Ctrl+Shift+L para fijar',
       enterChannel: 'Escribe el nombre de un canal en Ajustes.',
       connecting: 'Conectando a #{channel}…',
@@ -148,6 +163,21 @@
       createdBy: 'Made by',
       disclaimer: 'Independent project, not affiliated with Twitch.',
 
+      sectionHighlights: 'Highlights',
+      highlightMentions: 'When you are mentioned',
+      highlightMentionsNote: 'your channel or @your channel',
+      keywords: 'Keywords to highlight',
+      keywordsPlaceholder: 'comma separated: help, question, gg',
+      highlightFirst: 'Someone\'s first message',
+      showBadges: 'Badges',
+      showBadgesNote: 'streamer, mod, VIP, sub',
+      timestamps: 'Time on each message',
+
+      replyingTo: 'replying to @{name}',
+      firstMessage: 'First message',
+      bits: '{n} bits',
+      highlightedMessage: 'Highlighted',
+      redeemed: 'Redeemed',
       editHint: 'Drag to move · corner to resize · Ctrl+Shift+L to lock',
       enterChannel: 'Enter a channel name in Settings.',
       connecting: 'Connecting to #{channel}…',
@@ -166,39 +196,41 @@
     },
   };
 
-  // Mensajes de ejemplo del modo prueba. Formato: [nombre, color, texto] o un aviso de sub/raid.
+  // Mensajes de ejemplo del modo prueba.
+  // Formato: [nombre, color, texto, extras] o un aviso de sub/raid. {channel} se cambia por tu canal.
   const SAMPLES = {
     es: [
-      ['Faker', '#FF4A80', '¡Qué jugada! Kappa'],
+      ['Faker', '#FF4A80', '¡Qué jugada! Kappa', { badges: 'subscriber/12' }],
       ['ElMagoDelBot', '', 'baron en 30 segundos, cuidado monkaS'],
-      ['Pepita_22', '#00BBF9', 'ese flash ha sido de cine Clap Clap'],
+      ['Moderadora', '#FEE440', 'Recordad ser respetuosos en el chat 💜', { badges: 'moderator/1,subscriber/24' }],
+      ['Pepita_22', '#00BBF9', '@{channel} ¿qué runas llevas? Clap', { badges: 'vip/1' }],
       ['xX_Jungla_Xx', '#5FFF77', 'gg EZ'],
-      ['Moderadora', '#FEE440', 'Recordad ser respetuosos en el chat 💜'],
+      ['nuevo_por_aquí', '', 'hola! primera vez que veo el directo', { first: true }],
       ['TopMain_99', '#FA8E4B', '\x01ACTION se va a por un café mientras reaparece\x01'],
-      ['SoporteFeliz', '#1A1A7A', 'peepoHappy RainTime'],
-      ['LaNoviaDelADC', '#F670DD', 'esa build no la entiendo pero si funciona... LUL'],
-      ['AnalistaDeSofá', '#00F5D4', 'Un mensaje largo de ejemplo para ver cómo se parten las líneas cuando alguien escribe mucho en el chat, que siempre hay alguien que lo hace FeelsGoodMan'],
+      ['SoporteFeliz', '#1A1A7A', 'peepoHappy RainTime', { reply: { name: 'Faker', body: '¡Qué jugada!' } }],
+      ['Pentakill', '#FF7070', 'PENTAAAAA PogChamp', { bits: 500 }],
+      ['LaNoviaDelADC', '#F670DD', 'esa build no la entiendo pero si funciona... LUL', { redeem: true }],
       { notice: 'Kylen se ha suscrito con Prime. ¡Lleva 12 meses suscrito!', msg: ['Kylen', '#A970FF', 'PepePls PepePls PepePls'] },
-      ['nuevo_por_aquí', '', 'hola! primera vez que veo el directo'],
-      ['Pentakill', '#FF7070', 'PENTAAAAA PogChamp'],
+      ['AnalistaDeSofá', '#00F5D4', 'Un mensaje largo de ejemplo para ver cómo se parten las líneas cuando alguien escribe mucho en el chat FeelsGoodMan', { highlighted: true }],
       { notice: 'StreamerAmigo está haciendo raid con 57 espectadores' },
     ],
     en: [
-      ['Faker', '#FF4A80', 'What a play! Kappa'],
+      ['Faker', '#FF4A80', 'What a play! Kappa', { badges: 'subscriber/12' }],
       ['TheBotWizard', '', 'baron in 30 seconds, careful monkaS'],
-      ['Penny_22', '#00BBF9', 'that flash was cinema Clap Clap'],
+      ['Moderator', '#FEE440', 'Please be respectful in chat 💜', { badges: 'moderator/1,subscriber/24' }],
+      ['Penny_22', '#00BBF9', '@{channel} what runes are you using? Clap', { badges: 'vip/1' }],
       ['xX_Jungler_Xx', '#5FFF77', 'gg EZ'],
-      ['Moderator', '#FEE440', 'Please be respectful in chat 💜'],
+      ['new_here', '', 'hi! first time watching the stream', { first: true }],
       ['TopMain_99', '#FA8E4B', '\x01ACTION grabs a coffee while respawning\x01'],
-      ['HappySupport', '#1A1A7A', 'peepoHappy RainTime'],
-      ['ADCsBestFriend', '#F670DD', 'no idea what that build is but it works... LUL'],
-      ['CouchAnalyst', '#00F5D4', 'A long example message to see how lines wrap when someone writes a lot in chat, because there is always someone who does FeelsGoodMan'],
+      ['HappySupport', '#1A1A7A', 'peepoHappy RainTime', { reply: { name: 'Faker', body: 'What a play!' } }],
+      ['Pentakill', '#FF7070', 'PENTAAAAA PogChamp', { bits: 500 }],
+      ['ADCsBestFriend', '#F670DD', 'no idea what that build is but it works... LUL', { redeem: true }],
       { notice: 'Kylen subscribed with Prime. They\'ve subscribed for 12 months!', msg: ['Kylen', '#A970FF', 'PepePls PepePls PepePls'] },
-      ['new_here', '', 'hi! first time watching the stream'],
-      ['Pentakill', '#FF7070', 'PENTAAAAA PogChamp'],
+      ['CouchAnalyst', '#00F5D4', 'A long example message to see how lines wrap when someone writes a lot in chat FeelsGoodMan', { highlighted: true }],
       { notice: 'StreamerFriend is raiding with a party of 57' },
     ],
   };
+
 
   const LANGUAGES = Object.keys(STRINGS);
 

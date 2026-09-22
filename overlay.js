@@ -181,14 +181,23 @@ function parse(line) {
 }
 
 function messageFrom(m) {
-  const user = m.tags.login || m.prefix.split('!')[0];
+  const { tags } = m;
+  const user = tags.login || m.prefix.split('!')[0];
   return {
-    id: m.tags.id,
+    id: tags.id,
     user,
-    name: m.tags['display-name'] || user,
-    color: m.tags.color,
-    emotes: m.tags.emotes,
+    name: tags['display-name'] || user,
+    color: tags.color,
+    emotes: tags.emotes,
     text: m.trailing || '',
+    badges: tags.badges || '',
+    first: tags['first-msg'] === '1',
+    bits: Number(tags.bits) || 0,
+    highlighted: tags['msg-id'] === 'highlighted-message',
+    redeem: Boolean(tags['custom-reward-id']),
+    reply: tags['reply-parent-display-name']
+      ? { name: tags['reply-parent-display-name'], body: unescapeTag(tags['reply-parent-msg-body'] || '') }
+      : null,
   };
 }
 
@@ -289,10 +298,40 @@ const findEmote = (word) => channelEmotes.get(word) || globalEmotes.get(word);
 const BOTS = new Set(['nightbot', 'streamelements', 'streamlabs', 'moobot', 'fossabot', 'wizebot', 'soundalerts', 'sery_bot', 'botrixoficial', 'kofistreambot', 'pokemoncommunitygame']);
 const isBotMessage = ({ user, text }) => BOTS.has(user) || text.startsWith('!');
 
+// ---------- Destacados: menciones y palabras clave ----------
+
+// Se vuelve a construir solo cuando cambian los ajustes o el canal, no con cada mensaje.
+let mentionRegex = null;
+let mentionKey = '';
+function getMentionRegex() {
+  const target = joined || (testMode ? 'streamer' : '');
+  const words = (settings.keywords || '').split(',').map((w) => w.trim().toLowerCase()).filter(Boolean);
+  if (settings.highlightMentions && target) words.push(target);
+  const key = words.join(',');
+  if (key !== mentionKey) {
+    mentionKey = key;
+    const escape = (w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Palabra completa (sin cortar "pregunta" en "preguntas"), con o sin @ delante.
+    mentionRegex = words.length
+      ? new RegExp(`(^|[^\\p{L}\\p{N}_])@?(${words.map(escape).join('|')})(?=$|[^\\p{L}\\p{N}_])`, 'iu')
+      : null;
+  }
+  return mentionRegex;
+}
+
+function isMention(text) {
+  const re = getMentionRegex();
+  return re ? re.test(text) : false;
+}
+
 function addMessage(msg) {
   if (settings.hideBots && isBotMessage(msg)) return;
   const el = document.createElement('div');
   el.className = 'msg';
+  if (isMention(msg.text)) el.classList.add('mention');
+  if (msg.first && settings.highlightFirst) el.classList.add('first');
+  if (msg.highlighted) el.classList.add('highlighted');
+  if (msg.bits) el.classList.add('bits');
   fillMessage(el, msg);
   push(el);
 }
@@ -318,7 +357,29 @@ function addNotice(systemText, msg) {
   push(el);
 }
 
-function fillMessage(el, { id, user, name, color, emotes, text }) {
+const BADGE_ORDER = ['broadcaster', 'moderator', 'vip', 'subscriber'];
+
+function badgeIcons(badges) {
+  const have = new Set(badges.split(',').map((b) => b.split('/')[0]).map((b) => (b === 'founder' ? 'subscriber' : b)));
+  return BADGE_ORDER.filter((b) => have.has(b)).map((b) => {
+    const img = document.createElement('img');
+    img.className = 'badge';
+    img.src = `assets/badges/${b}.svg`;
+    img.alt = '';
+    return img;
+  });
+}
+
+function pill(kind, text) {
+  const span = document.createElement('span');
+  span.className = `pill pill-${kind}`;
+  span.textContent = text;
+  return span;
+}
+
+function fillMessage(el, msg) {
+  const { id, user, name, color, emotes } = msg;
+  let { text } = msg;
   let action = false;
   const me = text.match(/^\x01ACTION (.*)\x01$/);
   if (me) {
@@ -339,6 +400,23 @@ function fillMessage(el, { id, user, name, color, emotes, text }) {
   if (action && settings.userColors) textEl.style.color = nameEl.style.color;
   renderText(textEl, text, emotes);
 
+  if (msg.reply) {
+    const reply = document.createElement('div');
+    reply.className = 'reply';
+    reply.textContent = `↪ ${tr('replyingTo', { name: msg.reply.name })}: ${msg.reply.body}`;
+    el.append(reply);
+  }
+  if (settings.timestamps) {
+    const time = document.createElement('span');
+    time.className = 'time';
+    time.textContent = new Date().toLocaleTimeString(settings.language, { hour: '2-digit', minute: '2-digit' });
+    el.append(time);
+  }
+  if (msg.first && settings.highlightFirst) el.append(pill('first', tr('firstMessage')));
+  if (msg.bits) el.append(pill('bits', tr('bits', { n: msg.bits })));
+  if (msg.highlighted) el.append(pill('highlighted', tr('highlightedMessage')));
+  if (msg.redeem) el.append(pill('redeem', tr('redeemed')));
+  if (settings.showBadges && msg.badges) el.append(...badgeIcons(msg.badges));
   el.append(nameEl, action ? ' ' : ': ', textEl);
 }
 
@@ -479,7 +557,8 @@ let testMode = false;
 let testTimer = null;
 let sampleIndex = 0;
 
-function sampleMessage([name, color, text]) {
+function sampleMessage([name, color, rawText, extras]) {
+  const text = rawText.split('{channel}').join(joined || 'streamer');
   const byId = {};
   let pos = 0;
   for (const word of text.split(' ')) {
@@ -489,7 +568,7 @@ function sampleMessage([name, color, text]) {
     pos += len + 1;
   }
   const emotes = Object.entries(byId).map(([id, ranges]) => `${id}:${ranges.join(',')}`).join('/');
-  return { id: '', user: name.toLowerCase(), name, color, emotes, text };
+  return { id: '', user: name.toLowerCase(), name, color, emotes, text, badges: '', ...extras };
 }
 
 function testMessage() {
