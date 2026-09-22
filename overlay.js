@@ -2,10 +2,8 @@ const chat = document.getElementById('chat');
 const grip = document.getElementById('grip');
 
 let settings = null;
-let ws = null;
-let joined = null;
-let reconnectTimer = null;
-let notFoundTimer = null;
+
+// ---------- Colores ----------
 
 // Colores para usuarios que no han elegido ninguno en Twitch.
 const FALLBACK_COLORS = ['#FF4A80', '#FF7070', '#FA8E4B', '#FEE440', '#5FFF77', '#00F5D4', '#00BBF9', '#4371FB', '#9B5DE5', '#F670DD'];
@@ -15,17 +13,29 @@ function colorFor(name) {
   return FALLBACK_COLORS[Math.abs(h) % FALLBACK_COLORS.length];
 }
 
+// Muchos eligen colores muy oscuros (azul marino, negro...) que no se leen sobre el juego:
+// se aclaran mezclándolos con blanco hasta que tengan suficiente brillo.
+const readableCache = new Map();
+function readable(hex) {
+  if (readableCache.has(hex)) return readableCache.get(hex);
+  const n = parseInt(hex.slice(1), 16);
+  let r = (n >> 16) & 255;
+  let g = (n >> 8) & 255;
+  let b = n & 255;
+  const lum = () => 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  for (let i = 0; i < 6 && lum() < 110; i++) {
+    r += (255 - r) * 0.25;
+    g += (255 - g) * 0.25;
+    b += (255 - b) * 0.25;
+  }
+  const out = `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+  readableCache.set(hex, out);
+  return out;
+}
+
 function hexToRgba(hex, alpha) {
   const n = parseInt(hex.slice(1), 16);
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
-}
-
-function normalizeChannel(value) {
-  return (value || '').trim()
-    .replace(/^https?:\/\/(www\.)?twitch\.tv\//i, '')
-    .replace(/^#/, '')
-    .split(/[/?]/)[0]
-    .toLowerCase();
 }
 
 // ---------- Aspecto ----------
@@ -44,32 +54,43 @@ function applySettings(s) {
   root.setProperty('--opacity', String(s.opacity / 100));
   trim();
 
-  const channel = normalizeChannel(s.channel);
-  if (channel !== joined) connect(channel);
+  if (s.channel !== joined) connect(s.channel);
 }
 
 // ---------- Conexión al chat de Twitch (anónima, solo lectura) ----------
 
+let ws = null;
+let joined = null;
+let reconnectTimer = null;
+let notFoundTimer = null;
+let retries = 0;
+let lastData = 0;
+
 function connect(channel) {
   clearTimeout(reconnectTimer);
   clearTimeout(notFoundTimer);
-  channelEmotes = new Map();
-  emotesRoomId = null;
   if (ws) {
     ws.onclose = null;
     ws.close();
     ws = null;
+  }
+  if (channel !== joined) {
+    channelEmotes = new Map();
+    emotesRoomId = null;
+    retries = 0;
   }
   joined = channel;
   if (!channel) {
     system('Escribe el nombre de un canal en Ajustes.');
     return;
   }
-  system(`Conectando a #${channel}…`);
+  if (retries === 0) system(`Conectando a #${channel}…`);
 
   const sock = new WebSocket('wss://irc-ws.chat.twitch.tv:443');
+  let inRoom = false;
   ws = sock;
   sock.onopen = () => {
+    lastData = Date.now();
     sock.send('CAP REQ :twitch.tv/tags twitch.tv/commands');
     sock.send('PASS SCHMOOPIIE');
     sock.send(`NICK justinfan${Math.floor(10000 + Math.random() * 80000)}`);
@@ -77,12 +98,55 @@ function connect(channel) {
     // Twitch no da error si el canal no existe; simplemente nunca manda ROOMSTATE.
     notFoundTimer = setTimeout(() => system(`No se encuentra el canal "${channel}". ¿Está bien escrito?`), 6000);
   };
-  sock.onmessage = (e) => e.data.split('\r\n').forEach((line) => line && handle(line, sock));
+  sock.onmessage = (e) => {
+    lastData = Date.now();
+    for (const line of e.data.split('\r\n')) {
+      if (!line) continue;
+      const m = parse(line);
+      if (m.command === 'ROOMSTATE' && !inRoom) {
+        inRoom = true;
+        onJoined(m.tags['room-id']);
+      } else {
+        handle(m, sock);
+      }
+    }
+  };
+  // Reintentos cada vez más espaciados (2, 4, 8… hasta 30 s) para no saturar si no hay internet.
   sock.onclose = () => {
     if (ws !== sock) return;
-    system('Conexión perdida, reintentando…');
-    reconnectTimer = setTimeout(() => connect(joined), 3000);
+    ws = null;
+    if (retries === 0) system('Conexión perdida, reintentando…');
+    const delay = Math.min(30000, 2000 * 2 ** retries);
+    retries++;
+    reconnectTimer = setTimeout(() => connect(joined), delay);
   };
+}
+
+function onJoined(roomId) {
+  clearTimeout(notFoundTimer);
+  retries = 0;
+  system(`Conectado al chat de #${joined}`);
+  if (roomId && roomId !== emotesRoomId) loadChannelEmotes(roomId);
+}
+
+// Twitch manda un PING cada ~5 min. Si pasa mucho sin recibir nada (p. ej. tras suspender
+// el PC o cambiar de wifi), la conexión está muerta aunque no lo parezca: se rehace.
+setInterval(() => {
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
+  const idle = Date.now() - lastData;
+  if (idle > 6 * 60 * 1000) ws.close();
+  else if (idle > 4 * 60 * 1000) ws.send('PING :kylen');
+}, 30000);
+
+function reconnectNow() {
+  if (!joined) return;
+  retries = 0;
+  connect(joined);
+}
+
+// Los valores de las etiquetas de Twitch vienen "escapados" (\s = espacio, etc.).
+function unescapeTag(value) {
+  return value.replace(/\\(.)/g, (_, c) => ({ s: ' ', ':': ';', r: '\r', n: '\n', '\\': '\\' }[c] || c));
 }
 
 function parse(line) {
@@ -111,30 +175,28 @@ function parse(line) {
   return { tags, prefix, command, params, trailing };
 }
 
-function handle(line, sock) {
-  const m = parse(line);
-  const user = m.prefix.split('!')[0];
+function messageFrom(m) {
+  const user = m.tags.login || m.prefix.split('!')[0];
+  return {
+    id: m.tags.id,
+    user,
+    name: m.tags['display-name'] || user,
+    color: m.tags.color,
+    emotes: m.tags.emotes,
+    text: m.trailing || '',
+  };
+}
+
+function handle(m, sock) {
   switch (m.command) {
     case 'PING':
       sock.send(`PONG :${m.trailing || 'tmi.twitch.tv'}`);
       break;
-    case 'ROOMSTATE': // llega al entrar en un canal que existe
-      if (m.tags['room-id'] && m.tags['room-id'] !== emotesRoomId) {
-        clearTimeout(notFoundTimer);
-        system(`Conectado al chat de #${joined}`);
-        loadChannelEmotes(m.tags['room-id']);
-      }
-      break;
     case 'PRIVMSG':
-      if (testMode) break;
-      addMessage({
-        id: m.tags.id,
-        user,
-        name: m.tags['display-name'] || user,
-        color: m.tags.color,
-        emotes: m.tags.emotes,
-        text: m.trailing || '',
-      });
+      if (!testMode) addMessage(messageFrom(m));
+      break;
+    case 'USERNOTICE': // subs, regalos, raids, anuncios...
+      if (!testMode) addNotice(unescapeTag(m.tags['system-msg'] || ''), m.trailing ? messageFrom(m) : null);
       break;
     case 'CLEARCHAT': // un moderador ha borrado el chat o baneado a alguien
       removeWhere(m.trailing ? (el) => el.dataset.user === m.trailing.toLowerCase() : () => true);
@@ -145,7 +207,8 @@ function handle(line, sock) {
     case 'NOTICE':
       if (m.trailing) system(m.trailing);
       break;
-    case 'RECONNECT':
+    case 'RECONNECT': // Twitch avisa de que va a reiniciar el servidor
+      retries = 0;
       sock.close();
       break;
   }
@@ -217,23 +280,54 @@ const findEmote = (word) => channelEmotes.get(word) || globalEmotes.get(word);
 
 // ---------- Mensajes en pantalla ----------
 
-function addMessage({ id, user, name, color, emotes, text }) {
+// Bots habituales de los canales; se ocultan (junto a los comandos "!algo") si el usuario lo pide.
+const BOTS = new Set(['nightbot', 'streamelements', 'streamlabs', 'moobot', 'fossabot', 'wizebot', 'soundalerts', 'sery_bot', 'botrixoficial', 'kofistreambot', 'pokemoncommunitygame']);
+const isBotMessage = ({ user, text }) => BOTS.has(user) || text.startsWith('!');
+
+function addMessage(msg) {
+  if (settings.hideBots && isBotMessage(msg)) return;
+  const el = document.createElement('div');
+  el.className = 'msg';
+  fillMessage(el, msg);
+  push(el);
+}
+
+// Aviso destacado: "X se ha suscrito", "Y está haciendo raid con 50 espectadores"...
+function addNotice(systemText, msg) {
+  if (!systemText && !msg) return;
+  const el = document.createElement('div');
+  el.className = 'msg notice';
+  if (systemText) {
+    const title = document.createElement('div');
+    title.className = 'notice-title';
+    title.textContent = systemText;
+    el.append(title);
+  }
+  if (msg) {
+    const line = document.createElement('div');
+    fillMessage(line, msg);
+    el.dataset.id = line.dataset.id;
+    el.dataset.user = line.dataset.user;
+    el.append(line);
+  }
+  push(el);
+}
+
+function fillMessage(el, { id, user, name, color, emotes, text }) {
   let action = false;
   const me = text.match(/^\x01ACTION (.*)\x01$/);
   if (me) {
     text = me[1];
     action = true;
   }
-
-  const el = document.createElement('div');
-  el.className = action ? 'msg action' : 'msg';
+  if (action) el.classList.add('action');
   el.dataset.id = id || '';
   el.dataset.user = user || '';
 
   const nameEl = document.createElement('span');
   nameEl.className = 'name';
   nameEl.textContent = name;
-  if (settings.userColors) nameEl.style.color = color || colorFor(name);
+  if (settings.userColors) nameEl.style.color = readable(color || colorFor(name));
 
   const textEl = document.createElement('span');
   textEl.className = 'text';
@@ -241,7 +335,6 @@ function addMessage({ id, user, name, color, emotes, text }) {
   renderText(textEl, text, emotes);
 
   el.append(nameEl, action ? ' ' : ': ', textEl);
-  push(el);
 }
 
 // Sustituye los trozos de texto que Twitch marca como emotes por su imagen.
@@ -262,6 +355,7 @@ function renderText(parent, text, emotes) {
 
   let i = 0;
   for (const r of ranges) {
+    if (r.a < i) continue; // rango repetido o solapado
     if (r.a > i) appendWords(parent, chars.slice(i, r.a).join(''));
     const base = `https://static-cdn.jtvnw.net/emoticons/v2/${r.emoteId}`;
     const emote = { url: `${base}/default/dark/2.0`, still: `${base}/static/dark/2.0` };
@@ -298,8 +392,9 @@ function emoteImg(emote, name) {
   const img = document.createElement('img');
   img.className = 'emote';
   img.decoding = 'async';
-  img.src = settings.animatedEmotes || !emote.still ? emote.url : emote.still;
   img.alt = img.title = name;
+  img.onerror = () => img.replaceWith(name); // si no carga, se ve el texto en vez de un icono roto
+  img.src = settings.animatedEmotes || !emote.still ? emote.url : emote.still;
   return img;
 }
 
@@ -339,11 +434,10 @@ function flush() {
   chat.append(frag);
   trim();
   if (settings && settings.fadeAfter > 0) {
-    const ms = settings.fadeAfter * 1000;
     setTimeout(() => {
       batch.forEach((el) => el.classList.add('fade'));
       setTimeout(() => batch.forEach((el) => el.remove()), 700);
-    }, ms);
+    }, settings.fadeAfter * 1000);
   }
 }
 
@@ -352,8 +446,11 @@ function trim() {
   while (chat.children.length > max) chat.firstChild.remove();
 }
 
+// Borra mensajes ya pintados y también los que están esperando a pintarse.
 function removeWhere(fn) {
-  chat.querySelectorAll('.msg:not(.system)').forEach((el) => fn(el) && el.remove());
+  const matches = (el) => !el.classList.contains('system') && fn(el);
+  pending = pending.filter((el) => !matches(el));
+  for (const el of [...chat.children]) if (matches(el)) el.remove();
 }
 
 function system(text) {
@@ -374,12 +471,13 @@ const SAMPLES = [
   ['xX_Jungla_Xx', '#5FFF77', 'gg EZ'],
   ['Moderadora', '#FEE440', 'Recordad ser respetuosos en el chat 💜'],
   ['TopMain_99', '#FA8E4B', '\x01ACTION se va a por un café mientras reaparece\x01'],
-  ['SoporteFeliz', '#9B5DE5', 'peepoHappy RainTime'],
+  ['SoporteFeliz', '#1A1A7A', 'peepoHappy RainTime'],
   ['LaNoviaDelADC', '#F670DD', 'esa build no la entiendo pero si funciona... LUL'],
   ['AnalistaDeSofá', '#00F5D4', 'Un mensaje largo de ejemplo para ver cómo se parten las líneas cuando alguien escribe mucho en el chat, que siempre hay alguien que lo hace FeelsGoodMan'],
-  ['Kylen', '#A970FF', 'PepePls PepePls PepePls'],
+  { notice: 'Kylen se ha suscrito con Prime. ¡Lleva 12 meses suscrito!', msg: ['Kylen', '#A970FF', 'PepePls PepePls PepePls'] },
   ['nuevo_por_aquí', '', 'hola! primera vez que veo el directo'],
   ['Pentakill', '#FF7070', 'PENTAAAAA PogChamp'],
+  { notice: 'StreamerAmigo está haciendo raid con 57 espectadores' },
 ];
 // Emotes oficiales de Twitch que aparecen en los ejemplos (el resto los pone 7TV/BTTV).
 const TWITCH_TEST_EMOTES = { Kappa: 25, LUL: 425618, PogChamp: 305954156 };
@@ -388,18 +486,23 @@ let testMode = false;
 let testTimer = null;
 let sampleIndex = 0;
 
-function testMessage() {
-  const [name, color, text] = SAMPLES[sampleIndex++ % SAMPLES.length];
+function sampleMessage([name, color, text]) {
   const byId = {};
   let pos = 0;
-  for (const word of Array.from(text).join('').split(' ')) {
+  for (const word of text.split(' ')) {
     const len = Array.from(word).length;
     const id = TWITCH_TEST_EMOTES[word];
     if (id) (byId[id] = byId[id] || []).push(`${pos}-${pos + len - 1}`);
     pos += len + 1;
   }
   const emotes = Object.entries(byId).map(([id, ranges]) => `${id}:${ranges.join(',')}`).join('/');
-  addMessage({ id: '', user: name.toLowerCase(), name, color, emotes, text });
+  return { id: '', user: name.toLowerCase(), name, color, emotes, text };
+}
+
+function testMessage() {
+  const sample = SAMPLES[sampleIndex++ % SAMPLES.length];
+  if (Array.isArray(sample)) addMessage(sampleMessage(sample));
+  else addNotice(sample.notice, sample.msg ? sampleMessage(sample.msg) : null);
 }
 
 function clearChat() {
@@ -444,5 +547,6 @@ grip.addEventListener('pointerdown', (e) => {
 api.onSettings(applySettings);
 api.onEditMode((on) => document.body.classList.toggle('edit', on));
 api.onTestMode(setTestMode);
+api.onReconnect(reconnectNow);
 api.getSettings().then(applySettings);
 loadGlobalEmotes();

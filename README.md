@@ -17,6 +17,11 @@
 - Los clics **atraviesan** el chat, así que no molesta mientras juegas.
 - Puedes elegir **posición, tamaño, fuente, tamaño de letra, colores, fondo y transparencia**.
 - Muestra los emotes de **Twitch, 7TV, BTTV y FFZ**.
+- Destaca las **suscripciones, regalos y raids**.
+- **Modo prueba** con mensajes de ejemplo para ajustar el aspecto viendo el resultado final.
+- Opción para **ocultar bots y comandos** (Nightbot, `!discord`…).
+- Los nombres con colores muy oscuros se aclaran para que se lean sobre el juego.
+- Puede **iniciarse con Windows**, oculta en la bandeja.
 - Se **actualiza sola** cuando sale una versión nueva.
 - No necesitas iniciar sesión en Twitch.
 
@@ -31,7 +36,7 @@
 1. Escribe el nombre de tu canal (o pega el enlace de twitch.tv) y pulsa **Conectar**.
 2. Pulsa **Ctrl + Shift + L** para desbloquear el chat: arrástralo donde quieras y cambia su tamaño desde la esquina de abajo a la derecha.
 3. Vuelve a pulsar **Ctrl + Shift + L** para fijarlo.
-4. Ajusta la letra, los colores y la transparencia a tu gusto. Todo se guarda solo.
+4. Pulsa **Modo prueba** y ajusta la letra, los colores y la transparencia viendo cómo queda. Todo se guarda solo.
 
 Si cierras la ventana de ajustes, la app sigue funcionando en la bandeja (junto al reloj). Haz clic en su icono para volver a abrirla.
 
@@ -59,6 +64,7 @@ Está hecha para no afectar a los FPS ni al ping:
 - En chats muy rápidos agrupa los mensajes y actualiza la pantalla unas 6 veces por segundo como mucho.
 - Los emotes animados están desactivados por defecto (se pueden activar en ajustes).
 - El chat solo recibe texto: gasta menos internet que una página web.
+- Si se corta internet o el PC vuelve de suspensión, se reconecta sola sin saturar la red.
 
 ---
 
@@ -98,3 +104,7 @@ El instalador queda en `dist/`.
 
    Esto crea el instalador y lo sube a GitHub Releases junto con `latest.yml`.
 3. Las apps ya instaladas buscan actualizaciones al arrancar y cada 4 horas. Cuando encuentran una versión nueva la descargan y avisan para reiniciar; si no se reinicia, se instala al cerrar la app.
+
+---
+
+<p align="center">Creada por <b>Aleix Aj</b></p>

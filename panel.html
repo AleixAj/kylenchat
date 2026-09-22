@@ -32,7 +32,14 @@
   #update { display: none; align-items: center; gap: 10px; background: #2b1d4a; border: 1px solid var(--accent); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; }
   #update.show { display: flex; }
   #update span { flex: 1; }
-  #version { color: var(--muted); font-size: 12px; margin-top: 12px; }
+  .error { color: #ff8a8a; font-size: 12px; margin: -4px 0 8px; min-height: 0; }
+  .error:empty { display: none; }
+  .warn { background: #3a2a12; border: 1px solid #b7791f; border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 10px; }
+  .warn:empty { display: none; }
+  footer { border-top: 1px solid var(--line); margin-top: 14px; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 12px; }
+  footer b { color: #efeff1; font-weight: 600; }
+  footer a { color: #bf94ff; text-decoration: none; cursor: pointer; }
+  footer a:hover { text-decoration: underline; }
   kbd { background: #2f2f35; border-radius: 4px; padding: 1px 5px; font: 12px Consolas, monospace; }
 </style>
 </head>
@@ -48,6 +55,7 @@
       <input type="text" id="channel" placeholder="nombre del canal o enlace de twitch.tv">
       <button class="primary" id="connect">Conectar</button>
     </div>
+    <p class="error" id="channelError"></p>
   </section>
 
   <section>
@@ -107,11 +115,19 @@
     <div class="row"><label for="maxMessages">Máximo en pantalla</label><input type="range" id="maxMessages" min="3" max="100"><span class="val" id="maxMessagesVal"></span></div>
     <div class="row"><label for="fadeAfter">Ocultar tras</label><input type="range" id="fadeAfter" min="0" max="120" step="5"><span class="val" id="fadeAfterVal"></span></div>
     <div class="row"><label for="animatedEmotes">Emotes animados</label><input type="checkbox" id="animatedEmotes"><span class="note">gasta más CPU</span></div>
+    <div class="row"><label for="hideBots">Ocultar bots y comandos</label><input type="checkbox" id="hideBots"><span class="note">Nightbot, !comandos…</span></div>
     <button class="wide" id="visible"></button>
+    <button class="wide" id="reset">Restablecer aspecto por defecto</button>
+  </section>
+
+  <section id="startupSection">
+    <h2>Inicio</h2>
+    <div class="row"><label for="autoStart">Iniciar con Windows</label><input type="checkbox" id="autoStart"><span class="note">arranca oculta en la bandeja</span></div>
   </section>
 
   <section>
     <h2>Atajos</h2>
+    <div class="warn" id="shortcutWarn"></div>
     <p class="note">
       <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> mover o fijar el chat<br>
       <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> ocultar o mostrar el chat<br><br>
@@ -120,7 +136,10 @@
     </p>
   </section>
 
-  <p id="version"></p>
+  <footer>
+    <span>Creada por <b>Aleix Aj</b> · <a id="repo">GitHub</a></span>
+    <span id="version"></span>
+  </footer>
 
   <script src="panel.js"></script>
 </body>
