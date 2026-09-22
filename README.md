@@ -96,11 +96,13 @@ El instalador queda en `dist/`.
 ### Publicar una versión nueva (actualización automática)
 
 1. Sube el número de `version` en `package.json` (por ejemplo, de `1.0.0` a `1.0.1`).
-2. Crea el instalador y súbelo a GitHub como **borrador**. En PowerShell:
+2. Crea el instalador y súbelo a GitHub como **borrador**:
 
-   ```powershell
-   $env:GH_TOKEN = gh auth token; npm run release
+   ```bash
+   npm run release
    ```
+
+   Necesita la [CLI de GitHub](https://cli.github.com/) (`gh`) con la sesión iniciada.
 
    Esto sube el instalador, `latest.yml` y el `.blockmap` a un borrador en [Releases](https://github.com/AleixAj/kylentwitchchat/releases). Nadie lo ve todavía.
 3. Cuando quieras que esté disponible, abre el borrador en GitHub, escribe las novedades y pulsa **Publish release**.
