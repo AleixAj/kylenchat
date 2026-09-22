@@ -126,6 +126,7 @@ function handle(line, sock) {
       }
       break;
     case 'PRIVMSG':
+      if (testMode) break;
       addMessage({
         id: m.tags.id,
         user,
@@ -362,31 +363,62 @@ function system(text) {
   push(el);
 }
 
-// ---------- Mensajes de prueba ----------
+// ---------- Modo prueba ----------
+// Llena el chat con mensajes de ejemplo que siguen llegando solos, para poder
+// ajustar el aspecto viendo cómo quedará. Mientras está activo se ignora el chat real.
 
 const SAMPLES = [
   ['Faker', '#FF4A80', '¡Qué jugada! Kappa'],
-  ['ElMagoDelBot', '', 'baron en 30 segundos, cuidado'],
-  ['Pepita_22', '#00BBF9', 'ese flash ha sido de cine Kappa Kappa'],
-  ['xX_Jungla_Xx', '#5FFF77', 'gg ez'],
+  ['ElMagoDelBot', '', 'baron en 30 segundos, cuidado monkaS'],
+  ['Pepita_22', '#00BBF9', 'ese flash ha sido de cine Clap Clap'],
+  ['xX_Jungla_Xx', '#5FFF77', 'gg EZ'],
   ['Moderadora', '#FEE440', 'Recordad ser respetuosos en el chat 💜'],
+  ['TopMain_99', '#FA8E4B', '\x01ACTION se va a por un café mientras reaparece\x01'],
+  ['SoporteFeliz', '#9B5DE5', 'peepoHappy RainTime'],
+  ['LaNoviaDelADC', '#F670DD', 'esa build no la entiendo pero si funciona... LUL'],
+  ['AnalistaDeSofá', '#00F5D4', 'Un mensaje largo de ejemplo para ver cómo se parten las líneas cuando alguien escribe mucho en el chat, que siempre hay alguien que lo hace FeelsGoodMan'],
+  ['Kylen', '#A970FF', 'PepePls PepePls PepePls'],
+  ['nuevo_por_aquí', '', 'hola! primera vez que veo el directo'],
+  ['Pentakill', '#FF7070', 'PENTAAAAA PogChamp'],
 ];
+// Emotes oficiales de Twitch que aparecen en los ejemplos (el resto los pone 7TV/BTTV).
+const TWITCH_TEST_EMOTES = { Kappa: 25, LUL: 425618, PogChamp: 305954156 };
+
+let testMode = false;
+let testTimer = null;
 let sampleIndex = 0;
+
 function testMessage() {
   const [name, color, text] = SAMPLES[sampleIndex++ % SAMPLES.length];
-  const chars = Array.from(text);
-  const positions = [];
-  for (let i = 0; i + 5 <= chars.length; i++) {
-    if (chars.slice(i, i + 5).join('') === 'Kappa') positions.push(`${i}-${i + 4}`);
+  const byId = {};
+  let pos = 0;
+  for (const word of Array.from(text).join('').split(' ')) {
+    const len = Array.from(word).length;
+    const id = TWITCH_TEST_EMOTES[word];
+    if (id) (byId[id] = byId[id] || []).push(`${pos}-${pos + len - 1}`);
+    pos += len + 1;
   }
-  addMessage({
-    id: '',
-    user: name.toLowerCase(),
-    name,
-    color,
-    emotes: positions.length ? `25:${positions.join(',')}` : '',
-    text,
-  });
+  const emotes = Object.entries(byId).map(([id, ranges]) => `${id}:${ranges.join(',')}`).join('/');
+  addMessage({ id: '', user: name.toLowerCase(), name, color, emotes, text });
+}
+
+function clearChat() {
+  pending = [];
+  chat.replaceChildren();
+}
+
+function setTestMode(on) {
+  if (on === testMode) return;
+  testMode = on;
+  clearInterval(testTimer);
+  clearChat();
+  if (on) {
+    const first = Math.min(settings ? settings.maxMessages : 30, SAMPLES.length);
+    for (let i = 0; i < first; i++) testMessage();
+    testTimer = setInterval(testMessage, 1500);
+  } else {
+    system(joined ? `Chat de #${joined}` : 'Escribe el nombre de un canal en Ajustes.');
+  }
 }
 
 // ---------- Cambiar tamaño con la esquina ----------
@@ -411,6 +443,6 @@ grip.addEventListener('pointerdown', (e) => {
 
 api.onSettings(applySettings);
 api.onEditMode((on) => document.body.classList.toggle('edit', on));
-api.onTestMessage(testMessage);
+api.onTestMode(setTestMode);
 api.getSettings().then(applySettings);
 loadGlobalEmotes();

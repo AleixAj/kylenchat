@@ -33,6 +33,7 @@ let panel;
 let tray;
 let editMode = false;
 let visible = true;
+let testMode = false;
 let resizeStartBounds = null;
 let updateReady = null; // versión nueva ya descargada, lista para instalar
 
@@ -134,6 +135,13 @@ function setVisible(on) {
   updateTrayMenu();
 }
 
+function setTestMode(on) {
+  testMode = on;
+  if (on && !visible) setVisible(true);
+  overlay.webContents.send('test-mode', on);
+  sendState();
+}
+
 function setPosition(pos) {
   const b = overlay.getBounds();
   const wa = screen.getDisplayMatching(b).workArea;
@@ -172,12 +180,15 @@ function createPanel() {
   // Al cerrarla se destruye (no se esconde) para liberar memoria mientras se juega.
   panel.on('closed', () => {
     panel = null;
-    if (editMode && !app.isQuitting) setEditMode(false);
+    if (app.isQuitting) return;
+    // Al cerrar los ajustes se vuelve al chat real y se fija la posición.
+    if (editMode) setEditMode(false);
+    if (testMode) setTestMode(false);
   });
 }
 
 function state() {
-  return { editMode, visible, bounds: overlay.getBounds(), version: app.getVersion(), updateReady };
+  return { editMode, visible, testMode, bounds: overlay.getBounds(), version: app.getVersion(), updateReady };
 }
 function sendState() {
   if (panel && !panel.isDestroyed()) panel.webContents.send('state', state());
@@ -230,7 +241,7 @@ ipcMain.on('toggle-edit', () => setEditMode(!editMode));
 ipcMain.on('toggle-visible', () => setVisible(!visible));
 ipcMain.on('set-position', (_e, pos) => setPosition(pos));
 ipcMain.on('set-size', (_e, w, h) => setSize(w, h));
-ipcMain.on('test-message', () => overlay.webContents.send('test-message'));
+ipcMain.on('toggle-test', () => setTestMode(!testMode));
 ipcMain.on('resize-start', () => { resizeStartBounds = overlay.getBounds(); });
 ipcMain.on('resize-move', (_e, dx, dy) => {
   if (!resizeStartBounds) return;

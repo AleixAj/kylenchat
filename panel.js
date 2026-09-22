@@ -41,7 +41,9 @@ function connect() {
   api.setSettings({ channel });
 }
 
-function applyState({ editMode, visible, bounds, version, updateReady }) {
+function applyState({ editMode, visible, testMode, bounds, version, updateReady }) {
+  $('test').textContent = testMode ? 'Salir del modo prueba' : 'Modo prueba (ver cómo queda)';
+  $('test').classList.toggle('primary', testMode);
   $('version').textContent = `Versión ${version}`;
   $('update').classList.toggle('show', Boolean(updateReady));
   if (updateReady) $('updateText').textContent = `Nueva versión ${updateReady} lista para instalar.`;
@@ -76,7 +78,7 @@ $('connect').addEventListener('click', connect);
 $('channel').addEventListener('keydown', (e) => e.key === 'Enter' && connect());
 $('edit').addEventListener('click', () => api.toggleEdit());
 $('visible').addEventListener('click', () => api.toggleVisible());
-$('test').addEventListener('click', () => api.testMessage());
+$('test').addEventListener('click', () => api.toggleTest());
 document.querySelectorAll('[data-pos]').forEach((b) => b.addEventListener('click', () => api.setPosition(b.dataset.pos)));
 
 const sendSize = () => api.setSize(Number($('width').value), Number($('height').value));
