@@ -9,6 +9,22 @@
   Para streamers con una sola pantalla que no quieren mirar el chat en el móvil.
 </p>
 
+<h2 align="center">DESCARGAS</h2>
+
+<p align="center">
+  <a href="https://github.com/AleixAj/kylentwitchchat/releases/latest/download/KylenChat-Setup.exe">
+    <img src="https://img.shields.io/badge/Descargar_para_Windows-Instalador-9146FF?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar instalador para Windows" height="48">
+  </a>
+</p>
+<p align="center">
+  <a href="https://github.com/AleixAj/kylentwitchchat/releases/latest/download/KylenChat-Portable.zip">
+    <img src="https://img.shields.io/badge/Versión_portable-.zip-2f2f35?style=for-the-badge&logo=files&logoColor=white" alt="Descargar versión portable (.zip)" height="32">
+  </a>
+</p>
+<p align="center">
+  <sub>Windows 10 y 11 · Gratis · <a href="https://github.com/AleixAj/kylentwitchchat/releases">Todas las versiones</a></sub>
+</p>
+
 ---
 
 ## Qué hace
@@ -27,9 +43,15 @@
 
 ## Descarga e instalación
 
-1. Ve a [**Releases**](https://github.com/AleixAj/kylentwitchchat/releases/latest) y descarga `KylenChat-Setup-x.x.x.exe`.
-2. Ábrelo. Se instala en unos segundos y se abre sola.
+**Instalador (recomendado):**
+
+1. Pulsa el botón **Descargar para Windows** de arriba.
+2. Abre `KylenChat-Setup.exe`. Se instala en unos segundos y se abre sola.
 3. Si Windows muestra *"Windows protegió tu PC"*, pulsa **Más información → Ejecutar de todas formas**. Sale porque la app todavía no tiene firma digital de pago, no porque sea peligrosa.
+
+Con el instalador, la app **se actualiza sola** cuando sale una versión nueva.
+
+**Versión portable (sin instalar):** descarga `KylenChat-Portable.zip`, descomprímelo donde quieras y abre `Kylen Chat for Twitch.exe`. Esta versión **no se actualiza sola**: para tener la última, vuelve a descargarla.
 
 ## Cómo se usa
 
@@ -104,7 +126,7 @@ El instalador queda en `dist/`.
 
    Necesita la [CLI de GitHub](https://cli.github.com/) (`gh`) con la sesión iniciada.
 
-   Esto sube el instalador, `latest.yml` y el `.blockmap` a un borrador en [Releases](https://github.com/AleixAj/kylentwitchchat/releases). Nadie lo ve todavía.
+   Esto sube el instalador, la versión portable, `latest.yml` y el `.blockmap` a un borrador en [Releases](https://github.com/AleixAj/kylentwitchchat/releases). Nadie lo ve todavía.
 3. Cuando quieras que esté disponible, abre el borrador en GitHub, escribe las novedades y pulsa **Publish release**.
 4. Desde ese momento, la gente puede descargarla y las apps ya instaladas se actualizan solas: buscan versiones nuevas al arrancar y cada 4 horas, la descargan y avisan para reiniciar. Si no se reinicia, se instala al cerrar la app.
 

@@ -38,13 +38,17 @@
       "output": "dist"
     },
     "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico"
+      "target": [
+        "nsis",
+        "zip"
+      ],
+      "icon": "assets/icon.ico",
+      "artifactName": "KylenChat-Portable.${ext}"
     },
     "nsis": {
       "oneClick": true,
       "perMachine": false,
-      "artifactName": "KylenChat-Setup-${version}.exe",
+      "artifactName": "KylenChat-Setup.exe",
       "shortcutName": "Kylen Chat for Twitch"
     },
     "publish": {

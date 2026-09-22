@@ -7,8 +7,9 @@ const path = require('path');
 
 const { version } = require('../package.json');
 const dist = path.join(__dirname, '..', 'dist');
-const installer = `KylenChat-Setup-${version}.exe`;
-const files = [installer, `${installer}.blockmap`, 'latest.yml'].map((f) => path.join(dist, f));
+// Nombres fijos (sin versión) para que el botón de descarga del README no cambie nunca.
+const installer = 'KylenChat-Setup.exe';
+const files = [installer, `${installer}.blockmap`, 'latest.yml', 'KylenChat-Portable.zip'].map((f) => path.join(dist, f));
 
 for (const file of files) {
   if (!fs.existsSync(file)) {
@@ -20,7 +21,9 @@ for (const file of files) {
 const notes = [
   `## Kylen Chat for Twitch ${version}`,
   '',
-  `Descarga **${installer}**, ábrelo y listo.`,
+  `Descarga **${installer}**, ábrelo y listo. Se actualiza sola.`,
+  '',
+  '¿Prefieres no instalar nada? Descarga **KylenChat-Portable.zip**, descomprímelo y abre "Kylen Chat for Twitch.exe" (esta versión no se actualiza sola).',
   '',
   'Si Windows muestra "Windows protegió tu PC", pulsa **Más información → Ejecutar de todas formas**.',
 ].join('\n');
