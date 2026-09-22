@@ -34,7 +34,6 @@ const DEFAULTS = {
   newestOnTop: false,
   idleHide: 0,
   emoteScale: 1.6,
-  showHeader: true,
   autoStart: false,
   bounds: null,
   profiles: [],
@@ -47,7 +46,7 @@ const DEFAULTS = {
 const PROFILE_KEYS = [
   'fontSize', 'fontFamily', 'bold', 'textColor', 'userColors', 'bgColor', 'bgOpacity', 'outline', 'opacity',
   'maxMessages', 'fadeAfter', 'animatedEmotes', 'showBadges', 'timestamps', 'align', 'newestOnTop', 'idleHide',
-  'emoteScale', 'showHeader', 'bounds',
+  'emoteScale', 'bounds',
 ];
 // Lo que no se exporta ni se importa: depende de cada PC.
 const LOCAL_KEYS = ['autoStart', 'onboarded', 'lastVersion'];
@@ -84,7 +83,6 @@ const SCHEMA = {
   newestOnTop: isBool,
   idleHide: inRange(0, 300),
   emoteScale: inRange(1, 3),
-  showHeader: isBool,
   autoStart: isBool,
   activeProfile: isText(30),
   onboarded: isBool,

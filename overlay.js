@@ -55,7 +55,6 @@ function applySettings(s) {
   root.setProperty('--opacity', String(s.opacity / 100));
   root.setProperty('--emote', String(s.emoteScale));
   document.documentElement.lang = s.language;
-  document.body.classList.toggle('header', s.showHeader);
   document.body.classList.toggle('align-right', s.align === 'right');
   document.body.classList.toggle('newest-top', s.newestOnTop);
   resetIdle();

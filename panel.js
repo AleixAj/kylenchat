@@ -18,7 +18,6 @@ const FIELDS = {
   bgColor: { type: 'color' },
   bgOpacity: { type: 'range', show: (v) => `${v} %` },
   opacity: { type: 'range', show: (v) => `${v} %` },
-  showHeader: { type: 'check' },
   align: { type: 'select' },
   newestOnTop: { type: 'boolSelect' },
   highlightMentions: { type: 'check' },
@@ -39,11 +38,11 @@ const FIELDS = {
 // probar uno tras otro sin que queden restos del anterior. Solo usan fuentes que trae Windows.
 const LOOK_BASE = {
   fontSize: 16, fontFamily: 'Segoe UI', bold: false, textColor: '#ffffff', userColors: true,
-  bgColor: '#000000', bgOpacity: 35, outline: true, opacity: 100, emoteScale: 1.6, showHeader: true,
+  bgColor: '#000000', bgOpacity: 35, outline: true, opacity: 100, emoteScale: 1.6,
 };
 const PRESETS = {
   default: { ...LOOK_BASE },
-  minimal: { ...LOOK_BASE, fontFamily: 'Bahnschrift', fontSize: 17, bgOpacity: 0, emoteScale: 1.5, showHeader: false },
+  minimal: { ...LOOK_BASE, fontFamily: 'Bahnschrift', fontSize: 17, bgOpacity: 0, emoteScale: 1.5 },
   twitch: { ...LOOK_BASE, fontFamily: 'Segoe UI Semibold', fontSize: 14, textColor: '#efeff1', bgColor: '#18181b', bgOpacity: 90, outline: false },
   contrast: { ...LOOK_BASE, fontFamily: 'Verdana', fontSize: 18, bold: true, textColor: '#ffe600', bgOpacity: 85 },
   big: { ...LOOK_BASE, fontFamily: 'Arial Black', fontSize: 24, bgOpacity: 50, emoteScale: 1.8 },
