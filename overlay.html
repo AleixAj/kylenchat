@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src https://static-cdn.jtvnw.net https://cdn.7tv.app https://cdn.betterttv.net https://cdn.frankerfacez.com; connect-src wss://irc-ws.chat.twitch.tv:443 https://7tv.io https://api.betterttv.net; style-src 'self' 'unsafe-inline'">
+<style>
+  :root {
+    --fs: 16px;
+    --ff: "Segoe UI";
+    --fw: 400;
+    --color: #fff;
+    --bg: rgba(0, 0, 0, .35);
+    --shadow: none;
+    --opacity: 1;
+  }
+  html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; user-select: none; }
+  body { font-family: var(--ff), "Segoe UI", sans-serif; font-size: var(--fs); font-weight: var(--fw); color: var(--color); }
+
+  #chat {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: flex-end; gap: 4px;
+    padding: 6px; box-sizing: border-box; overflow: hidden;
+    opacity: var(--opacity);
+  }
+  .msg {
+    align-self: flex-start; max-width: 100%; box-sizing: border-box;
+    padding: 3px 8px; border-radius: 6px; background: var(--bg);
+    line-height: 1.35; overflow-wrap: anywhere; text-shadow: var(--shadow);
+    transition: opacity .6s;
+  }
+  .msg.fade { opacity: 0; }
+  .msg.system { font-style: italic; opacity: .75; font-size: .85em; }
+  .name { font-weight: 700; }
+  .action .text { font-style: italic; }
+  .emote { height: 1.6em; vertical-align: middle; margin: -.2em 0; }
+  .stack { display: inline-grid; vertical-align: middle; }
+  .stack > .emote { grid-area: 1 / 1; place-self: center; }
+
+  body.edit { -webkit-app-region: drag; cursor: move; background: rgba(20, 20, 30, .35); outline: 2px dashed #a970ff; outline-offset: -2px; }
+  #hint {
+    display: none; position: absolute; top: 6px; left: 6px; right: 6px; z-index: 2;
+    font: 12px "Segoe UI", sans-serif; text-shadow: none; text-align: center;
+    background: #9146ff; color: #fff; padding: 4px 8px; border-radius: 4px;
+  }
+  body.edit #hint { display: block; }
+  #grip {
+    display: none; position: absolute; right: 0; bottom: 0; width: 24px; height: 24px; z-index: 3;
+    -webkit-app-region: no-drag; cursor: nwse-resize;
+    background: linear-gradient(135deg, transparent 50%, #a970ff 50%);
+  }
+  body.edit #grip { display: block; }
+</style>
+</head>
+<body>
+  <div id="chat"></div>
+  <div id="hint">Arrastra para mover · esquina para cambiar tamaño · Ctrl+Shift+L para fijar</div>
+  <div id="grip"></div>
+  <script src="overlay.js"></script>
+</body>
+</html>

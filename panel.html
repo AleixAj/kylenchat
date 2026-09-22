@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+<title>Kylen Twitch Chat · Ajustes</title>
+<style>
+  :root { color-scheme: dark; --accent: #9146ff; --line: #2f2f35; --muted: #adadb8; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 18px 20px 24px; background: #18181b; color: #efeff1; font: 14px "Segoe UI", sans-serif; }
+  h1 { font-size: 18px; margin: 0 0 4px; display: flex; align-items: center; gap: 10px; }
+  h1 img { width: 32px; height: 32px; }
+  .sub { color: var(--muted); margin: 0 0 16px; font-size: 13px; }
+  section { border-top: 1px solid var(--line); padding: 14px 0 6px; }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+  .row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .row > label:first-child { width: 150px; flex-shrink: 0; }
+  .row input[type=range] { flex: 1; accent-color: var(--accent); }
+  .val { width: 56px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  input[type=text], select { flex: 1; background: #0e0e10; color: inherit; border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font: inherit; }
+  input[type=text]:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  input[type=color] { width: 44px; height: 30px; border: 1px solid var(--line); border-radius: 6px; background: none; padding: 2px; }
+  input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent); }
+  button { background: #2f2f35; color: inherit; border: 0; border-radius: 6px; padding: 8px 12px; font: inherit; cursor: pointer; }
+  button:hover { background: #3a3a42; }
+  button.primary { background: var(--accent); color: #fff; }
+  button.primary:hover { background: #a970ff; }
+  button.wide { width: 100%; margin-bottom: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 44px); gap: 6px; }
+  .grid button { height: 32px; padding: 0; font-size: 16px; }
+  .note { color: var(--muted); font-size: 12px; line-height: 1.5; }
+  #update { display: none; align-items: center; gap: 10px; background: #2b1d4a; border: 1px solid var(--accent); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; }
+  #update.show { display: flex; }
+  #update span { flex: 1; }
+  #version { color: var(--muted); font-size: 12px; margin-top: 12px; }
+  kbd { background: #2f2f35; border-radius: 4px; padding: 1px 5px; font: 12px Consolas, monospace; }
+</style>
+</head>
+<body>
+  <h1><img src="assets/icon.png" alt="">Kylen Twitch Chat</h1>
+  <p class="sub">El chat de Twitch encima del juego, con fondo transparente.</p>
+
+  <div id="update"><span id="updateText"></span><button class="primary" id="installUpdate">Reiniciar</button></div>
+
+  <section>
+    <h2>Canal</h2>
+    <div class="row">
+      <input type="text" id="channel" placeholder="nombre del canal o enlace de twitch.tv">
+      <button class="primary" id="connect">Conectar</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Posición y tamaño</h2>
+    <button class="wide primary" id="edit"></button>
+    <div class="row">
+      <label>Colocar en</label>
+      <div class="grid">
+        <button data-pos="top-left" title="Arriba izquierda">↖</button>
+        <button data-pos="top-center" title="Arriba centro">↑</button>
+        <button data-pos="top-right" title="Arriba derecha">↗</button>
+        <button data-pos="middle-left" title="Centro izquierda">←</button>
+        <button data-pos="middle-center" title="Centro">•</button>
+        <button data-pos="middle-right" title="Centro derecha">→</button>
+        <button data-pos="bottom-left" title="Abajo izquierda">↙</button>
+        <button data-pos="bottom-center" title="Abajo centro">↓</button>
+        <button data-pos="bottom-right" title="Abajo derecha">↘</button>
+      </div>
+    </div>
+    <div class="row"><label for="width">Ancho</label><input type="range" id="width" min="160" max="2560" step="10"><span class="val" id="widthVal"></span></div>
+    <div class="row"><label for="height">Alto</label><input type="range" id="height" min="80" max="1440" step="10"><span class="val" id="heightVal"></span></div>
+  </section>
+
+  <section>
+    <h2>Letra</h2>
+    <div class="row"><label for="fontSize">Tamaño</label><input type="range" id="fontSize" min="10" max="48"><span class="val" id="fontSizeVal"></span></div>
+    <div class="row">
+      <label for="fontFamily">Fuente</label>
+      <select id="fontFamily">
+        <option>Segoe UI</option>
+        <option>Arial</option>
+        <option>Verdana</option>
+        <option>Tahoma</option>
+        <option>Trebuchet MS</option>
+        <option>Georgia</option>
+        <option>Consolas</option>
+        <option>Impact</option>
+        <option>Comic Sans MS</option>
+      </select>
+    </div>
+    <div class="row"><label for="bold">Negrita</label><input type="checkbox" id="bold"></div>
+    <div class="row"><label for="textColor">Color del texto</label><input type="color" id="textColor"></div>
+    <div class="row"><label for="userColors">Colores de Twitch en los nombres</label><input type="checkbox" id="userColors"></div>
+    <div class="row"><label for="outline">Contorno negro</label><input type="checkbox" id="outline"></div>
+  </section>
+
+  <section>
+    <h2>Fondo y transparencia</h2>
+    <div class="row"><label for="bgColor">Color de fondo</label><input type="color" id="bgColor"></div>
+    <div class="row"><label for="bgOpacity">Opacidad del fondo</label><input type="range" id="bgOpacity" min="0" max="100"><span class="val" id="bgOpacityVal"></span></div>
+    <div class="row"><label for="opacity">Opacidad del chat</label><input type="range" id="opacity" min="10" max="100"><span class="val" id="opacityVal"></span></div>
+  </section>
+
+  <section>
+    <h2>Mensajes</h2>
+    <div class="row"><label for="maxMessages">Máximo en pantalla</label><input type="range" id="maxMessages" min="3" max="100"><span class="val" id="maxMessagesVal"></span></div>
+    <div class="row"><label for="fadeAfter">Ocultar tras</label><input type="range" id="fadeAfter" min="0" max="120" step="5"><span class="val" id="fadeAfterVal"></span></div>
+    <div class="row"><label for="animatedEmotes">Emotes animados</label><input type="checkbox" id="animatedEmotes"><span class="note">gasta más CPU</span></div>
+    <button class="wide" id="test">Enviar mensaje de prueba</button>
+    <button class="wide" id="visible"></button>
+  </section>
+
+  <section>
+    <h2>Atajos</h2>
+    <p class="note">
+      <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> mover o fijar el chat<br>
+      <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> ocultar o mostrar el chat<br><br>
+      Pon el juego en modo <b>"Sin bordes"</b>; en pantalla completa el chat no se ve encima.
+      Si cierras esta ventana, la app sigue en la bandeja (junto al reloj).
+    </p>
+  </section>
+
+  <p id="version"></p>
+
+  <script src="panel.js"></script>
+</body>
+</html>
