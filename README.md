@@ -153,6 +153,8 @@ El instalador queda en `dist/`.
 
 [MIT](LICENSE) © Aleix Aj. Puedes usar, modificar y compartir el código siempre que mantengas el aviso de autoría.
 
+Incluye la fuente [Space Grotesk](https://github.com/floriankarsten/space-grotesk) (© The Space Grotesk Project Authors), con licencia [SIL Open Font License 1.1](assets/fonts/OFL.txt).
+
 > Kylen Chat for Twitch es un proyecto independiente. No está afiliado, asociado ni respaldado por Twitch Interactive, Inc. "Twitch" es una marca registrada de Twitch Interactive, Inc.
 
 <p align="center">Creada por <b>Aleix Aj</b></p>

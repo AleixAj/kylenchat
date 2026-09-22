@@ -35,7 +35,7 @@ const FIELDS = {
 };
 
 // Estilos rápidos: cada uno fija todo el aspecto (fuente, colores, fondo...), así que se pueden
-// probar uno tras otro sin que queden restos del anterior. Solo usan fuentes que trae Windows.
+// probar uno tras otro sin que queden restos del anterior. Usan fuentes de Windows o incluidas en la app.
 const LOOK_BASE = {
   fontSize: 16, fontFamily: 'Segoe UI', bold: false, textColor: '#ffffff', userColors: true,
   bgColor: '#000000', bgOpacity: 35, outline: true, opacity: 100, emoteScale: 1.6,
@@ -47,7 +47,7 @@ const PRESETS = {
   contrast: { ...LOOK_BASE, fontFamily: 'Verdana', fontSize: 18, bold: true, textColor: '#ffe600', bgOpacity: 85 },
   big: { ...LOOK_BASE, fontFamily: 'Arial Black', fontSize: 24, bgOpacity: 50, emoteScale: 1.8 },
   terminal: { ...LOOK_BASE, fontFamily: 'Consolas', fontSize: 15, textColor: '#39ff14', bgColor: '#050805', bgOpacity: 75, outline: false },
-  sakura: { ...LOOK_BASE, fontFamily: 'Trebuchet MS', fontSize: 17, bold: true, textColor: '#ffffff', userColors: false, bgColor: '#ffb6d9', bgOpacity: 25, outline: true },
+  sakura: { ...LOOK_BASE, fontFamily: 'Space Grotesk', fontSize: 17, bold: true, textColor: '#ffffff', userColors: false, bgColor: '#ffb6d9', bgOpacity: 25, outline: true },
 };
 
 // Cada botón de estilo se ve con su propia fuente y colores, como una muestra.
@@ -140,7 +140,9 @@ function connect() {
 
 // ---------- Fuentes instaladas ----------
 
-const BASIC_FONTS = ['Segoe UI', 'Arial', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Georgia', 'Consolas', 'Impact', 'Comic Sans MS'];
+// Fuentes que trae la propia app: siempre salen en la lista, las tenga el PC o no.
+const BUNDLED_FONTS = ['Space Grotesk'];
+const BASIC_FONTS = [...BUNDLED_FONTS, 'Segoe UI', 'Arial', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Georgia', 'Consolas', 'Impact', 'Comic Sans MS'];
 
 function fillFontList(families) {
   const select = $('fontFamily');
@@ -169,7 +171,7 @@ async function loadFonts() {
   fillFontList(BASIC_FONTS);
   try {
     const fonts = await window.queryLocalFonts();
-    const families = [...new Set(fonts.map((f) => f.family))]
+    const families = [...new Set([...BUNDLED_FONTS, ...fonts.map((f) => f.family)])]
       .filter((f) => /^[^"'\\;{}<>]{1,64}$/.test(f))
       .sort((a, b) => a.localeCompare(b));
     if (families.length) fillFontList(families);
