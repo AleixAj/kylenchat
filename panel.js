@@ -28,7 +28,6 @@ const FIELDS = {
   timestamps: { type: 'check' },
   hideBots: { type: 'check' },
   mutedUsers: { type: 'text' },
-  blockedWords: { type: 'text' },
   maxMessages: { type: 'range', show: (v) => String(v) },
   fadeAfter: { type: 'range', show: secondsOrNever },
   idleHide: { type: 'range', show: secondsOrNever },

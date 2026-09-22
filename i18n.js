@@ -95,8 +95,6 @@
       sectionFilters: 'Filtros',
       mutedUsers: 'Usuarios silenciados',
       mutedUsersPlaceholder: 'separados por comas: usuario1, usuario2',
-      blockedWords: 'Palabras prohibidas',
-      blockedWordsPlaceholder: 'los mensajes con estas palabras no salen',
       idleHide: 'Ocultar si no hay mensajes',
       sectionProfiles: 'Perfiles',
       profilesNote: 'Guarda el aspecto y la posición para cada juego. Ctrl+Alt+P pasa al siguiente perfil.',
@@ -241,8 +239,6 @@
       sectionFilters: 'Filters',
       mutedUsers: 'Muted users',
       mutedUsersPlaceholder: 'comma separated: user1, user2',
-      blockedWords: 'Blocked words',
-      blockedWordsPlaceholder: 'messages with these words are hidden',
       idleHide: 'Hide when chat is quiet',
       sectionProfiles: 'Profiles',
       profilesNote: 'Save the look and position for each game. Ctrl+Alt+P switches to the next profile.',
@@ -299,7 +295,7 @@
     es: {
       '1.1.0': [
         'Menciones y palabras clave destacadas, primer mensaje, insignias, bits, canjes y respuestas.',
-        'Filtros de usuarios y palabras, estilos rápidos, alineación a la derecha y mensajes nuevos arriba.',
+        'Silenciar usuarios, estilos rápidos, alineación a la derecha y mensajes nuevos arriba.',
         'Perfiles por juego (Ctrl+Alt+P), ocultar el chat cuando está tranquilo, hora y tamaño de emotes.',
         'Cualquier fuente instalada, ajustes en pestañas y copia de la configuración.',
       ],
@@ -307,7 +303,7 @@
     en: {
       '1.1.0': [
         'Highlighted mentions and keywords, first messages, badges, bits, redemptions and replies.',
-        'User and word filters, quick styles, right alignment and newest messages on top.',
+        'Mute users, quick styles, right alignment and newest messages on top.',
         'Per-game profiles (Ctrl+Alt+P), hide the chat when it\'s quiet, timestamps and emote size.',
         'Any installed font, tabbed settings and settings backup.',
       ],

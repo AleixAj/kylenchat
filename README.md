@@ -43,7 +43,7 @@
 - **Estilos rápidos** (Minimalista, Clásico Twitch, Alto contraste, Texto grande…) y control total de posición, tamaño, fuente (cualquiera instalada), colores, fondo, transparencia y tamaño de emotes.
 - Mensajes **alineados a la derecha** y **nuevos arriba**, si lo prefieres.
 - **Perfiles por juego**: guarda el aspecto y la posición para cada juego y cambia con `Ctrl + Alt + P`.
-- **Filtros**: usuarios silenciados, palabras prohibidas y ocultar bots y comandos.
+- **Filtros**: silenciar usuarios y ocultar bots y comandos. No hay filtro de palabras a propósito: el streamer tiene que ver todo lo que le escriben.
 - El chat puede **ocultarse cuando está tranquilo** y volver con el siguiente mensaje.
 - **Modo prueba** con mensajes de ejemplo para ajustarlo viendo el resultado final.
 

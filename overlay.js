@@ -309,22 +309,18 @@ const wordsRegex = (words) => (words.length
   ? new RegExp(`(^|[^\\p{L}\\p{N}_])@?(${words.map(escapeRegex).join('|')})(?=$|[^\\p{L}\\p{N}_])`, 'iu')
   : null);
 
-// ---------- Filtros: usuarios silenciados, palabras prohibidas y bots ----------
+// ---------- Filtros: usuarios silenciados y bots ----------
+// No hay filtro de palabras a propósito: el streamer tiene que ver todo lo que le escriben.
 
-let filterKey = null;
+let mutedKey = null;
 let mutedUsers = new Set();
-let blockedRegex = null;
 
 function isFiltered(msg) {
-  const key = `${settings.mutedUsers}|${settings.blockedWords}`;
-  if (key !== filterKey) {
-    filterKey = key;
+  if (settings.mutedUsers !== mutedKey) {
+    mutedKey = settings.mutedUsers;
     mutedUsers = new Set(splitList(settings.mutedUsers).map((u) => u.replace(/^@/, '')));
-    blockedRegex = wordsRegex(splitList(settings.blockedWords));
   }
-  return mutedUsers.has(msg.user)
-    || Boolean(blockedRegex && blockedRegex.test(msg.text))
-    || (settings.hideBots && isBotMessage(msg));
+  return mutedUsers.has(msg.user) || (settings.hideBots && isBotMessage(msg));
 }
 
 // ---------- Destacados: menciones y palabras clave ----------

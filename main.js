@@ -30,7 +30,6 @@ const DEFAULTS = {
   showBadges: true,
   timestamps: false,
   mutedUsers: '',
-  blockedWords: '',
   align: 'left',
   newestOnTop: false,
   idleHide: 0,
@@ -81,7 +80,6 @@ const SCHEMA = {
   showBadges: isBool,
   timestamps: isBool,
   mutedUsers: isText(1000),
-  blockedWords: isText(1000),
   align: (v) => v === 'left' || v === 'right',
   newestOnTop: isBool,
   idleHide: inRange(0, 300),
@@ -145,10 +143,12 @@ app.commandLine.appendSwitch('in-process-gpu');
 // ---------- Ajustes guardados en disco ----------
 
 const settingsFile = () => path.join(app.getPath('userData'), 'settings.json');
+// Ignora la marca invisible (BOM) que añaden algunos editores como el Bloc de notas.
+const readJSON = (file) => JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
 
 function loadSettings() {
   try {
-    return { ...DEFAULTS, ...sanitize(JSON.parse(fs.readFileSync(settingsFile(), 'utf8'))) };
+    return { ...DEFAULTS, ...sanitize(readJSON(settingsFile())) };
   } catch {
     return { ...DEFAULTS };
   }
@@ -460,7 +460,7 @@ async function importSettings() {
   });
   if (canceled || !filePaths.length) return 'canceled';
   try {
-    const data = JSON.parse(fs.readFileSync(filePaths[0], 'utf8'));
+    const data = readJSON(filePaths[0]);
     const clean = sanitize(data && data.settings);
     for (const key of LOCAL_KEYS) delete clean[key];
     if (!Object.keys(clean).length) return 'invalid';
