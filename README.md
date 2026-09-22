@@ -95,15 +95,18 @@ El instalador queda en `dist/`.
 
 ### Publicar una versión nueva (actualización automática)
 
-1. Sube el número de `version` en `package.json` (por ejemplo, de `0.1.0` a `0.1.1`).
-2. Publica la versión. En PowerShell:
+1. Sube el número de `version` en `package.json` (por ejemplo, de `1.0.0` a `1.0.1`).
+2. Crea el instalador y súbelo a GitHub como **borrador**. En PowerShell:
 
    ```powershell
    $env:GH_TOKEN = gh auth token; npm run release
    ```
 
-   Esto crea el instalador y lo sube a GitHub Releases junto con `latest.yml`.
-3. Las apps ya instaladas buscan actualizaciones al arrancar y cada 4 horas. Cuando encuentran una versión nueva la descargan y avisan para reiniciar; si no se reinicia, se instala al cerrar la app.
+   Esto sube el instalador, `latest.yml` y el `.blockmap` a un borrador en [Releases](https://github.com/AleixAj/kylentwitchchat/releases). Nadie lo ve todavía.
+3. Cuando quieras que esté disponible, abre el borrador en GitHub, escribe las novedades y pulsa **Publish release**.
+4. Desde ese momento, la gente puede descargarla y las apps ya instaladas se actualizan solas: buscan versiones nuevas al arrancar y cada 4 horas, la descargan y avisan para reiniciar. Si no se reinicia, se instala al cerrar la app.
+
+> No borres `latest.yml` ni el `.blockmap` de la release: la actualización automática los necesita.
 
 ---
 
