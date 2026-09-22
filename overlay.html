@@ -24,7 +24,8 @@
     opacity: var(--opacity); transition: opacity .8s;
   }
   body.newest-top #chat { flex-direction: column-reverse; justify-content: flex-end; }
-  body.idle #chat, body.idle #bar { opacity: 0; }
+  /* Sin mensajes durante un rato: se atenúa, pero se sigue pudiendo leer de un vistazo. */
+  body.idle #chat, body.idle #bar { opacity: calc(var(--opacity) * .25); }
   .msg {
     --edge: transparent; --dir: 90deg;
     align-self: flex-start; max-width: 100%; box-sizing: border-box;

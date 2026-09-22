@@ -39,7 +39,8 @@
   .grid { display: grid; grid-template-columns: repeat(3, 44px); gap: 6px; }
   .grid button { height: 32px; padding: 0; font-size: 16px; }
   .presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-  .presets button { padding: 6px 11px; font-size: 13px; border-radius: 999px; }
+  .presets button { padding: 6px 12px; font-size: 13px; border-radius: 999px; border: 1px solid #3a3a42; }
+  .presets button:hover { filter: brightness(1.2); }
   .note { color: var(--muted); font-size: 12px; line-height: 1.5; }
   .status { font-size: 12px; margin: 0 0 8px; color: #8fe3a8; }
   .status.bad { color: #ff8a8a; }
@@ -129,6 +130,8 @@
         <button data-preset="twitch" data-i18n="presetTwitch"></button>
         <button data-preset="contrast" data-i18n="presetContrast"></button>
         <button data-preset="big" data-i18n="presetBig"></button>
+        <button data-preset="terminal" data-i18n="presetTerminal"></button>
+        <button data-preset="kylen" data-i18n="presetKylen"></button>
       </div>
     </section>
 

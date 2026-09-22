@@ -35,14 +35,35 @@ const FIELDS = {
   autoStart: { type: 'check' },
 };
 
-// Estilos rápidos: cambian varios ajustes de aspecto de golpe.
-const PRESETS = {
-  default: { fontSize: 16, fontFamily: 'Segoe UI', bold: false, textColor: '#ffffff', bgColor: '#000000', bgOpacity: 35, outline: true, opacity: 100, emoteScale: 1.6, showHeader: true },
-  minimal: { bgOpacity: 0, outline: true, bold: false, showHeader: false },
-  twitch: { fontFamily: 'Segoe UI', fontSize: 14, bold: false, textColor: '#efeff1', bgColor: '#18181b', bgOpacity: 85, outline: false },
-  contrast: { fontSize: 18, bold: true, textColor: '#ffffff', bgColor: '#000000', bgOpacity: 80, outline: true },
-  big: { fontSize: 24, bold: true, emoteScale: 1.8 },
+// Estilos rápidos: cada uno fija todo el aspecto (fuente, colores, fondo...), así que se pueden
+// probar uno tras otro sin que queden restos del anterior. Solo usan fuentes que trae Windows.
+const LOOK_BASE = {
+  fontSize: 16, fontFamily: 'Segoe UI', bold: false, textColor: '#ffffff', userColors: true,
+  bgColor: '#000000', bgOpacity: 35, outline: true, opacity: 100, emoteScale: 1.6, showHeader: true,
 };
+const PRESETS = {
+  default: { ...LOOK_BASE },
+  minimal: { ...LOOK_BASE, fontFamily: 'Bahnschrift', fontSize: 17, bgOpacity: 0, emoteScale: 1.5, showHeader: false },
+  twitch: { ...LOOK_BASE, fontFamily: 'Segoe UI Semibold', fontSize: 14, textColor: '#efeff1', bgColor: '#18181b', bgOpacity: 90, outline: false },
+  contrast: { ...LOOK_BASE, fontFamily: 'Verdana', fontSize: 18, bold: true, textColor: '#ffe600', bgOpacity: 85 },
+  big: { ...LOOK_BASE, fontFamily: 'Arial Black', fontSize: 24, bgOpacity: 50, emoteScale: 1.8 },
+  terminal: { ...LOOK_BASE, fontFamily: 'Consolas', fontSize: 15, textColor: '#39ff14', bgColor: '#050805', bgOpacity: 75, outline: false },
+  kylen: { ...LOOK_BASE, fontFamily: 'Trebuchet MS', fontSize: 17, bold: true, textColor: '#f3e8ff', bgColor: '#3b0f80', bgOpacity: 55, outline: false },
+};
+
+// Cada botón de estilo se ve con su propia fuente y colores, como una muestra.
+function paintPresetButtons() {
+  document.querySelectorAll('[data-preset]').forEach((b) => {
+    const p = PRESETS[b.dataset.preset];
+    const n = parseInt(p.bgColor.slice(1), 16);
+    const alpha = p.bgOpacity ? Math.max(0.6, p.bgOpacity / 100) : 0;
+    b.style.fontFamily = `"${p.fontFamily}", "Segoe UI", sans-serif`;
+    b.style.fontWeight = p.bold ? '700' : '400';
+    b.style.color = p.textColor;
+    b.style.background = `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+    b.style.textShadow = p.outline ? '0 0 2px #000, 1px 1px 1px #000' : 'none';
+  });
+}
 
 function readField(el, type) {
   if (type === 'check') return el.checked;
@@ -291,6 +312,7 @@ $('height').addEventListener('input', sendSize);
 let savedTab = 'look';
 try { savedTab = localStorage.getItem('tab') || 'look'; } catch { /* sin almacenamiento */ }
 showTab(document.querySelector(`[data-tab="${savedTab}"]`) ? savedTab : 'look');
+paintPresetButtons();
 applyLanguage(lang); // textos en español mientras llegan los ajustes guardados
 
 api.onSettings(fillFields);

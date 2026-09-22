@@ -547,7 +547,8 @@ function flush() {
   }
 }
 
-// "Ocultar si no hay mensajes": el chat se desvanece tras un rato sin actividad y vuelve con el siguiente.
+// "Atenuar si no hay mensajes": tras un rato sin actividad el chat se vuelve casi transparente
+// (sigue legible) y recupera la opacidad normal con el siguiente mensaje.
 let idleTimer = null;
 function resetIdle() {
   document.body.classList.remove('idle');
