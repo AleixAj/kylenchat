@@ -34,7 +34,7 @@
     transition: opacity .6s;
   }
   .msg.fade { opacity: 0; }
-  .msg.system { font-style: italic; opacity: .75; font-size: .85em; }
+  .msg.system { opacity: .75; font-size: .85em; }
   .msg.notice { --edge: #a970ff; background: linear-gradient(var(--dir), rgba(145, 70, 255, .45), var(--bg)); }
   .notice-title { font-weight: 700; font-size: .9em; }
   /* Destacados */
@@ -57,7 +57,6 @@
   .reply { font-size: .78em; opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px; }
   .time { font-size: .75em; opacity: .6; margin-right: 5px; font-variant-numeric: tabular-nums; }
   .name { font-weight: 700; }
-  .action .text { font-style: italic; }
   .emote { height: calc(var(--emote, 1.6) * 1em); vertical-align: middle; margin: -.2em 0; }
   .stack { display: inline-grid; vertical-align: middle; }
   .stack > .emote { grid-area: 1 / 1; place-self: center; }
