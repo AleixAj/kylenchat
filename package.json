@@ -32,7 +32,9 @@
       "panel.html",
       "panel.js",
       "assets/**/*",
-      "LICENSE"
+      "LICENSE",
+      "!assets/readme/**",
+      "!assets/logo-original.png"
     ],
     "directories": {
       "output": "dist"

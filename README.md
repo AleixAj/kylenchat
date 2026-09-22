@@ -13,12 +13,12 @@
 
 <p align="center">
   <a href="https://github.com/AleixAj/kylentwitchchat/releases/latest/download/KylenChat-Setup.exe">
-    <img src="https://img.shields.io/badge/Descargar_para_Windows-Instalador-9146FF?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar instalador para Windows" height="48">
+    <img src="assets/readme/btn-download.svg" alt="Descargar para Windows (instalador)" width="460">
   </a>
 </p>
 <p align="center">
   <a href="https://github.com/AleixAj/kylentwitchchat/releases/latest/download/KylenChat-Portable.zip">
-    <img src="https://img.shields.io/badge/Versión_portable-.zip-2f2f35?style=for-the-badge&logo=files&logoColor=white" alt="Descargar versión portable (.zip)" height="32">
+    <img src="assets/readme/btn-portable.svg" alt="Descargar versión portable (.zip)" width="320">
   </a>
 </p>
 <p align="center">
