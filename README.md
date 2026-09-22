@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/icon.png" width="128" alt="Kylen Twitch Chat">
+  <img src="assets/icon.png" width="128" alt="Kylen Chat for Twitch">
 </p>
 
-<h1 align="center">Kylen Twitch Chat</h1>
+<h1 align="center">Kylen Chat for Twitch</h1>
 
 <p align="center">
   El chat de Twitch encima de tu juego, con fondo transparente.<br>
@@ -27,7 +27,7 @@
 
 ## Descarga e instalación
 
-1. Ve a [**Releases**](https://github.com/AleixAj/kylentwitchchat/releases/latest) y descarga `KylenTwitchChat-Setup-x.x.x.exe`.
+1. Ve a [**Releases**](https://github.com/AleixAj/kylentwitchchat/releases/latest) y descarga `KylenChat-Setup-x.x.x.exe`.
 2. Ábrelo. Se instala en unos segundos y se abre sola.
 3. Si Windows muestra *"Windows protegió tu PC"*, pulsa **Más información → Ejecutar de todas formas**. Sale porque la app todavía no tiene firma digital de pago, no porque sea peligrosa.
 
@@ -111,5 +111,11 @@ El instalador queda en `dist/`.
 > No borres `latest.yml` ni el `.blockmap` de la release: la actualización automática los necesita.
 
 ---
+
+## Licencia
+
+[MIT](LICENSE) © Aleix Aj. Puedes usar, modificar y compartir el código siempre que mantengas el aviso de autoría.
+
+> Kylen Chat for Twitch es un proyecto independiente. No está afiliado, asociado ni respaldado por Twitch Interactive, Inc. "Twitch" es una marca registrada de Twitch Interactive, Inc.
 
 <p align="center">Creada por <b>Aleix Aj</b></p>

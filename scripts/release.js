@@ -7,7 +7,7 @@ const path = require('path');
 
 const { version } = require('../package.json');
 const dist = path.join(__dirname, '..', 'dist');
-const installer = `KylenTwitchChat-Setup-${version}.exe`;
+const installer = `KylenChat-Setup-${version}.exe`;
 const files = [installer, `${installer}.blockmap`, 'latest.yml'].map((f) => path.join(dist, f));
 
 for (const file of files) {
@@ -18,7 +18,7 @@ for (const file of files) {
 }
 
 const notes = [
-  `## Kylen Twitch Chat ${version}`,
+  `## Kylen Chat for Twitch ${version}`,
   '',
   `Descarga **${installer}**, ábrelo y listo.`,
   '',
@@ -27,7 +27,7 @@ const notes = [
 
 execFileSync('gh', [
   'release', 'create', `v${version}`, ...files,
-  '--draft', '--title', `Kylen Twitch Chat ${version}`, '--notes', notes,
+  '--draft', '--title', `Kylen Chat for Twitch ${version}`, '--notes', notes,
 ], { stdio: 'inherit' });
 
 console.log(`\nBorrador v${version} creado. Publícalo desde GitHub cuando quieras.`);

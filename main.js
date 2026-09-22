@@ -239,7 +239,7 @@ function createPanel() {
   panel = new BrowserWindow({
     width: 460,
     height: 860,
-    title: 'Kylen Twitch Chat · Ajustes',
+    title: 'Kylen Chat for Twitch · Ajustes',
     icon: APP_ICON,
     autoHideMenuBar: true,
     backgroundColor: '#18181b',
@@ -371,7 +371,7 @@ if (!app.requestSingleInstanceLock()) {
     if (!process.argv.includes('--hidden')) createPanel();
 
     tray = new Tray(TRAY_ICON);
-    tray.setToolTip('Kylen Twitch Chat');
+    tray.setToolTip('Kylen Chat for Twitch');
     tray.on('click', createPanel);
     updateTrayMenu();
 
