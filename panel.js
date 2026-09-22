@@ -47,7 +47,7 @@ const PRESETS = {
   contrast: { ...LOOK_BASE, fontFamily: 'Verdana', fontSize: 18, bold: true, textColor: '#ffe600', bgOpacity: 85 },
   big: { ...LOOK_BASE, fontFamily: 'Arial Black', fontSize: 24, bgOpacity: 50, emoteScale: 1.8 },
   terminal: { ...LOOK_BASE, fontFamily: 'Consolas', fontSize: 15, textColor: '#39ff14', bgColor: '#050805', bgOpacity: 75, outline: false },
-  sakura: { ...LOOK_BASE, fontFamily: 'Space Grotesk', fontSize: 17, bold: true, textColor: '#ffb3dc', userColors: false, bgColor: '#ff4fa8', bgOpacity: 20, outline: true },
+  sakura: { ...LOOK_BASE, fontFamily: 'Space Grotesk', fontSize: 17, bold: true, textColor: '#ffffff', userColors: false, bgColor: '#ff8fc8', bgOpacity: 45, outline: true },
 };
 
 // Cada botón de estilo se ve con su propia fuente y colores, como una muestra.
