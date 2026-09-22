@@ -295,7 +295,7 @@
     es: {
       '1.1.0': [
         'Menciones y palabras clave destacadas, primer mensaje, insignias, bits, canjes y respuestas.',
-        'Silenciar usuarios, estilos rápidos, alineación a la derecha y mensajes nuevos arriba.',
+        '7 estilos rápidos (nuevo: Sakura 🌸), silenciar usuarios, alineación a la derecha y mensajes nuevos arriba.',
         'Perfiles por juego (Ctrl+Alt+P), atenuar el chat cuando está tranquilo, hora y tamaño de emotes.',
         'Cualquier fuente instalada, ajustes en pestañas y copia de la configuración.',
       ],
@@ -303,7 +303,7 @@
     en: {
       '1.1.0': [
         'Highlighted mentions and keywords, first messages, badges, bits, redemptions and replies.',
-        'Mute users, quick styles, right alignment and newest messages on top.',
+        '7 quick styles (new: Sakura 🌸), mute users, right alignment and newest messages on top.',
         'Per-game profiles (Ctrl+Alt+P), dim the chat when it\'s quiet, timestamps and emote size.',
         'Any installed font, tabbed settings and settings backup.',
       ],

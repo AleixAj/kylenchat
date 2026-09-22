@@ -32,6 +32,7 @@
 - Muestra el chat de cualquier canal de Twitch en una ventana **transparente** que queda **siempre encima** del juego.
 - Los clics **atraviesan** el chat, así que no molesta mientras juegas.
 - Muestra los emotes de **Twitch, 7TV, BTTV y FFZ**.
+- Una barra discreta **"Kylen Chat"** encima del chat muestra el canal conectado.
 
 **Para no perderte lo importante**
 - **Menciones y palabras clave destacadas**: si alguien escribe tu nombre o una palabra que elijas, el mensaje sale resaltado.
@@ -40,7 +41,8 @@
 - Destaca **subs, regalos, raids, bits, canjes de puntos y mensajes destacados**, y muestra a quién responde cada mensaje.
 
 **A tu gusto**
-- **Estilos rápidos** (Minimalista, Clásico Twitch, Alto contraste, Texto grande, Terminal, Sakura…) y control total de posición, tamaño, fuente (cualquiera instalada), colores, fondo, transparencia y tamaño de emotes.
+- **7 estilos rápidos** con un clic: Por defecto, Minimalista, Clásico Twitch, Alto contraste, Texto grande, Terminal y Sakura 🌸.
+- Control total de posición, tamaño, fuente (cualquiera instalada en tu PC), colores, fondo, transparencia y tamaño de emotes.
 - Mensajes **alineados a la derecha** y **nuevos arriba**, si lo prefieres.
 - **Perfiles por juego**: guarda el aspecto y la posición para cada juego y cambia con `Ctrl + Alt + P`.
 - **Filtros**: silenciar usuarios y ocultar bots y comandos. No hay filtro de palabras a propósito: el streamer tiene que ver todo lo que le escriben.
@@ -120,7 +122,7 @@ npm start
 | `panel.html` / `panel.js` | La ventana de ajustes |
 | `i18n.js` | Textos en español e inglés |
 | `preload.js` | Puente seguro entre las ventanas y el proceso principal |
-| `assets/` | Iconos |
+| `assets/` | Iconos, insignias, banderas y la fuente Space Grotesk |
 
 ### Crear el instalador
 
@@ -132,7 +134,7 @@ El instalador queda en `dist/`.
 
 ### Publicar una versión nueva (actualización automática)
 
-1. Sube el número de `version` en `package.json` (por ejemplo, de `1.0.0` a `1.0.1`).
+1. Sube el número de `version` en `package.json` (por ejemplo, de `1.1.0` a `1.1.1`) y añade sus novedades en `CHANGELOG` dentro de `i18n.js` (salen en la app tras actualizar).
 2. Crea el instalador y súbelo a GitHub como **borrador**:
 
    ```bash
