@@ -1,5 +1,5 @@
 const {
-  app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, screen, shell, session, powerMonitor, dialog,
+  app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, screen, shell, session, powerMonitor, dialog, net, Notification,
 } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
@@ -33,6 +33,13 @@ const DEFAULTS = {
   showBadges: true,
   timestamps: false,
   mutedUsers: '',
+  liveChannels: '',
+  liveDesktop: true,
+  liveBox: true,
+  liveDuration: 8,
+  liveSound: true,
+  liveVolume: 70,
+  alertBounds: null,
   showDeleted: false,
   shortcuts: { ...DEFAULT_SHORTCUTS },
   align: 'left',
@@ -94,6 +101,13 @@ const SCHEMA = {
   showBadges: isBool,
   timestamps: isBool,
   mutedUsers: isText(1000),
+  liveChannels: isText(1500),
+  liveDesktop: isBool,
+  liveBox: isBool,
+  liveDuration: inRange(3, 30),
+  liveSound: isBool,
+  liveVolume: inRange(0, 100),
+  alertBounds: (v) => v === null || (v && ['x', 'y', 'width', 'height'].every((k) => Number.isFinite(v[k]))),
   showDeleted: isBool,
   shortcuts: isShortcuts,
   align: (v) => v === 'left' || v === 'right',
@@ -144,7 +158,7 @@ let tray;
 let editMode = false;
 let visible = true;
 let testMode = false;
-let resizeStartBounds = null;
+let resizing = null; // { win, bounds, min } mientras se cambia el tamaño desde la esquina
 // Actualizaciones: primero solo se comprueba (un archivo de 1 KB); la descarga (~100 MB)
 // empieza únicamente cuando el usuario pulsa "Descargar", para no subirle el ping en partida.
 let updateAvailable = null; // versión nueva publicada, todavía sin descargar
@@ -232,6 +246,7 @@ function updateSettings(patch) {
   Object.assign(settings, clean);
   if ('autoStart' in clean) applyAutoStart();
   if ('language' in clean) applyLanguage();
+  if (['liveChannels', 'liveDesktop', 'liveBox', 'liveSound'].some((k) => k in clean)) restartLiveWatch();
   if ('shortcuts' in clean) {
     registerShortcuts();
     updateTrayMenu();
@@ -244,6 +259,7 @@ function updateSettings(patch) {
 function broadcastSettings() {
   overlay.webContents.send('settings', settings);
   if (panel && !panel.isDestroyed()) panel.webContents.send('settings', settings);
+  sendToAlert('settings', settings);
 }
 
 const tr = (key, vars) => t(settings.language, key, vars);
@@ -322,6 +338,10 @@ function createOverlay() {
 
 // Si se desconecta el monitor donde estaba el chat, se trae a la pantalla principal.
 function keepOnScreen() {
+  if (alertWin && !alertWin.isDestroyed() && !boundsOnScreen(alertWin.getBounds())) {
+    alertWin.setBounds(defaultAlertBounds());
+    rememberAlertBounds();
+  }
   if (!overlay || overlay.isDestroyed()) return;
   if (!boundsOnScreen(overlay.getBounds())) {
     overlay.setBounds(defaultBounds());
@@ -434,6 +454,8 @@ function state() {
     defaultShortcuts: DEFAULT_SHORTCUTS,
     canAutoStart: app.isPackaged,
     whatsNew,
+    liveNow: Object.fromEntries(liveNow), // canal -> nombre visible
+    alertEdit,
   };
 }
 function sendState() {
@@ -542,6 +564,224 @@ function installUpdate() {
   app.isQuitting = true;
   autoUpdater.quitAndInstall(true, true);
 }
+
+// ---------- Avisos de directo ----------
+// Cada minuto se pregunta a api.ivr.fi (la misma que da los espectadores) qué canales de la
+// lista están en directo: una sola petición pequeña para todos, sin iniciar sesión en Twitch.
+// El aviso sale como notificación del sistema y/o dentro del chat, que se ve encima del juego
+// aunque Windows esconda las notificaciones mientras se juega.
+
+const LIVE_POLL_MS = 60 * 1000;
+const LIVE_RECENT_MS = 10 * 60 * 1000; // al arrancar solo se avisa de directos que acaban de empezar
+const LIVE_BATCH = 50; // canales por petición
+let liveTimer = null;
+let liveRound = 0; // si se cambia la lista a mitad de una comprobación, la vieja no programa otra
+let liveErrorLogged = false;
+const liveSeen = new Map(); // canal -> id del directo visto la última vez (null si no estaba en directo)
+const liveNow = new Map(); // canal -> nombre visible, de los que están en directo ahora
+const liveNotified = new Set(); // directos (por id) ya avisados, por si la API parpadea
+const liveNotifications = new Set(); // referencia para que Windows no pierda el clic en la notificación
+
+function liveChannelList() {
+  const channels = settings.liveChannels
+    .toLowerCase()
+    .split(/[\s,;]+/)
+    .map((c) => c.replace(/^(https?:\/\/)?(www\.|m\.)?twitch\.tv\//, '').replace(/^@/, '').replace(/[/?#].*$/, ''))
+    .filter((c) => /^[a-z0-9_]{1,25}$/.test(c));
+  return [...new Set(channels)].slice(0, 100);
+}
+
+function restartLiveWatch() {
+  clearTimeout(liveTimer);
+  liveRound++;
+  const channels = liveChannelList();
+  for (const c of [...liveSeen.keys()]) {
+    if (!channels.includes(c)) {
+      liveSeen.delete(c);
+      liveNow.delete(c);
+    }
+  }
+  sendState();
+  if (channels.length && (settings.liveDesktop || settings.liveBox || settings.liveSound)) checkLive(liveRound);
+}
+
+async function checkLive(round) {
+  const channels = liveChannelList();
+  try {
+    for (let i = 0; i < channels.length; i += LIVE_BATCH) {
+      const batch = channels.slice(i, i + LIVE_BATCH);
+      const res = await net.fetch(`https://api.ivr.fi/v2/twitch/user?login=${batch.join(',')}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const users = await res.json();
+      if (!Array.isArray(users)) throw new Error('respuesta inesperada');
+      if (round !== liveRound) return; // la lista ha cambiado mientras tanto
+      for (const user of users) onLiveStatus(user);
+    }
+    liveErrorLogged = false;
+    sendState();
+  } catch (err) {
+    // Sin internet o la API caída: se reintenta en el siguiente minuto sin llenar el registro.
+    if (!liveErrorLogged) logError(`Avisos de directo: ${err.message}`);
+    liveErrorLogged = true;
+  }
+  if (round === liveRound) liveTimer = setTimeout(() => checkLive(round), LIVE_POLL_MS);
+}
+
+function onLiveStatus(user) {
+  const login = String((user && user.login) || '').toLowerCase();
+  if (!/^[a-z0-9_]{1,25}$/.test(login)) return;
+  const stream = user.stream && user.stream.type === 'live' ? user.stream : null;
+  const name = typeof user.displayName === 'string' && user.displayName ? user.displayName : login;
+  const firstLook = !liveSeen.has(login);
+  const previous = liveSeen.get(login);
+  liveSeen.set(login, stream ? String(stream.id) : null);
+  if (stream) liveNow.set(login, name);
+  else liveNow.delete(login);
+
+  if (!stream || liveNotified.has(String(stream.id))) return;
+  if (firstLook ? !(Date.now() - Date.parse(stream.createdAt) < LIVE_RECENT_MS) : previous === String(stream.id)) {
+    liveNotified.add(String(stream.id)); // ya estaba en directo antes: no se avisa
+    return;
+  }
+  liveNotified.add(String(stream.id));
+  announceLive({
+    login,
+    name,
+    logo: typeof user.logo === 'string' && user.logo.startsWith('https://static-cdn.jtvnw.net/') ? user.logo : '',
+    title: typeof stream.title === 'string' ? stream.title.slice(0, 140) : '',
+    game: stream.game && typeof stream.game.displayName === 'string' ? stream.game.displayName : '',
+  });
+}
+
+function announceLive(info) {
+  const ownSound = settings.liveSound && settings.liveVolume > 0;
+  if (settings.liveBox || ownSound) queueAlert(info);
+  if (settings.liveDesktop && Notification.isSupported()) {
+    const notification = new Notification({
+      title: tr('liveAlert', { name: info.name }),
+      body: [info.title, info.game].filter(Boolean).join(' · '),
+      icon: path.join(__dirname, 'assets', 'icon.png'),
+      silent: ownSound, // si ya suena el sonido propio, sin el de Windows encima
+    });
+    liveNotifications.add(notification);
+    const forget = () => liveNotifications.delete(notification);
+    notification.on('click', () => {
+      forget();
+      if (info.login) shell.openExternal(`https://www.twitch.tv/${info.login}`);
+    });
+    notification.on('close', forget);
+    notification.show();
+  }
+}
+
+// ---------- Recuadro del aviso de directo ----------
+// Ventana aparte del chat, igual de transparente y sin quitar nunca el teclado al juego.
+// Se crea al llegar un aviso (o al moverla) y se cierra en cuanto no tiene nada que enseñar.
+
+let alertWin = null;
+let alertReady = false; // la ventana ya ha cargado y tiene los ajustes
+let alertEdit = false; // se está moviendo y ajustando con el aviso de ejemplo
+const alertQueue = [];
+
+function defaultAlertBounds() {
+  const wa = screen.getPrimaryDisplay().workArea;
+  const width = 420;
+  const height = 110;
+  return { width, height, x: wa.x + Math.round((wa.width - width) / 2), y: wa.y + 40 };
+}
+
+function ensureAlertWindow() {
+  if (alertWin && !alertWin.isDestroyed()) return;
+  alertReady = false;
+  const b = boundsOnScreen(settings.alertBounds) || defaultAlertBounds();
+  alertWin = new BrowserWindow({
+    ...b,
+    frame: false,
+    transparent: true,
+    backgroundColor: '#00000000',
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: false,
+    maximizable: false,
+    minimizable: false,
+    fullscreenable: false,
+    focusable: false,
+    hasShadow: false,
+    show: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      spellcheck: false,
+      autoplayPolicy: 'no-user-gesture-required', // el sonido suena sin haber hecho clic antes
+    },
+  });
+  alertWin.setAlwaysOnTop(true, 'screen-saver');
+  if (isMac) alertWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  alertWin.setIgnoreMouseEvents(!alertEdit);
+  alertWin.setFocusable(alertEdit);
+  alertWin.loadFile('alert.html');
+  alertWin.on('moved', rememberAlertBounds);
+  alertWin.on('closed', () => {
+    alertWin = null;
+    alertReady = false;
+  });
+  alertWin.webContents.on('render-process-gone', (_e, details) => {
+    logError(`Ventana del aviso cerrada inesperadamente: ${details.reason}`);
+    if (alertWin && !alertWin.isDestroyed()) alertWin.destroy();
+  });
+}
+
+function sendToAlert(channel, ...args) {
+  if (alertReady && alertWin && !alertWin.isDestroyed()) alertWin.webContents.send(channel, ...args);
+}
+
+function queueAlert(info) {
+  alertQueue.push(info);
+  ensureAlertWindow();
+  flushAlerts();
+}
+
+function flushAlerts() {
+  while (alertReady && alertQueue.length) sendToAlert('live-alert', alertQueue.shift());
+}
+
+function setAlertEdit(on) {
+  alertEdit = on;
+  if (on) ensureAlertWindow();
+  if (alertWin && !alertWin.isDestroyed()) {
+    alertWin.setIgnoreMouseEvents(!on);
+    alertWin.setFocusable(on);
+    if (!on) {
+      alertWin.blur();
+      rememberAlertBounds();
+    }
+  }
+  sendToAlert('alert-edit', on);
+  sendState();
+}
+
+function rememberAlertBounds() {
+  if (!alertWin || alertWin.isDestroyed()) return;
+  settings.alertBounds = alertWin.getBounds();
+  saveSettings();
+}
+
+const fromAlert = (e) => Boolean(alertWin) && !alertWin.isDestroyed() && e.sender === alertWin.webContents;
+
+ipcMain.on('alert-ready', (e) => {
+  if (!fromAlert(e)) return;
+  alertReady = true;
+  if (alertEdit) sendToAlert('alert-edit', true);
+  flushAlerts();
+});
+ipcMain.on('alert-show', (e) => {
+  if (!fromAlert(e) || alertWin.isVisible()) return;
+  alertWin.showInactive();
+  alertWin.setFocusable(alertEdit); // al mostrarse Windows lo reactiva
+});
+ipcMain.on('alert-idle', (e) => {
+  if (fromAlert(e) && !alertEdit && !alertQueue.length) alertWin.destroy();
+});
+ipcMain.on('toggle-alert-edit', () => setAlertEdit(!alertEdit));
 
 // ---------- Perfiles (una configuración por juego) ----------
 
@@ -666,28 +906,34 @@ ipcMain.on('resume-shortcuts', () => {
   sendState();
 });
 ipcMain.on('download-update', downloadUpdate);
+ipcMain.on('test-live-alert', () => announceLive({ login: '', name: 'Kylen Chat', title: tr('liveTestTitle'), game: '', logo: '' }));
 ipcMain.on('open-repo', () => shell.openExternal(REPO_URL));
 ipcMain.on('toggle-edit', () => setEditMode(!editMode));
 ipcMain.on('toggle-visible', () => setVisible(!visible));
 ipcMain.on('toggle-test', () => setTestMode(!testMode));
 ipcMain.on('set-position', (_e, pos) => setPosition(pos));
 ipcMain.on('set-size', (_e, w, h) => setSize(w, h));
-ipcMain.on('resize-start', () => {
-  if (editMode) resizeStartBounds = overlay.getBounds();
+// Cambiar el tamaño desde la esquina: vale para el chat y para el recuadro del aviso.
+ipcMain.on('resize-start', (e) => {
+  if (e.sender === overlay.webContents && editMode) resizing = { win: overlay, bounds: overlay.getBounds(), min: [160, 80] };
+  else if (fromAlert(e) && alertEdit) resizing = { win: alertWin, bounds: alertWin.getBounds(), min: [200, 60] };
 });
 ipcMain.on('resize-move', (_e, dx, dy) => {
-  if (!resizeStartBounds || !Number.isFinite(dx) || !Number.isFinite(dy)) return;
-  overlay.setBounds({
-    ...resizeStartBounds,
-    width: Math.max(160, Math.round(resizeStartBounds.width + dx)),
-    height: Math.max(80, Math.round(resizeStartBounds.height + dy)),
+  if (!resizing || resizing.win.isDestroyed() || !Number.isFinite(dx) || !Number.isFinite(dy)) return;
+  const { win, bounds, min } = resizing;
+  win.setBounds({
+    ...bounds,
+    width: Math.max(min[0], Math.round(bounds.width + dx)),
+    height: Math.max(min[1], Math.round(bounds.height + dy)),
   });
   sendState();
 });
 ipcMain.on('resize-end', () => {
-  if (!resizeStartBounds) return;
-  resizeStartBounds = null;
-  rememberBounds();
+  if (!resizing) return;
+  const { win } = resizing;
+  resizing = null;
+  if (win === overlay) rememberBounds();
+  else rememberAlertBounds();
 });
 
 // ---------- Seguridad ----------
@@ -726,6 +972,7 @@ if (!app.requestSingleInstanceLock()) {
     saveSettings();
     applyAutoStart();
     createOverlay();
+    restartLiveWatch();
     if (!process.argv.includes('--hidden')) createPanel();
 
     // Sin menú de aplicación, en Mac no funcionarían Cmd+C / Cmd+V en los campos de texto.

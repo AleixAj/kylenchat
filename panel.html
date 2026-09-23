@@ -53,6 +53,16 @@
   .tabs button:hover { color: #efeff1; background: transparent; }
   .tabs button.active { color: #efeff1; border-bottom-color: var(--accent); }
   .tab-panel[hidden] { display: none; }
+  .live-list { list-style: none; margin: 0 0 6px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .live-list li { display: flex; align-items: center; gap: 10px; background: #0e0e10; border: 1px solid var(--line); border-radius: 6px; padding: 6px 6px 6px 12px; }
+  .live-list .dot { width: 9px; height: 9px; border-radius: 50%; background: #53535f; flex-shrink: 0; }
+  .live-list li.on .dot { background: #eb0400; box-shadow: 0 0 6px #eb0400; }
+  .live-list .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+  .live-list .tag { font-size: 12px; color: #ff8a8a; font-weight: 600; }
+  .live-list li:not(.on) .tag { display: none; }
+  .live-list .remove { padding: 4px 9px; background: transparent; color: var(--muted); font-size: 16px; line-height: 1; }
+  .live-list .remove:hover { background: #3a3a42; color: #efeff1; }
+  #liveEmpty[hidden] { display: none; }
 
   .banner { display: none; gap: 10px; background: #2b1d4a; border: 1px solid var(--accent); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; }
   .banner.show { display: flex; }
@@ -120,6 +130,7 @@
   <nav class="tabs" role="tablist">
     <button role="tab" data-tab="look" data-i18n="tabLook"></button>
     <button role="tab" data-tab="messages" data-i18n="tabMessages"></button>
+    <button role="tab" data-tab="alerts" data-i18n="tabAlerts"></button>
     <button role="tab" data-tab="general" data-i18n="tabGeneral"></button>
   </nav>
 
@@ -221,6 +232,36 @@
       <div class="row"><label for="maxMessages" data-i18n="maxMessages"></label><input type="range" id="maxMessages" min="3" max="100"><span class="val" id="maxMessagesVal"></span></div>
       <div class="row"><label for="fadeAfter" data-i18n="fadeAfter"></label><input type="range" id="fadeAfter" min="0" max="120" step="5"><span class="val" id="fadeAfterVal"></span></div>
       <div class="row"><label for="idleHide" data-i18n="idleHide"></label><input type="range" id="idleHide" min="0" max="300" step="10"><span class="val" id="idleHideVal"></span></div>
+    </section>
+  </div>
+
+  <!-- ======================= AVISOS DE DIRECTO ======================= -->
+  <div class="tab-panel" data-panel="alerts" hidden>
+    <section>
+      <h2 data-i18n="sectionLive"></h2>
+      <p class="note" data-i18n="liveNote"></p>
+      <div class="row">
+        <input type="text" id="liveAdd" maxlength="80" data-i18n-placeholder="liveAddPlaceholder">
+        <button class="primary" id="liveAddBtn" data-i18n="liveAdd"></button>
+      </div>
+      <p class="status bad" id="liveAddError"></p>
+      <ul class="live-list" id="liveList"></ul>
+      <p class="note" id="liveEmpty" data-i18n="liveEmpty"></p>
+    </section>
+
+    <section>
+      <h2 data-i18n="sectionLiveHow"></h2>
+      <div class="row"><label for="liveDesktop" data-i18n="liveDesktop"></label><input type="checkbox" id="liveDesktop"></div>
+      <div class="row"><label for="liveBox" data-i18n="liveBox"></label><input type="checkbox" id="liveBox"><span class="note" data-i18n="liveBoxNote"></span></div>
+      <div class="row"><label for="liveDuration" data-i18n="liveDuration"></label><input type="range" id="liveDuration" min="3" max="30"><span class="val" id="liveDurationVal"></span></div>
+      <button class="wide" id="liveMove"></button>
+    </section>
+
+    <section>
+      <h2 data-i18n="sectionLiveSound"></h2>
+      <div class="row"><label for="liveSound" data-i18n="liveSound"></label><input type="checkbox" id="liveSound"></div>
+      <div class="row"><label for="liveVolume" data-i18n="liveVolume"></label><input type="range" id="liveVolume" min="0" max="100" step="5"><span class="val" id="liveVolumeVal"></span></div>
+      <button class="wide" id="liveTest" data-i18n="liveTest"></button>
     </section>
   </div>
 

@@ -68,6 +68,7 @@
 - Marca el **primer missatge** de cada persona, perquè la puguis saludar.
 - **Insígnies** de streamer, moderador, VIP i subscriptor.
 - Destaca **subs, regals, raids, bits, bescanvis de punts i missatges destacats**, i mostra a qui respon cada missatge.
+- **Avisos de directe**: apunta els canals que segueixes i t'avisa tan bon punt comencen directe, amb un requadre damunt del joc, so i notificació del sistema.
 - En el **xat compartit**, cada missatge mostra la icona del canal d'on ve.
 - Els noms amb **pintura de 7TV** (degradats) es veuen amb els seus colors.
 
@@ -120,6 +121,18 @@ La versió de Mac **t'avisa quan surt una versió nova**, però no s'instal·la 
 4. Prem **Modo prueba** (mode de prova) i ajusta la lletra, els colors i la transparència veient com queda. Tot es desa automàticament.
 
 Si tanques la finestra d'ajustos, l'app continua funcionant a la safata del sistema (al costat del rellotge; al Mac, a la barra de menús). Fes clic a la seva icona per tornar-la a obrir.
+
+### Avisos de directe
+
+A la pestanya **Avisos** escriu un canal (o enganxa'n l'enllaç de twitch.tv) i prem **Añadir** (Afegeix). Els que són en directe en aquell moment surten amb un punt vermell. L'app ho comprova cada minut amb una consulta molt petita, sense iniciar sessió a Twitch.
+
+Quan un comença directe t'avisa amb:
+
+- Un **requadre damunt del joc** amb la foto del canal, el títol i el joc. Prem **Mover y ajustar el aviso** (Mou i ajusta l'avís) per col·locar-lo i canviar-ne la mida amb un avís d'exemple. També tries quants segons es queda a la pantalla.
+- Un **so**, que pots treure o abaixar de volum.
+- Una **notificació del sistema**. Si la prems, s'obre el canal.
+
+En obrir l'app només t'avisa dels directes que han començat fa menys de 10 minuts, per no omplir-te d'avisos de cop. Amb **Probar aviso** (Prova l'avís) veus i sents com queda.
 
 ### Dreceres
 

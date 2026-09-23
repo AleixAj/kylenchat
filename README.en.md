@@ -68,6 +68,7 @@
 - Marks each person's **first message**, so you can greet them.
 - **Badges** for streamer, moderator, VIP and subscriber.
 - Highlights **subs, gifts, raids, bits, channel point redemptions and highlighted messages**, and shows who each message is replying to.
+- **Live alerts**: add the channels you follow and get notified as soon as they go live, with an alert box on top of your game, a sound and a system notification.
 - In **shared chat**, each message shows the icon of the channel it comes from.
 - Names with a **7TV paint** (gradients) show their colors.
 
@@ -120,6 +121,18 @@ The Mac version **lets you know when a new version is out**, but doesn't install
 4. Click **Preview mode** and adjust the font, colors and transparency while you see how it looks. Everything saves automatically.
 
 If you close the settings window, the app keeps running in the tray (next to the clock; on Mac, in the menu bar). Click its icon to open it again.
+
+### Live alerts
+
+In the **Alerts** tab, type a channel (or paste its twitch.tv link) and click **Add**. Channels that are live right now show a red dot. The app checks every minute with a very small request, without logging in to Twitch.
+
+When one of them goes live, you get:
+
+- An **alert box on top of your game** with the channel's picture, title and game. Click **Move and resize the alert** to place it and change its size with a sample alert. You also choose how many seconds it stays on screen.
+- A **sound**, which you can mute or turn down.
+- A **system notification**. Clicking it opens the channel.
+
+When the app starts, it only alerts you about streams that started less than 10 minutes ago, so you don't get a flood of alerts at once. **Test alert** lets you see and hear how it looks.
 
 ### Shortcuts
 

@@ -68,6 +68,7 @@
 - Marca el **primer mensaje** de cada persona, para que puedas saludarla.
 - **Insignias** de streamer, moderador, VIP y suscriptor.
 - Destaca **subs, regalos, raids, bits, canjes de puntos y mensajes destacados**, y muestra a quién responde cada mensaje.
+- **Avisos de directo**: apunta los canales que sigues y te avisa en cuanto empiezan directo, con un recuadro encima del juego, sonido y notificación del sistema.
 - En **chat compartido**, cada mensaje muestra el icono del canal del que viene.
 - Los nombres con **pintura de 7TV** (degradados) se ven con sus colores.
 
@@ -120,6 +121,18 @@ La versión de Mac **te avisa cuando sale una versión nueva**, pero no se insta
 4. Pulsa **Modo prueba** y ajusta la letra, los colores y la transparencia viendo cómo queda. Todo se guarda solo.
 
 Si cierras la ventana de ajustes, la app sigue funcionando en la bandeja (junto al reloj; en Mac, en la barra de menú). Haz clic en su icono para volver a abrirla.
+
+### Avisos de directo
+
+En la pestaña **Avisos** escribe un canal (o pega su enlace de twitch.tv) y pulsa **Añadir**. Los que están en directo en ese momento salen con un punto rojo. La app lo comprueba cada minuto con una consulta muy pequeña, sin iniciar sesión en Twitch.
+
+Cuando uno empieza directo te avisa con:
+
+- Un **recuadro encima del juego** con la foto del canal, el título y el juego. Pulsa **Mover y ajustar el aviso** para colocarlo y cambiar su tamaño con un aviso de ejemplo. También eliges cuántos segundos se queda en pantalla.
+- Un **sonido**, que puedes quitar o bajar de volumen.
+- Una **notificación del sistema**. Al pulsarla se abre el canal.
+
+Al abrir la app solo te avisa de los directos que empezaron hace menos de 10 minutos, para no llenarte de avisos de golpe. Con **Probar aviso** ves y oyes cómo queda.
 
 ### Atajos
 

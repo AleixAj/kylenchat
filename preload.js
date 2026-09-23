@@ -15,6 +15,11 @@ contextBridge.exposeInMainWorld('api', {
   dismissWhatsNew: () => ipcRenderer.send('dismiss-whats-new'),
   installUpdate: () => ipcRenderer.send('install-update'),
   downloadUpdate: () => ipcRenderer.send('download-update'),
+  testLiveAlert: () => ipcRenderer.send('test-live-alert'),
+  toggleAlertEdit: () => ipcRenderer.send('toggle-alert-edit'),
+  alertReady: () => ipcRenderer.send('alert-ready'),
+  alertShow: () => ipcRenderer.send('alert-show'),
+  alertIdle: () => ipcRenderer.send('alert-idle'),
   pauseShortcuts: () => ipcRenderer.send('pause-shortcuts'),
   resumeShortcuts: () => ipcRenderer.send('resume-shortcuts'),
   openRepo: () => ipcRenderer.send('open-repo'),
@@ -32,4 +37,6 @@ contextBridge.exposeInMainWorld('api', {
   onTestMode: on('test-mode'),
   onReconnect: on('reconnect'),
   onToast: on('toast'),
+  onLiveAlert: on('live-alert'),
+  onAlertEdit: on('alert-edit'),
 });

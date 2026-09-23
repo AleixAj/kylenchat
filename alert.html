@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://static-cdn.jtvnw.net; media-src 'self'; style-src 'self' 'unsafe-inline'">
+<title>Kylen Chat — aviso de directo</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; user-select: none; }
+  body { font-family: "Segoe UI", system-ui, sans-serif; color: #fff; }
+
+  /* Todo se mide con la altura de la ventana: al hacer el recuadro más grande, crece todo. */
+  .card {
+    position: absolute; inset: 4px;
+    display: flex; align-items: center; gap: 5vh;
+    padding: 0 7vh 0 9vh;
+    border-radius: 14vh;
+    background: linear-gradient(100deg, rgba(24, 24, 27, .94), rgba(24, 24, 27, .86));
+    border: 1px solid rgba(235, 4, 0, .55);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, .45);
+    overflow: hidden;
+    opacity: 0;
+  }
+  /* Entrada: baja desde arriba con un pequeño rebote; salida: sube y se desvanece. */
+  .card.show { animation: card-in .7s cubic-bezier(.2, 1.4, .4, 1) forwards; }
+  .card.hide { animation: card-out .6s ease-in forwards; }
+  .card.show .avatar { animation: avatar-pop .6s .15s cubic-bezier(.2, 1.6, .4, 1) backwards; }
+  .card.show .text { animation: text-in .5s .25s ease-out backwards; }
+  /* Un brillo que cruza el recuadro al aparecer */
+  .card::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .16) 50%, transparent 65%);
+    transform: translateX(-100%);
+  }
+  .card.show::after { animation: shine 1.1s .35s ease-out forwards; }
+  /* Barra del tiempo que le queda en pantalla */
+  .progress { position: absolute; left: 12vh; right: 12vh; bottom: 0; height: 3px; border-radius: 3px; background: #eb0400; transform-origin: left; opacity: .85; }
+  .card.show .progress { animation: progress var(--duration, 8s) linear forwards; }
+  .card.sample .progress { display: none; }
+
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(-60%) scale(.92); }
+    60% { opacity: 1; }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes card-out {
+    from { opacity: 1; transform: none; filter: blur(0); }
+    to { opacity: 0; transform: translateY(-35%) scale(.96); filter: blur(3px); }
+  }
+  @keyframes avatar-pop { from { transform: scale(.3); opacity: 0; } }
+  @keyframes text-in { from { transform: translateX(-8%); opacity: 0; } }
+  @keyframes shine { to { transform: translateX(100%); } }
+  @keyframes progress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+  .avatar { height: 62vh; aspect-ratio: 1; border-radius: 50%; object-fit: cover; flex-shrink: 0; box-shadow: 0 0 0 .8vh #eb0400; background: #26262c; }
+  .text { min-width: 0; display: flex; flex-direction: column; gap: 1.5vh; }
+  .tag { font-size: 12vh; font-weight: 800; letter-spacing: .08em; color: #ff5a57; display: flex; align-items: center; gap: 2.5vh; }
+  .tag::before { content: ""; width: 7vh; height: 7vh; border-radius: 50%; background: #eb0400; animation: pulse 1.4s ease-in-out infinite; }
+  .name { font-size: 22vh; font-weight: 800; line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .detail { font-size: 12vh; color: rgba(255, 255, 255, .78); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .detail:empty { display: none; }
+  @keyframes pulse { 50% { opacity: .35; } }
+
+  /* Mientras se mueve y ajusta */
+  body.edit { -webkit-app-region: drag; cursor: move; outline: 2px dashed #a970ff; outline-offset: -2px; background: rgba(20, 20, 30, .35); }
+  #grip {
+    display: none; position: absolute; right: 0; bottom: 0; width: 18px; height: 18px;
+    -webkit-app-region: no-drag; cursor: nwse-resize;
+    background: linear-gradient(135deg, transparent 50%, #a970ff 50%);
+  }
+  body.edit #grip { display: block; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card.show, .card.show *, .card.show::after, .tag::before { animation: none !important; }
+    .card.show { opacity: 1; }
+    .card.hide { animation: none; opacity: 0; }
+  }
+</style>
+</head>
+<body>
+  <div id="grip"></div>
+  <audio id="sound" src="assets/sounds/notification.wav" preload="auto"></audio>
+  <script src="i18n.js"></script>
+  <script src="alert.js"></script>
+</body>
+</html>

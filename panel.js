@@ -30,6 +30,11 @@ const FIELDS = {
   timestamps: { type: 'check' },
   hideBots: { type: 'check' },
   mutedUsers: { type: 'text' },
+  liveDesktop: { type: 'check' },
+  liveBox: { type: 'check' },
+  liveDuration: { type: 'range', show: (v) => `${v} s` },
+  liveSound: { type: 'check' },
+  liveVolume: { type: 'range', show: (v) => `${v} %` },
   showDeleted: { type: 'check' },
   maxMessages: { type: 'range', show: (v) => String(v) },
   fadeAfter: { type: 'range', show: secondsOrNever },
@@ -139,13 +144,14 @@ function fillFields(newSettings) {
     $('welcome').classList.add('show');
     api.setSettings({ onboarded: true });
   }
+  renderLiveList();
 }
 
-// Acepta "nombre", "#nombre" o el enlace completo de twitch.tv.
+// Acepta "nombre", "#nombre", "@nombre" o el enlace completo de twitch.tv.
 function normalizeChannel(value) {
   return value.trim()
     .replace(/^https?:\/\/(www\.|m\.)?twitch\.tv\//i, '')
-    .replace(/^#/, '')
+    .replace(/^[#@]/, '')
     .split(/[/?]/)[0]
     .toLowerCase();
 }
@@ -245,6 +251,9 @@ function applyState(state) {
   $('edit').classList.toggle('primary', editMode); // morado solo mientras se puede mover
   $('visible').textContent = tr(visible ? 'hideChat' : 'showChat', { keys: keys('hide') });
   $('profilesNote').textContent = tr('profilesNote', { keys: keys('profile') });
+  $('liveMove').textContent = tr(state.alertEdit ? 'liveMoveOn' : 'liveMove');
+  $('liveMove').classList.toggle('primary', Boolean(state.alertEdit));
+  renderLiveList();
   $('test').textContent = tr(testMode ? 'testOn' : 'testOff');
   $('test').classList.toggle('primary', testMode);
 
@@ -363,6 +372,66 @@ window.addEventListener('keydown', (e) => {
 });
 window.addEventListener('blur', stopRecording);
 
+// ---------- Avisos de directo ----------
+// La lista se guarda como texto ("canal1, canal2") y aquí se muestra como una lista
+// con un botón para quitar cada canal y un punto rojo en los que están en directo.
+
+const LIVE_MAX = 100;
+
+function liveList() {
+  if (!settings) return [];
+  const channels = settings.liveChannels.split(/[\s,;]+/).map(normalizeChannel).filter((c) => /^[a-z0-9_]{1,25}$/.test(c));
+  return [...new Set(channels)];
+}
+
+function saveLiveList(list) {
+  api.setSettings({ liveChannels: list.join(', ') });
+}
+
+function renderLiveList() {
+  if (!settings) return;
+  const live = (lastState && lastState.liveNow) || {};
+  const list = liveList();
+  const ul = $('liveList');
+  ul.replaceChildren(...list.map((channel) => {
+    const li = document.createElement('li');
+    li.classList.toggle('on', channel in live);
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    const name = document.createElement('span');
+    name.className = 'name';
+    name.textContent = live[channel] || channel;
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = tr('liveOn');
+    const remove = document.createElement('button');
+    remove.className = 'remove';
+    remove.textContent = '×';
+    remove.title = tr('liveRemove', { name: live[channel] || channel });
+    remove.setAttribute('aria-label', remove.title);
+    remove.addEventListener('click', () => saveLiveList(liveList().filter((c) => c !== channel)));
+    li.append(dot, name, tag, remove);
+    return li;
+  }));
+  $('liveEmpty').hidden = list.length > 0;
+}
+
+function addLiveChannel() {
+  const input = $('liveAdd');
+  const channel = normalizeChannel(input.value);
+  const list = liveList();
+  let error = '';
+  if (!channel) return;
+  if (!/^[a-z0-9_]{1,25}$/.test(channel)) error = tr('channelInvalid');
+  else if (list.includes(channel)) error = tr('liveDuplicate');
+  else if (list.length >= LIVE_MAX) error = tr('liveFull', { max: LIVE_MAX });
+  $('liveAddError').textContent = error;
+  if (error) return;
+  saveLiveList([...list, channel]);
+  input.value = '';
+  input.focus();
+}
+
 // ---------- Pestañas ----------
 
 function showTab(name) {
@@ -386,6 +455,11 @@ for (const [key, { type }] of Object.entries(FIELDS)) {
 
 $('connect').addEventListener('click', connect);
 $('channel').addEventListener('keydown', (e) => e.key === 'Enter' && connect());
+$('liveTest').addEventListener('click', () => api.testLiveAlert());
+$('liveMove').addEventListener('click', () => api.toggleAlertEdit());
+$('liveAddBtn').addEventListener('click', addLiveChannel);
+$('liveAdd').addEventListener('keydown', (e) => { if (e.key === 'Enter') addLiveChannel(); });
+$('liveAdd').addEventListener('input', () => { $('liveAddError').textContent = ''; });
 $('installUpdate').addEventListener('click', () => {
   if (lastState && lastState.updateReady) api.installUpdate();
   else api.downloadUpdate();

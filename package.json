@@ -1,7 +1,7 @@
 {
   "name": "kylen-chat-for-twitch",
   "productName": "Kylen Chat for Twitch",
-  "version": "1.1.5",
+  "version": "1.2.0",
   "description": "Chat de Twitch transparente encima del juego, para streamers con una sola pantalla",
   "main": "main.js",
   "scripts": {
@@ -32,6 +32,8 @@
       "fonts.css",
       "overlay.html",
       "overlay.js",
+      "alert.js",
+      "alert.html",
       "panel.html",
       "panel.js",
       "assets/**/*",
