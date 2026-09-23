@@ -22,7 +22,7 @@ const DEFAULTS = {
   opacity: 100,
   maxMessages: 30,
   fadeAfter: 0,
-  animatedEmotes: false,
+  animatedEmotes: true,
   hideBots: false,
   highlightMentions: true,
   keywords: '',

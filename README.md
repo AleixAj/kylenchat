@@ -109,7 +109,7 @@ Está hecha para no afectar a los FPS ni al ping:
 
 - No usa la tarjeta gráfica: el chat se dibuja con el procesador, que para texto gasta muy poco.
 - En chats muy rápidos agrupa los mensajes y actualiza la pantalla unas 6 veces por segundo como mucho.
-- Los emotes animados están desactivados por defecto (se pueden activar en ajustes).
+- Los emotes animados se pueden desactivar en ajustes para gastar aún menos CPU.
 - El chat solo recibe texto: gasta menos internet que una página web.
 - Si se corta internet o el PC vuelve de suspensión, se reconecta sola sin saturar la red.
 
