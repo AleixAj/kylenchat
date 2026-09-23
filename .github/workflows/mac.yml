@@ -1,0 +1,29 @@
+# Crea el instalador para Mac en un Mac de GitHub y lo añade a la release.
+# Lo lanza scripts/release.js después de crear el borrador con la versión de Windows.
+name: Mac
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Versión a la que añadir el instalador (por ejemplo v1.1.5)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run dist:mac
+      - name: Subir a la release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ inputs.tag }}" dist/KylenChat-Mac.dmg dist/KylenChat-Mac.zip dist/KylenChat-Mac.zip.blockmap dist/latest-mac.yml --clobber

@@ -66,7 +66,7 @@ function paintPresetButtons() {
     const p = PRESETS[b.dataset.preset];
     const n = parseInt(p.bgColor.slice(1), 16);
     const alpha = p.bgOpacity ? Math.max(0.6, p.bgOpacity / 100) : 0;
-    b.style.fontFamily = `"${p.fontFamily}", "Segoe UI", sans-serif`;
+    b.style.fontFamily = `"${p.fontFamily}", "Segoe UI", system-ui, sans-serif`;
     b.style.fontWeight = p.bold ? '700' : '400';
     b.style.color = p.textColor;
     b.style.background = `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
@@ -97,7 +97,10 @@ function showValue(key) {
 function applyLanguage(newLang) {
   lang = newLang;
   document.documentElement.lang = lang;
-  document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = tr(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    const key = el.dataset.i18n;
+    el.textContent = tr(i18n.isMac && `${key}Mac` in i18n.STRINGS.es ? `${key}Mac` : key);
+  });
   document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = tr(el.dataset.i18nHtml); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = tr(el.dataset.i18nTitle); });
   document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => { el.placeholder = tr(el.dataset.i18nPlaceholder); });
@@ -312,8 +315,9 @@ function shortcutFromEvent(e) {
   else if (/^F([1-9]|1[0-9]|2[0-4])$/.test(e.code)) key = e.code;
   if (!key) return null;
   const isFKey = key.length > 1;
-  if (!isFKey && !e.ctrlKey && !e.altKey) return 'invalid';
-  const mods = [e.ctrlKey && 'CommandOrControl', e.altKey && 'Alt', e.shiftKey && 'Shift'].filter(Boolean);
+  const cmd = i18n.isMac ? e.metaKey : e.ctrlKey; // en Mac, Cmd hace de Ctrl
+  if (!isFKey && !cmd && !e.altKey) return 'invalid';
+  const mods = [cmd && 'CommandOrControl', e.altKey && 'Alt', e.shiftKey && 'Shift'].filter(Boolean);
   return [...mods, key].join('+');
 }
 

@@ -11,6 +11,7 @@
 
 <h2 align="center">DESCARGAS</h2>
 
+<h3 align="center">Windows</h3>
 <p align="center">
   <a href="https://github.com/AleixAj/kylenchat/releases/latest/download/KylenChat-Setup.exe">
     <img src="assets/readme/btn-download.svg" alt="Descargar para Windows (instalador)" width="460">
@@ -22,7 +23,20 @@
   </a>
 </p>
 <p align="center">
-  <sub>Windows 10 y 11 · Gratis · <a href="https://github.com/AleixAj/kylenchat/releases">Todas las versiones</a></sub>
+  <sub>Windows 10 y 11</sub>
+</p>
+
+<h3 align="center">Mac</h3>
+<p align="center">
+  <a href="https://github.com/AleixAj/kylenchat/releases/latest/download/KylenChat-Mac.dmg">
+    <img src="assets/readme/btn-mac.svg" alt="Descargar para Mac (.dmg)" width="460">
+  </a>
+</p>
+<p align="center">
+  <sub>macOS 11 o superior · <a href="#mac-en-pruebas">Leer antes de instalar</a></sub>
+</p>
+<p align="center">
+  <sub><a href="https://github.com/AleixAj/kylenchat/releases">Todas las versiones</a></sub>
 </p>
 
 ## Así se ve
@@ -62,10 +76,10 @@
 - **Modo prueba** con mensajes de ejemplo para ajustarlo viendo el resultado final.
 
 **Y además**
-- En **español e inglés**; la primera vez elige solo según el idioma de tu Windows.
+- En **español e inglés**; la primera vez elige solo según el idioma de tu sistema.
 - **Guía rápida** la primera vez y aviso de **novedades** tras cada actualización.
 - **Exporta e importa** tu configuración.
-- Puede **iniciarse con Windows**, oculta en la bandeja.
+- Puede **iniciarse con Windows** (oculta en la bandeja) o con el Mac.
 - Te **avisa de las versiones nuevas** y las descargas cuando tú quieras (nunca por sorpresa en mitad de una partida). No necesitas iniciar sesión en Twitch.
 
 ## Descarga e instalación
@@ -80,6 +94,18 @@ Con el instalador, la app **te avisa cuando sale una versión nueva**: pulsas **
 
 **Versión portable (sin instalar):** descarga `KylenChat-Portable.zip`, descomprímelo donde quieras y abre `Kylen Chat for Twitch.exe`. Esta versión **no se actualiza sola**: para tener la última, vuelve a descargarla.
 
+### Mac (en pruebas)
+
+1. Pulsa el botón **Descargar para Mac** de arriba. Vale para Mac con Intel y con Apple Silicon (M1, M2…).
+2. Abre `KylenChat-Mac.dmg` y arrastra **Kylen Chat for Twitch** a la carpeta **Aplicaciones**.
+3. La primera vez, macOS dirá que no puede comprobar la app. Ve a **Ajustes del Sistema → Privacidad y seguridad**, baja hasta el aviso de Kylen Chat y pulsa **Abrir igualmente**. Sale porque la app no tiene la firma de pago de Apple, no porque sea peligrosa.
+
+La app vive en la **barra de menú** (arriba a la derecha), no en el Dock. En Mac los atajos usan **Cmd** en vez de Ctrl y **Option** en vez de Alt.
+
+La versión de Mac **te avisa cuando sale una versión nueva**, pero no se instala sola: el botón **Descargar** abre esta página para bajar el `.dmg` nuevo.
+
+> La versión de Mac se crea automáticamente y todavía no se ha probado en un Mac real. Si algo no va bien, cuéntalo en [Issues](https://github.com/AleixAj/kylenchat/issues).
+
 ## Cómo se usa
 
 1. Escribe el nombre de tu canal (o pega el enlace de twitch.tv) y pulsa **Conectar**.
@@ -87,7 +113,7 @@ Con el instalador, la app **te avisa cuando sale una versión nueva**: pulsas **
 3. Vuelve a pulsar **Ctrl + Shift + L** para fijarlo.
 4. Pulsa **Modo prueba** y ajusta la letra, los colores y la transparencia viendo cómo queda. Todo se guarda solo.
 
-Si cierras la ventana de ajustes, la app sigue funcionando en la bandeja (junto al reloj). Haz clic en su icono para volver a abrirla.
+Si cierras la ventana de ajustes, la app sigue funcionando en la bandeja (junto al reloj; en Mac, en la barra de menú). Haz clic en su icono para volver a abrirla.
 
 ### Atajos
 
@@ -97,7 +123,7 @@ Si cierras la ventana de ajustes, la app sigue funcionando en la bandeja (junto 
 | `Ctrl + Shift + H` | Ocultar o mostrar el chat |
 | `Ctrl + Alt + P` | Pasar al siguiente perfil |
 
-Los tres **se pueden cambiar** en Ajustes → General: haz clic en el atajo y pulsa la combinación que quieras.
+En Mac son `Cmd + Shift + L`, `Cmd + Shift + H` y `Cmd + Option + P`. Los tres **se pueden cambiar** en Ajustes → General: haz clic en el atajo y pulsa la combinación que quieras.
 
 ### Importante para juegos (League of Legends, etc.)
 
@@ -130,7 +156,7 @@ Está hecha para no afectar a los FPS ni al ping:
 
 - **No veo el chat encima del juego:** pon el juego en modo **"Sin bordes"**.
 - **Un atajo no funciona:** otro programa ya lo usa. La app te avisa en Ajustes → General, y ahí mismo puedes cambiarlo por otra combinación.
-- **Algo no va bien:** en `%APPDATA%\Kylen Chat for Twitch\error.log` hay un registro de errores. Si abres un aviso en [Issues](https://github.com/AleixAj/kylenchat/issues), adjúntalo.
+- **Algo no va bien:** en `%APPDATA%\Kylen Chat for Twitch\error.log` (en Mac, `~/Library/Application Support/Kylen Chat for Twitch/error.log`) hay un registro de errores. Si abres un aviso en [Issues](https://github.com/AleixAj/kylenchat/issues), adjúntalo.
 
 ---
 
@@ -159,7 +185,7 @@ npm start
 npm run dist
 ```
 
-El instalador queda en `dist/`.
+El instalador queda en `dist/`. El de Mac (`npm run dist:mac`) solo se puede crear en un Mac; por eso lo crea GitHub Actions (`.github/workflows/mac.yml`).
 
 ### Publicar una versión nueva (actualización automática)
 
@@ -172,8 +198,8 @@ El instalador queda en `dist/`.
 
    Necesita la [CLI de GitHub](https://cli.github.com/) (`gh`) con la sesión iniciada.
 
-   Esto sube el instalador, la versión portable, `latest.yml` y el `.blockmap` a un borrador en [Releases](https://github.com/AleixAj/kylenchat/releases). Nadie lo ve todavía.
-3. Cuando quieras que esté disponible, abre el borrador en GitHub, escribe las novedades y pulsa **Publish release**.
+   Esto sube el instalador, la versión portable, `latest.yml` y el `.blockmap` a un borrador en [Releases](https://github.com/AleixAj/kylenchat/releases). Nadie lo ve todavía. Después lanza en GitHub la compilación para Mac, que añade `KylenChat-Mac.dmg`, `KylenChat-Mac.zip` y `latest-mac.yml` al mismo borrador en unos 10 minutos.
+3. Cuando quieras que esté disponible (y ya estén los archivos de Mac), abre el borrador en GitHub, escribe las novedades y pulsa **Publish release**.
 4. Desde ese momento, la gente puede descargarla. Las apps ya instaladas lo comprueban al arrancar y cada 4 horas (un archivo de 1 KB) y avisan en los ajustes; la descarga solo empieza cuando el usuario pulsa **Descargar**, y se instala al reiniciar o al cerrar la app.
 
 > No borres `latest.yml` ni el `.blockmap` de la release: la actualización automática los necesita.

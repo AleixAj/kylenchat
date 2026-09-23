@@ -23,6 +23,8 @@ const notes = [
   '',
   `Descarga **${installer}**, ábrelo y listo. Se actualiza sola.`,
   '',
+  '**Mac:** descarga **KylenChat-Mac.dmg** (se añade unos minutos después de publicar), ábrelo y arrastra la app a Aplicaciones. La primera vez, si macOS no la deja abrir: Ajustes del Sistema → Privacidad y seguridad → **Abrir igualmente**.',
+  '',
   '¿Prefieres no instalar nada? Descarga **KylenChat-Portable.zip**, descomprímelo y abre "Kylen Chat for Twitch.exe" (esta versión no se actualiza sola).',
   '',
   'Si Windows muestra "Windows protegió tu PC", pulsa **Más información → Ejecutar de todas formas**.',
@@ -33,4 +35,7 @@ execFileSync('gh', [
   '--draft', '--title', `Kylen Chat for Twitch ${version}`, '--notes', notes,
 ], { stdio: 'inherit' });
 
-console.log(`\nBorrador v${version} creado. Publícalo desde GitHub cuando quieras.`);
+// El instalador de Mac solo se puede crear en un Mac: lo hace GitHub Actions (.github/workflows/mac.yml).
+execFileSync('gh', ['workflow', 'run', 'mac.yml', '-f', `tag=v${version}`], { stdio: 'inherit' });
+
+console.log(`\nBorrador v${version} creado. El de Mac se está compilando en GitHub (unos 10 min). Publícalo cuando esté.`);

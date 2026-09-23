@@ -58,6 +58,7 @@
       reset: 'Restablecer aspecto por defecto',
       sectionStartup: 'Inicio',
       autoStart: 'Iniciar con Windows',
+      autoStartMac: 'Iniciar con el Mac',
       autoStartNote: 'arranca oculta en la bandeja',
       sectionShortcuts: 'Atajos',
       shortcutEdit: 'Mover o fijar el chat',
@@ -66,6 +67,7 @@
       shortcutsHelp: 'Haz clic en un atajo y pulsa la combinación que quieras (Esc para cancelar).',
       shortcutRecord: 'Pulsa la combinación…',
       shortcutInvalid: 'Usa Ctrl o Alt con una letra o un número, o una tecla de F1 a F24.',
+      shortcutInvalidMac: 'Usa Cmd u Option con una letra o un número, o una tecla de F1 a F24.',
       shortcutDuplicate: 'Esa combinación ya la usa otro atajo.',
       shortcutsReset: 'Restablecer atajos',
       shortcutWarn: 'Otro programa ya usa {keys}. Ese atajo no funcionará; usa los botones de esta ventana o el icono de la bandeja.',
@@ -246,6 +248,7 @@
       reset: 'Reset look to default',
       sectionStartup: 'Startup',
       autoStart: 'Start with Windows',
+      autoStartMac: 'Start with your Mac',
       autoStartNote: 'starts hidden in the tray',
       sectionShortcuts: 'Shortcuts',
       shortcutEdit: 'Move or lock the chat',
@@ -254,6 +257,7 @@
       shortcutsHelp: 'Click a shortcut and press the combination you want (Esc to cancel).',
       shortcutRecord: 'Press the combination…',
       shortcutInvalid: 'Use Ctrl or Alt with a letter or number, or a key from F1 to F24.',
+      shortcutInvalidMac: 'Use Cmd or Option with a letter or number, or a key from F1 to F24.',
       shortcutDuplicate: 'Another shortcut already uses that combination.',
       shortcutsReset: 'Reset shortcuts',
       shortcutWarn: 'Another program is already using {keys}. That shortcut won\'t work; use the buttons in this window or the tray icon.',
@@ -380,6 +384,9 @@
   // Novedades de cada versión, para el aviso que sale tras actualizar.
   const CHANGELOG = {
     es: {
+      '1.1.5': [
+        'Primera versión para Mac (en pruebas).',
+      ],
       '1.1.4': [
         'Las actualizaciones ya no se descargan solas: te avisamos y la descargas cuando tú quieras, para no afectar al ping en partida.',
         'Espectadores en la barra "Kylen Chat" mientras estás en directo.',
@@ -405,6 +412,9 @@
       ],
     },
     en: {
+      '1.1.5': [
+        'First version for Mac (beta).',
+      ],
       '1.1.4': [
         'Updates no longer download on their own: you get a notice and download them when you want, so your ping is never affected mid-game.',
         'Viewer count in the "Kylen Chat" bar while you\'re live.',
@@ -479,7 +489,14 @@
     hide: 'CommandOrControl+Shift+H',
     profile: 'CommandOrControl+Alt+P',
   };
-  const shortcutLabel = (accelerator) => String(accelerator || '').replace('CommandOrControl', 'Ctrl');
+  // En Mac "CommandOrControl" es la tecla Cmd y "Alt" es Option.
+  const isMac = typeof process !== 'undefined' && process.platform
+    ? process.platform === 'darwin'
+    : typeof navigator !== 'undefined' && /Mac/.test(navigator.platform);
+  const shortcutLabel = (accelerator) => {
+    const text = String(accelerator || '');
+    return isMac ? text.replace('CommandOrControl', 'Cmd').replace('Alt', 'Option') : text.replace('CommandOrControl', 'Ctrl');
+  };
 
   function t(lang, key, vars) {
     const table = STRINGS[lang] || STRINGS.es;
@@ -489,7 +506,7 @@
     return text;
   }
 
-  const api = { STRINGS, SAMPLES, CHANGELOG, LANGUAGES, DEFAULT_SHORTCUTS, shortcutLabel, t };
+  const api = { STRINGS, SAMPLES, CHANGELOG, LANGUAGES, DEFAULT_SHORTCUTS, shortcutLabel, t, isMac };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.i18n = api;
 })(this);

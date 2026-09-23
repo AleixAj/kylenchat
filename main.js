@@ -7,6 +7,7 @@ const fs = require('fs');
 const { t, LANGUAGES, DEFAULT_SHORTCUTS, shortcutLabel } = require('./i18n');
 
 const REPO_URL = 'https://github.com/AleixAj/kylenchat';
+const isMac = process.platform === 'darwin';
 
 const DEFAULTS = {
   language: 'es',
@@ -155,8 +156,8 @@ const shortcutErrors = [];
 
 // El chat es solo texto: se pinta con la CPU para no quitarle tarjeta gráfica al juego.
 app.disableHardwareAcceleration();
-// Une el proceso gráfico al principal: unos 40 MB menos de RAM, mismo consumo de CPU.
-app.commandLine.appendSwitch('in-process-gpu');
+// Une el proceso gráfico al principal: unos 40 MB menos de RAM, mismo consumo de CPU (solo Windows).
+if (!isMac) app.commandLine.appendSwitch('in-process-gpu');
 
 // ---------- Registro de errores ----------
 // Un error inesperado no debe sacar una ventana en mitad del directo: se apunta en
@@ -255,7 +256,8 @@ function applyLanguage() {
 // "Iniciar con Windows": arranca escondida en la bandeja, sin abrir los ajustes.
 function applyAutoStart() {
   if (!app.isPackaged) return;
-  app.setLoginItemSettings({ openAtLogin: settings.autoStart, args: ['--hidden'] });
+  // En Mac no se pueden pasar argumentos: arranca con la ventana de ajustes abierta.
+  app.setLoginItemSettings(isMac ? { openAtLogin: settings.autoStart } : { openAtLogin: settings.autoStart, args: ['--hidden'] });
 }
 
 // ---------- Ventana del chat (overlay) ----------
@@ -292,6 +294,8 @@ function createOverlay() {
     webPreferences: { preload: path.join(__dirname, 'preload.js'), spellcheck: false },
   });
   overlay.setAlwaysOnTop(true, 'screen-saver');
+  // En Mac, que se vea en todos los escritorios y encima de las apps a pantalla completa.
+  if (isMac) overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   overlay.setIgnoreMouseEvents(true); // los clics atraviesan el chat y llegan al juego
   overlay.setFocusable(false); // y nunca le quita el teclado al juego (se reaplica tras lo anterior)
   overlay.loadFile('overlay.html');
@@ -518,7 +522,13 @@ function afterUpdateChange() {
 }
 
 // Solo cuando el usuario lo pide (botón "Descargar" o menú de la bandeja).
+// En Mac la app no tiene firma de Apple y macOS no deja que se actualice sola:
+// se abre la página de descarga para bajar el .dmg nuevo.
 function downloadUpdate() {
+  if (isMac) {
+    if (updateAvailable) shell.openExternal(`${REPO_URL}/releases/latest`);
+    return;
+  }
   if (!updateAvailable || updateReady || updateProgress !== null) return;
   updateProgress = 0;
   updateError = false;
@@ -691,6 +701,8 @@ app.on('web-contents-created', (_e, contents) => {
 // ---------- Arranque ----------
 
 app.setAppUserModelId('com.kylen.twitchchat');
+// En Mac vive solo en la barra de menú (arriba), sin icono en el Dock.
+if (isMac && app.dock) app.dock.hide();
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -715,6 +727,9 @@ if (!app.requestSingleInstanceLock()) {
     applyAutoStart();
     createOverlay();
     if (!process.argv.includes('--hidden')) createPanel();
+
+    // Sin menú de aplicación, en Mac no funcionarían Cmd+C / Cmd+V en los campos de texto.
+    if (isMac) Menu.setApplicationMenu(Menu.buildFromTemplate([{ role: 'appMenu' }, { role: 'editMenu' }]));
 
     tray = new Tray(TRAY_ICON);
     tray.setToolTip('Kylen Chat for Twitch');
