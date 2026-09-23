@@ -135,6 +135,96 @@ function onJoined(roomId) {
   retries = 0;
   system(tr('connected', { channel: joined }));
   if (roomId && roomId !== emotesRoomId) loadChannelEmotes(roomId);
+  if (roomId) connectPaints(roomId);
+}
+
+// ---------- Pinturas de 7TV (nombres en degradado) ----------
+// Twitch no manda estos colores: son de 7TV. Su canal de eventos avisa, para el chat en el
+// que estamos, de qué pintura lleva cada persona (entitlement) y cómo es cada pintura
+// (cosmetic). Se guarda todo en memoria y se aplica al nombre al pintarlo.
+const paintCss = new Map();  // id de la pintura -> estilos CSS
+const userPaint = new Map(); // id de Twitch del usuario -> id de la pintura
+let paintSocket = null;
+let paintRoom = null;
+let paintRetry = 0;
+let paintTimer = null;
+
+// 7TV guarda los colores como un entero RGBA de 32 bits.
+function rgba(n) {
+  const c = n >>> 0;
+  return `rgba(${(c >>> 24) & 255}, ${(c >>> 16) & 255}, ${(c >>> 8) & 255}, ${((c & 255) / 255).toFixed(3)})`;
+}
+
+function paintToCss(p) {
+  const stops = (p.stops || []).map((s) => `${rgba(s.color)} ${Math.round(s.at * 1000) / 10}%`).join(', ');
+  const rep = p.repeat ? 'repeating-' : '';
+  let image = null;
+  if (p.function === 'LINEAR_GRADIENT' && stops) image = `${rep}linear-gradient(${Number(p.angle) || 0}deg, ${stops})`;
+  else if (p.function === 'RADIAL_GRADIENT' && stops) image = `${rep}radial-gradient(${p.shape === 'ellipse' ? 'ellipse' : 'circle'}, ${stops})`;
+  else if (p.function === 'URL' && /^https:\/\/cdn\.7tv\.app\//.test(p.image_url || '')) image = `url("${p.image_url}")`;
+  if (!image) return null;
+  const shadows = (p.shadows || []).slice(0, 4)
+    .map((s) => `drop-shadow(${s.x_offset}px ${s.y_offset}px ${s.radius}px ${rgba(s.color)})`).join(' ');
+  return { image, shadows, url: p.function === 'URL' };
+}
+
+// Aplica la pintura al nombre si la hay; si no, se queda con su color normal.
+function applyPaint(nameEl) {
+  const css = settings.userColors && paintCss.get(userPaint.get(nameEl.dataset.uid));
+  if (!css) return;
+  nameEl.classList.add('painted');
+  nameEl.style.backgroundImage = css.image;
+  nameEl.style.backgroundSize = css.url ? 'cover' : '';
+  nameEl.style.filter = css.shadows || '';
+}
+
+function repaintUser(userId) {
+  document.querySelectorAll(`.name[data-uid="${userId}"]`).forEach(applyPaint);
+}
+
+function onPaintEvent(type, object) {
+  if (!object) return;
+  if (type === 'cosmetic.create' && object.kind === 'PAINT' && object.data) {
+    const css = paintToCss(object.data);
+    if (css) paintCss.set(object.id, css);
+    return;
+  }
+  if (object.kind !== 'PAINT' || !object.user) return;
+  const twitch = (object.user.connections || []).find((c) => c.platform === 'TWITCH');
+  if (!twitch) return;
+  if (type === 'entitlement.create') userPaint.set(twitch.id, object.ref_id);
+  else if (type === 'entitlement.delete' && userPaint.get(twitch.id) === object.ref_id) userPaint.delete(twitch.id);
+  repaintUser(twitch.id);
+}
+
+function connectPaints(roomId) {
+  clearTimeout(paintTimer);
+  if (paintSocket && paintRoom === roomId) return;
+  if (paintSocket) {
+    paintSocket.onclose = null;
+    paintSocket.close();
+  }
+  paintRoom = roomId;
+  const sock = new WebSocket('wss://events.7tv.io/v3');
+  paintSocket = sock;
+  sock.onopen = () => {
+    paintRetry = 0;
+    for (const type of ['cosmetic.*', 'entitlement.*']) {
+      sock.send(JSON.stringify({ op: 35, d: { type, condition: { ctx: 'channel', platform: 'TWITCH', id: roomId } } }));
+    }
+  };
+  sock.onmessage = (e) => {
+    try {
+      const m = JSON.parse(e.data);
+      if (m.op === 0 && m.d && m.d.body) onPaintEvent(m.d.type, m.d.body.object);
+    } catch { /* mensaje raro: se ignora */ }
+  };
+  // Si se corta, se reintenta con esperas crecientes (las pinturas son un extra, sin prisa).
+  sock.onclose = () => {
+    if (paintSocket !== sock) return;
+    paintSocket = null;
+    paintTimer = setTimeout(() => connectPaints(roomId), Math.min(60000, 5000 * 2 ** paintRetry++));
+  };
 }
 
 // Twitch manda un PING cada ~5 min. Si pasa mucho sin recibir nada (p. ej. tras suspender
@@ -193,6 +283,7 @@ function messageFrom(m) {
     color: tags.color,
     emotes: tags.emotes,
     text: m.trailing || '',
+    userId: tags['user-id'] || '',
     // En chat compartido las insignias del canal de origen vienen en source-badges.
     badges: tags['source-badges'] || tags.badges || '',
     sourceRoom: tags['source-room-id'] || '',
@@ -498,6 +589,10 @@ function fillMessage(el, msg) {
   nameEl.className = 'name';
   nameEl.textContent = name;
   if (settings.userColors) nameEl.style.color = readable(color || colorFor(name));
+  if (msg.userId) {
+    nameEl.dataset.uid = msg.userId;
+    applyPaint(nameEl);
+  }
 
   const textEl = document.createElement('span');
   textEl.className = 'text';
@@ -685,6 +780,12 @@ const TWITCH_TEST_EMOTES = { Kappa: 25, LUL: 425618, PogChamp: 305954156 };
 let testMode = false;
 let testTimer = null;
 let sampleIndex = 0;
+
+// Pintura de ejemplo (degradado rosa-morado-azul) para enseñarlas en el modo prueba.
+paintCss.set('demo', paintToCss({ function: 'LINEAR_GRADIENT', angle: 90, stops: [
+  { at: 0, color: 0xff5fa2ff }, { at: 0.5, color: 0xb070ffff }, { at: 1, color: 0x4fc3ffff },
+] }));
+userPaint.set('demo-paint', 'demo');
 
 function sampleMessage([name, color, rawText, extras]) {
   const text = rawText.split('{channel}').join(joined || 'streamer');

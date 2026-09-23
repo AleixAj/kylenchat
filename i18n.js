@@ -64,6 +64,7 @@
       createdBy: 'Creada por',
       disclaimer: 'Proyecto independiente, no afiliado a Twitch.',
 
+      sectionEmotes: 'Emotes',
       sectionHighlights: 'Destacados',
       highlightMentions: 'Cuando te mencionen',
       highlightMentionsNote: 'tu canal o @tu canal',
@@ -225,6 +226,7 @@
       createdBy: 'Made by',
       disclaimer: 'Independent project, not affiliated with Twitch.',
 
+      sectionEmotes: 'Emotes',
       sectionHighlights: 'Highlights',
       highlightMentions: 'When you are mentioned',
       highlightMentionsNote: 'your channel or @your channel',
@@ -328,6 +330,7 @@
     es: {
       '1.1.3': [
         'En los directos con chat compartido, cada mensaje muestra el icono del canal del que viene.',
+        'Los nombres con pintura de 7TV (degradados) se ven con sus colores.',
         'Los emotes animados vienen activados y la guía de inicio solo sale la primera vez.',
       ],
       '1.1.2': [
@@ -343,6 +346,7 @@
     en: {
       '1.1.3': [
         'In shared chat streams, each message shows the icon of the channel it comes from.',
+        'Names with 7TV paints (gradients) now show their colors.',
         'Animated emotes are on by default, and the welcome guide only shows the first time.',
       ],
       '1.1.2': [
@@ -365,6 +369,7 @@
       ['ElMagoDelBot', '', 'baron en 30 segundos, cuidado monkaS'],
       ['Moderadora', '#FEE440', 'Recordad ser respetuosos en el chat 💜', { badges: 'moderator/1,subscriber/24' }],
       ['Pepita_22', '#00BBF9', '@{channel} ¿qué runas llevas? Clap', { badges: 'vip/1' }],
+      ['NombreConPintura', '#9B5DE5', 'mi nombre lleva una pintura de 7TV ✨', { userId: 'demo-paint' }],
       ['xX_Jungla_Xx', '#5FFF77', 'gg EZ'],
       ['DesdeOtroCanal', '#9B5DE5', '¡Hola desde el chat compartido! 👋', { sourceRoom: '71092938' }],
       ['nuevo_por_aquí', '', 'hola! primera vez que veo el directo', { first: true }],
@@ -381,6 +386,7 @@
       ['TheBotWizard', '', 'baron in 30 seconds, careful monkaS'],
       ['Moderator', '#FEE440', 'Please be respectful in chat 💜', { badges: 'moderator/1,subscriber/24' }],
       ['Penny_22', '#00BBF9', '@{channel} what runes are you using? Clap', { badges: 'vip/1' }],
+      ['PaintedName', '#9B5DE5', 'my name has a 7TV paint ✨', { userId: 'demo-paint' }],
       ['xX_Jungler_Xx', '#5FFF77', 'gg EZ'],
       ['FromAnotherChannel', '#9B5DE5', 'Hi from the shared chat! 👋', { sourceRoom: '71092938' }],
       ['new_here', '', 'hi! first time watching the stream', { first: true }],

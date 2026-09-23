@@ -151,6 +151,16 @@ function systemLanguage() {
   return ['es', 'ca', 'gl', 'eu'].includes(code) ? 'es' : 'en';
 }
 
+// ¿La versión a es anterior a la b? ('' cuenta como muy antigua)
+function isOlderThan(a, b) {
+  const pa = String(a || '0').split('.').map(Number);
+  const pb = b.split('.').map(Number);
+  for (let i = 0; i < 3; i++) {
+    if ((pa[i] || 0) !== pb[i]) return (pa[i] || 0) < pb[i];
+  }
+  return false;
+}
+
 function loadSettings() {
   const defaults = { ...DEFAULTS, language: systemLanguage() };
   try {
@@ -553,6 +563,9 @@ if (!app.requestSingleInstanceLock()) {
     settings = loadSettings();
     // Tras actualizar se enseñan las novedades una vez. En una instalación nueva, no.
     if (hadSettings && settings.lastVersion !== app.getVersion()) whatsNew = app.getVersion();
+    // Hasta la 1.1.2 los emotes animados venían apagados; al pasar a la 1.1.3 se encienden
+    // una vez para todos. Después, cada uno puede volver a apagarlos y se respeta.
+    if (hadSettings && isOlderThan(settings.lastVersion, '1.1.3')) settings.animatedEmotes = true;
     settings.lastVersion = app.getVersion();
     saveSettings();
     applyAutoStart();
