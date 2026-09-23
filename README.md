@@ -17,7 +17,7 @@
 
 <h2 align="center">DESCARGAS</h2>
 
-<h3 align="center">Windows</h3>
+<h3 align="center">Windows 10 y 11</h3>
 <p align="center">
   <a href="https://github.com/AleixAj/kylenchat/releases/latest/download/KylenChat-Setup.exe">
     <img src="assets/readme/btn-download.svg" alt="Descargar para Windows (instalador)" width="460">
@@ -28,21 +28,15 @@
     <img src="assets/readme/btn-portable.svg" alt="Descargar versión portable (.zip)" width="320">
   </a>
 </p>
-<p align="center">
-  <sub>Windows 10 y 11</sub>
-</p>
 
-<h3 align="center">Mac</h3>
+<h3 align="center">macOS 11 o superior</h3>
 <p align="center">
   <a href="https://github.com/AleixAj/kylenchat/releases/latest/download/KylenChat-Mac.dmg">
     <img src="assets/readme/btn-mac.svg" alt="Descargar para Mac (.dmg)" width="460">
   </a>
 </p>
 <p align="center">
-  <sub>macOS 11 o superior · <a href="#mac-en-pruebas">Leer antes de instalar</a></sub>
-</p>
-<p align="center">
-  <sub><a href="https://github.com/AleixAj/kylenchat/releases">Todas las versiones</a></sub>
+  <sub><a href="#mac-en-pruebas">Leer antes de instalar en Mac</a> · <a href="https://github.com/AleixAj/kylenchat/releases">Todas las versiones</a></sub>
 </p>
 
 ## Así se ve
