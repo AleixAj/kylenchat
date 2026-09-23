@@ -326,6 +326,10 @@
   // Novedades de cada versión, para el aviso que sale tras actualizar.
   const CHANGELOG = {
     es: {
+      '1.1.3': [
+        'En los directos con chat compartido, cada mensaje muestra el icono del canal del que viene.',
+        'Los emotes animados vienen activados y la guía de inicio solo sale la primera vez.',
+      ],
       '1.1.2': [
         'Los avisos de Twitch (subs, regalos, raids, rachas de visualización…) salen ahora en tu idioma, en vez de en inglés.',
       ],
@@ -337,6 +341,10 @@
       ],
     },
     en: {
+      '1.1.3': [
+        'In shared chat streams, each message shows the icon of the channel it comes from.',
+        'Animated emotes are on by default, and the welcome guide only shows the first time.',
+      ],
       '1.1.2': [
         'Twitch notices (subs, gifts, raids, watch streaks…) now appear in your language.',
       ],
@@ -358,6 +366,7 @@
       ['Moderadora', '#FEE440', 'Recordad ser respetuosos en el chat 💜', { badges: 'moderator/1,subscriber/24' }],
       ['Pepita_22', '#00BBF9', '@{channel} ¿qué runas llevas? Clap', { badges: 'vip/1' }],
       ['xX_Jungla_Xx', '#5FFF77', 'gg EZ'],
+      ['DesdeOtroCanal', '#9B5DE5', '¡Hola desde el chat compartido! 👋', { sourceRoom: '71092938' }],
       ['nuevo_por_aquí', '', 'hola! primera vez que veo el directo', { first: true }],
       ['TopMain_99', '#FA8E4B', '\x01ACTION se va a por un café mientras reaparece\x01'],
       ['SoporteFeliz', '#1A1A7A', 'peepoHappy RainTime', { reply: { name: 'Faker', body: '¡Qué jugada!' } }],
@@ -373,6 +382,7 @@
       ['Moderator', '#FEE440', 'Please be respectful in chat 💜', { badges: 'moderator/1,subscriber/24' }],
       ['Penny_22', '#00BBF9', '@{channel} what runes are you using? Clap', { badges: 'vip/1' }],
       ['xX_Jungler_Xx', '#5FFF77', 'gg EZ'],
+      ['FromAnotherChannel', '#9B5DE5', 'Hi from the shared chat! 👋', { sourceRoom: '71092938' }],
       ['new_here', '', 'hi! first time watching the stream', { first: true }],
       ['TopMain_99', '#FA8E4B', '\x01ACTION grabs a coffee while respawning\x01'],
       ['HappySupport', '#1A1A7A', 'peepoHappy RainTime', { reply: { name: 'Faker', body: 'What a play!' } }],

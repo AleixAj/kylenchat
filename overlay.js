@@ -193,7 +193,9 @@ function messageFrom(m) {
     color: tags.color,
     emotes: tags.emotes,
     text: m.trailing || '',
-    badges: tags.badges || '',
+    // En chat compartido las insignias del canal de origen vienen en source-badges.
+    badges: tags['source-badges'] || tags.badges || '',
+    sourceRoom: tags['source-room-id'] || '',
     first: tags['first-msg'] === '1',
     bits: Number(tags.bits) || 0,
     highlighted: tags['msg-id'] === 'highlighted-message',
@@ -440,6 +442,38 @@ function badgeIcons(badges) {
   });
 }
 
+// ---------- Chat compartido ----------
+// En los directos con chat compartido, cada mensaje indica de qué canal viene
+// (source-room-id) y se muestra el icono de ese canal. Los datos de cada canal se
+// piden una sola vez a api.ivr.fi (pública, sin cuenta) y se guardan en memoria.
+const channelInfo = new Map(); // id del canal -> { name, logo }, o null mientras carga o si falla
+
+function channelIcon(roomId) {
+  const img = document.createElement('img');
+  img.className = 'channel-icon';
+  img.dataset.room = roomId;
+  img.alt = '';
+  const info = channelInfo.get(roomId);
+  if (info) applyChannelInfo(img, info);
+  else if (!channelInfo.has(roomId) && /^\d{1,20}$/.test(roomId)) loadChannelInfo(roomId);
+  return img;
+}
+
+function applyChannelInfo(img, info) {
+  img.src = info.logo;
+  img.alt = img.title = info.name;
+}
+
+async function loadChannelInfo(roomId) {
+  channelInfo.set(roomId, null);
+  const data = await getJSON(`https://api.ivr.fi/v2/twitch/user?id=${roomId}`);
+  const user = Array.isArray(data) && data[0];
+  if (!user || typeof user.logo !== 'string' || !user.logo.startsWith('https://static-cdn.jtvnw.net/')) return;
+  const info = { name: user.displayName || user.login, logo: user.logo.replace('600x600', '70x70') };
+  channelInfo.set(roomId, info);
+  document.querySelectorAll(`img.channel-icon[data-room="${roomId}"]`).forEach((img) => applyChannelInfo(img, info));
+}
+
 function pill(kind, text) {
   const span = document.createElement('span');
   span.className = `pill pill-${kind}`;
@@ -486,6 +520,7 @@ function fillMessage(el, msg) {
   if (msg.bits) el.append(pill('bits', tr('bits', { n: msg.bits })));
   if (msg.highlighted) el.append(pill('highlighted', tr('highlightedMessage')));
   if (msg.redeem) el.append(pill('redeem', tr('redeemed')));
+  if (msg.sourceRoom) el.append(channelIcon(msg.sourceRoom));
   if (settings.showBadges && msg.badges) el.append(...badgeIcons(msg.badges));
   el.append(nameEl, action ? ' ' : ': ', textEl);
 }

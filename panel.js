@@ -3,6 +3,7 @@ const $ = (id) => document.getElementById(id);
 let lang = 'es';
 let settings = null;
 let lastState = null;
+let welcomeShown = false;
 const tr = (key, vars) => i18n.t(lang, key, vars);
 const secondsOrNever = (v) => (Number(v) === 0 ? tr('never') : `${v} s`);
 
@@ -115,7 +116,13 @@ function fillFields(newSettings) {
     showValue(key);
   }
   renderProfiles();
-  $('welcome').classList.toggle('show', !settings.onboarded);
+  // La guía sale solo la primera vez que se abre la app: se marca como vista al mostrarla,
+  // así no vuelve aunque se cierre la ventana sin pulsar "Empezar".
+  if (!settings.onboarded && !welcomeShown) {
+    welcomeShown = true;
+    $('welcome').classList.add('show');
+    api.setSettings({ onboarded: true });
+  }
 }
 
 // Acepta "nombre", "#nombre" o el enlace completo de twitch.tv.

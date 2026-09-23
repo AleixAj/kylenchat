@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Kylen Chat for Twitch · Chat</title>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://static-cdn.jtvnw.net https://cdn.7tv.app https://cdn.betterttv.net https://cdn.frankerfacez.com; connect-src wss://irc-ws.chat.twitch.tv:443 https://7tv.io https://api.betterttv.net; style-src 'self' 'unsafe-inline'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://static-cdn.jtvnw.net https://cdn.7tv.app https://cdn.betterttv.net https://cdn.frankerfacez.com; connect-src wss://irc-ws.chat.twitch.tv:443 https://7tv.io https://api.betterttv.net https://api.ivr.fi; style-src 'self' 'unsafe-inline'">
 <style>
   /* Fuente incluida en la app (licencia OFL, ver assets/fonts/OFL.txt): se ve igual aunque el PC no la tenga. */
   @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/SpaceGrotesk.ttf") format("truetype"); font-weight: 300 700; font-display: swap; }
@@ -55,6 +55,9 @@
   .pill-bits { background: #c43fc0; }
   .pill-highlighted { background: #7c3aed; }
   .pill-redeem { background: #2b6cb0; }
+  /* Icono del canal de origen en el chat compartido (oculto hasta que carga) */
+  .channel-icon { width: 1.15em; height: 1.15em; border-radius: 50%; margin-right: 4px; vertical-align: -.22em; object-fit: cover; }
+  .channel-icon:not([src]) { display: none; }
   .badge { height: 1.05em; width: 1.05em; margin-right: 3px; vertical-align: -.15em; }
   .reply { font-size: .78em; opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px; }
   .time { font-size: .75em; opacity: .6; margin-right: 5px; font-variant-numeric: tabular-nums; }

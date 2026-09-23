@@ -48,6 +48,7 @@
 - Marca el **primer mensaje** de cada persona, para que puedas saludarla.
 - **Insignias** de streamer, moderador, VIP y suscriptor.
 - Destaca **subs, regalos, raids, bits, canjes de puntos y mensajes destacados**, y muestra a quién responde cada mensaje.
+- En **chat compartido**, cada mensaje muestra el icono del canal del que viene.
 
 **A tu gusto**
 - **7 estilos rápidos** con un clic: Por defecto, Minimalista, Clásico Twitch, Alto contraste, Texto grande, Terminal y Sakura 🌸.
