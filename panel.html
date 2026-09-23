@@ -83,6 +83,8 @@
   footer a { color: #bf94ff; text-decoration: none; cursor: pointer; }
   footer a:hover { text-decoration: underline; }
   .disclaimer { color: #7a7a85; font-size: 11px; margin: 8px 0 0; }
+  button.shortcut { flex: 1; font: 13px Consolas, monospace; background: #0e0e10; border: 1px solid var(--line); }
+  button.shortcut.recording { border-color: var(--accent); color: #d9c4ff; }
   kbd { background: #2f2f35; border-radius: 4px; padding: 1px 5px; font: 12px Consolas, monospace; }
 </style>
 </head>
@@ -186,6 +188,7 @@
       <div class="row"><label for="bgColor" data-i18n="bgColor"></label><input type="color" id="bgColor"></div>
       <div class="row"><label for="bgOpacity" data-i18n="bgOpacity"></label><input type="range" id="bgOpacity" min="0" max="100"><span class="val" id="bgOpacityVal"></span></div>
       <div class="row"><label for="barColor" data-i18n="barColor"></label><input type="color" id="barColor"><span class="note" data-i18n="barColorNote"></span></div>
+      <div class="row"><label for="showViewers" data-i18n="showViewers"></label><input type="checkbox" id="showViewers"><span class="note" data-i18n="showViewersNote"></span></div>
       <div class="row"><label for="opacity" data-i18n="opacity"></label><input type="range" id="opacity" min="10" max="100"><span class="val" id="opacityVal"></span></div>
     </section>
   </div>
@@ -209,6 +212,7 @@
     <section>
       <h2 data-i18n="sectionFilters"></h2>
       <div class="row"><label for="hideBots" data-i18n="hideBots"></label><input type="checkbox" id="hideBots"><span class="note" data-i18n="hideBotsNote"></span></div>
+      <div class="row"><label for="showDeleted" data-i18n="showDeleted"></label><input type="checkbox" id="showDeleted"><span class="note" data-i18n="showDeletedNote"></span></div>
       <div class="row"><label for="mutedUsers" data-i18n="mutedUsers"></label><input type="text" id="mutedUsers" maxlength="1000" data-i18n-placeholder="mutedUsersPlaceholder"></div>
     </section>
 
@@ -224,7 +228,7 @@
   <div class="tab-panel" data-panel="general" hidden>
     <section>
       <h2 data-i18n="sectionProfiles"></h2>
-      <p class="note" data-i18n="profilesNote"></p>
+      <p class="note" id="profilesNote"></p>
       <div class="row">
         <select id="profileList"></select>
         <button id="profileLoad" data-i18n="loadProfile"></button>
@@ -260,12 +264,13 @@
     <section>
       <h2 data-i18n="sectionShortcuts"></h2>
       <div class="warn" id="shortcutWarn"></div>
-      <p class="note">
-        <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> <span data-i18n="shortcutEdit"></span><br>
-        <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> <span data-i18n="shortcutHide"></span><br>
-        <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>P</kbd> <span data-i18n="shortcutProfile"></span><br><br>
-        <span data-i18n-html="shortcutsNote"></span>
-      </p>
+      <p class="note" data-i18n="shortcutsHelp"></p>
+      <div class="row"><label data-i18n="shortcutEdit"></label><button class="shortcut" data-shortcut="edit"></button></div>
+      <div class="row"><label data-i18n="shortcutHide"></label><button class="shortcut" data-shortcut="hide"></button></div>
+      <div class="row"><label data-i18n="shortcutProfile"></label><button class="shortcut" data-shortcut="profile"></button></div>
+      <p class="error" id="shortcutError"></p>
+      <button class="wide" id="shortcutsReset" data-i18n="shortcutsReset"></button>
+      <p class="note" data-i18n-html="shortcutsNote"></p>
     </section>
   </div>
 

@@ -19,6 +19,7 @@ const FIELDS = {
   bgColor: { type: 'color' },
   bgOpacity: { type: 'range', show: (v) => `${v} %` },
   barColor: { type: 'color' },
+  showViewers: { type: 'check' },
   opacity: { type: 'range', show: (v) => `${v} %` },
   align: { type: 'select' },
   newestOnTop: { type: 'boolSelect' },
@@ -29,6 +30,7 @@ const FIELDS = {
   timestamps: { type: 'check' },
   hideBots: { type: 'check' },
   mutedUsers: { type: 'text' },
+  showDeleted: { type: 'check' },
   maxMessages: { type: 'range', show: (v) => String(v) },
   fadeAfter: { type: 'range', show: secondsOrNever },
   idleHide: { type: 'range', show: secondsOrNever },
@@ -104,7 +106,10 @@ function applyLanguage(newLang) {
   for (const key of Object.keys(FIELDS)) showValue(key);
   if ($('channelError').textContent) $('channelError').textContent = tr('channelInvalid');
   $('backupStatus').textContent = '';
-  if (settings) renderProfiles();
+  if (settings) {
+    renderProfiles();
+    renderShortcuts();
+  }
   if (lastState) applyState(lastState);
 }
 
@@ -123,6 +128,7 @@ function fillFields(newSettings) {
     showValue(key);
   }
   renderProfiles();
+  renderShortcuts();
   // La guía sale solo la primera vez que se abre la app: se marca como vista al mostrarla,
   // así no vuelve aunque se cierre la ventana sin pulsar "Empezar".
   if (!settings.onboarded && !welcomeShown) {
@@ -231,9 +237,11 @@ function saveProfile() {
 function applyState(state) {
   lastState = state;
   const { editMode, visible, testMode, bounds, maxSize, version, shortcutErrors, canAutoStart, whatsNew } = state;
-  $('edit').textContent = tr(editMode ? 'editOn' : 'editOff');
+  const keys = (action) => i18n.shortcutLabel(settings ? settings.shortcuts[action] : state.defaultShortcuts[action]);
+  $('edit').textContent = tr(editMode ? 'editOn' : 'editOff', { keys: keys('edit') });
   $('edit').classList.toggle('primary', editMode); // morado solo mientras se puede mover
-  $('visible').textContent = tr(visible ? 'hideChat' : 'showChat');
+  $('visible').textContent = tr(visible ? 'hideChat' : 'showChat', { keys: keys('hide') });
+  $('profilesNote').textContent = tr('profilesNote', { keys: keys('profile') });
   $('test').textContent = tr(testMode ? 'testOn' : 'testOff');
   $('test').classList.toggle('primary', testMode);
 
@@ -282,6 +290,75 @@ function renderUpdate({ updateAvailable, updateProgress, updateError, updateRead
   }
 }
 
+// ---------- Atajos configurables ----------
+// Se hace clic en un atajo y se pulsa la combinación nueva. Mientras tanto, los atajos
+// actuales se sueltan para que no se disparen.
+
+let recording = null; // acción cuyo atajo se está grabando
+
+function renderShortcuts() {
+  document.querySelectorAll('[data-shortcut]').forEach((b) => {
+    const action = b.dataset.shortcut;
+    b.textContent = recording === action ? tr('shortcutRecord') : i18n.shortcutLabel(settings.shortcuts[action]);
+    b.classList.toggle('recording', recording === action);
+  });
+}
+
+// Traduce la tecla pulsada al formato de Electron ("CommandOrControl+Shift+L").
+function shortcutFromEvent(e) {
+  let key = null;
+  if (/^Key[A-Z]$/.test(e.code)) key = e.code.slice(3);
+  else if (/^Digit[0-9]$/.test(e.code)) key = e.code.slice(5);
+  else if (/^F([1-9]|1[0-9]|2[0-4])$/.test(e.code)) key = e.code;
+  if (!key) return null;
+  const isFKey = key.length > 1;
+  if (!isFKey && !e.ctrlKey && !e.altKey) return 'invalid';
+  const mods = [e.ctrlKey && 'CommandOrControl', e.altKey && 'Alt', e.shiftKey && 'Shift'].filter(Boolean);
+  return [...mods, key].join('+');
+}
+
+function startRecording(action) {
+  if (recording) api.resumeShortcuts();
+  recording = action;
+  $('shortcutError').textContent = '';
+  api.pauseShortcuts();
+  renderShortcuts();
+}
+
+function stopRecording() {
+  if (!recording) return;
+  recording = null;
+  api.resumeShortcuts();
+  renderShortcuts();
+}
+
+window.addEventListener('keydown', (e) => {
+  if (!recording) return;
+  e.preventDefault();
+  if (e.key === 'Escape') {
+    stopRecording();
+    return;
+  }
+  if (['Control', 'Alt', 'Shift', 'Meta', 'AltGraph'].includes(e.key)) return; // falta la tecla principal
+  const accelerator = shortcutFromEvent(e);
+  if (!accelerator) return;
+  if (accelerator === 'invalid') {
+    $('shortcutError').textContent = tr('shortcutInvalid');
+    return;
+  }
+  const action = recording;
+  const taken = Object.entries(settings.shortcuts).some(([k, v]) => k !== action && v === accelerator);
+  if (taken) {
+    $('shortcutError').textContent = tr('shortcutDuplicate');
+    return;
+  }
+  recording = null;
+  api.setSettings({ shortcuts: { ...settings.shortcuts, [action]: accelerator } });
+  api.resumeShortcuts();
+  renderShortcuts();
+});
+window.addEventListener('blur', stopRecording);
+
 // ---------- Pestañas ----------
 
 function showTab(name) {
@@ -314,6 +391,12 @@ $('edit').addEventListener('click', () => api.toggleEdit());
 $('visible').addEventListener('click', () => api.toggleVisible());
 $('test').addEventListener('click', () => api.toggleTest());
 $('reset').addEventListener('click', () => api.resetLook());
+document.querySelectorAll('[data-shortcut]').forEach((b) => b.addEventListener('click', () => startRecording(b.dataset.shortcut)));
+$('shortcutsReset').addEventListener('click', () => {
+  stopRecording();
+  $('shortcutError').textContent = '';
+  if (lastState) api.setSettings({ shortcuts: { ...lastState.defaultShortcuts } });
+});
 $('repo').addEventListener('click', () => api.openRepo());
 $('welcomeStart').addEventListener('click', () => {
   $('welcome').classList.remove('show');

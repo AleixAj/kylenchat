@@ -41,7 +41,7 @@
 - Muestra el chat de cualquier canal de Twitch en una ventana **transparente** que queda **siempre encima** del juego.
 - Los clics **atraviesan** el chat, así que no molesta mientras juegas.
 - Muestra los emotes de **Twitch, 7TV, BTTV y FFZ**.
-- Una barra discreta **"Kylen Chat"** encima del chat muestra el canal conectado.
+- Una barra discreta **"Kylen Chat"** encima del chat muestra el canal conectado y, si estás en directo, **tus espectadores**.
 
 **Para no perderte lo importante**
 - **Menciones y palabras clave destacadas**: si alguien escribe tu nombre o una palabra que elijas, el mensaje sale resaltado.
@@ -57,6 +57,7 @@
 - Mensajes **alineados a la derecha** y **nuevos arriba**, si lo prefieres.
 - **Perfiles por juego**: guarda el aspecto y la posición para cada juego y cambia con `Ctrl + Alt + P`.
 - **Filtros**: silenciar usuarios y ocultar bots y comandos. No hay filtro de palabras a propósito: el streamer tiene que ver todo lo que le escriben.
+- Lo que borra un moderador puede desaparecer o quedarse como **«mensaje borrado»**, a tu elección.
 - El chat se **atenúa cuando está tranquilo** (a los 2 minutos, sigue legible) y se recupera con el siguiente mensaje. Se puede cambiar o desactivar.
 - **Modo prueba** con mensajes de ejemplo para ajustarlo viendo el resultado final.
 
@@ -96,6 +97,8 @@ Si cierras la ventana de ajustes, la app sigue funcionando en la bandeja (junto 
 | `Ctrl + Shift + H` | Ocultar o mostrar el chat |
 | `Ctrl + Alt + P` | Pasar al siguiente perfil |
 
+Los tres **se pueden cambiar** en Ajustes → General: haz clic en el atajo y pulsa la combinación que quieras.
+
 ### Importante para juegos (League of Legends, etc.)
 
 - Pon el juego en modo **"Sin bordes"** (*Borderless*). En pantalla completa exclusiva, Windows no deja que ninguna ventana se vea encima.
@@ -126,7 +129,7 @@ Está hecha para no afectar a los FPS ni al ping:
 ## Solución de problemas
 
 - **No veo el chat encima del juego:** pon el juego en modo **"Sin bordes"**.
-- **Un atajo no funciona:** otro programa ya lo usa. La app te avisa en Ajustes → General; puedes usar los botones de la ventana o el icono de la bandeja.
+- **Un atajo no funciona:** otro programa ya lo usa. La app te avisa en Ajustes → General, y ahí mismo puedes cambiarlo por otra combinación.
 - **Algo no va bien:** en `%APPDATA%\Kylen Chat for Twitch\error.log` hay un registro de errores. Si abres un aviso en [Issues](https://github.com/AleixAj/kylenchat/issues), adjúntalo.
 
 ---

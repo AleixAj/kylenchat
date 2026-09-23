@@ -12,8 +12,8 @@
       connect: 'Conectar',
       channelInvalid: 'Nombre de canal no válido: solo letras, números y guion bajo.',
       sectionPosition: 'Posición y tamaño',
-      editOff: 'Mover y cambiar tamaño (Ctrl+Shift+L)',
-      editOn: 'Fijar posición (Ctrl+Shift+L)',
+      editOff: 'Mover y cambiar tamaño ({keys})',
+      editOn: 'Fijar posición ({keys})',
       testOff: 'Modo prueba (ver cómo queda)',
       testOn: 'Salir del modo prueba',
       placeAt: 'Colocar en',
@@ -39,6 +39,8 @@
       bgColor: 'Color de fondo',
       bgOpacity: 'Opacidad del fondo',
       barColor: 'Color de la barra',
+      showViewers: 'Espectadores en la barra',
+      showViewersNote: 'solo en directo',
       barColorNote: 'la de "Kylen Chat"',
       opacity: 'Opacidad del chat',
       sectionMessages: 'Mensajes',
@@ -49,16 +51,23 @@
       animatedEmotesNote: 'gasta más CPU',
       hideBots: 'Ocultar bots y comandos',
       hideBotsNote: 'Nightbot, !comandos…',
-      hideChat: 'Ocultar chat (Ctrl+Shift+H)',
-      showChat: 'Mostrar chat (Ctrl+Shift+H)',
+      showDeleted: 'Mostrar mensajes borrados',
+      showDeletedNote: 'sale «mensaje borrado»',
+      hideChat: 'Ocultar chat ({keys})',
+      showChat: 'Mostrar chat ({keys})',
       reset: 'Restablecer aspecto por defecto',
       sectionStartup: 'Inicio',
       autoStart: 'Iniciar con Windows',
       autoStartNote: 'arranca oculta en la bandeja',
       sectionShortcuts: 'Atajos',
-      shortcutEdit: 'mover o fijar el chat',
-      shortcutHide: 'ocultar o mostrar el chat',
+      shortcutEdit: 'Mover o fijar el chat',
+      shortcutHide: 'Ocultar o mostrar el chat',
       shortcutsNote: 'Pon el juego en modo <b>"Sin bordes"</b>; en pantalla completa el chat no se ve encima. Si cierras esta ventana, la app sigue en la bandeja (junto al reloj).',
+      shortcutsHelp: 'Haz clic en un atajo y pulsa la combinación que quieras (Esc para cancelar).',
+      shortcutRecord: 'Pulsa la combinación…',
+      shortcutInvalid: 'Usa Ctrl o Alt con una letra o un número, o una tecla de F1 a F24.',
+      shortcutDuplicate: 'Esa combinación ya la usa otro atajo.',
+      shortcutsReset: 'Restablecer atajos',
       shortcutWarn: 'Otro programa ya usa {keys}. Ese atajo no funcionará; usa los botones de esta ventana o el icono de la bandeja.',
       and: ' y ',
       updateAvailable: 'Hay una versión nueva ({version}). Descárgala cuando no estés jugando.',
@@ -111,7 +120,7 @@
       mutedUsersPlaceholder: 'separados por comas: usuario1, usuario2',
       idleHide: 'Atenuar si no hay mensajes',
       sectionProfiles: 'Perfiles',
-      profilesNote: 'Guarda el aspecto y la posición para cada juego. Ctrl+Alt+P pasa al siguiente perfil.',
+      profilesNote: 'Guarda el aspecto y la posición para cada juego. {keys} pasa al siguiente perfil.',
       profileNamePlaceholder: 'Nombre (p. ej. LoL)',
       saveProfile: 'Guardar',
       loadProfile: 'Cargar',
@@ -127,7 +136,7 @@
       importOk: 'Configuración importada.',
       importInvalid: 'Ese archivo no es una configuración válida.',
       sectionOther: 'Otros',
-      shortcutProfile: 'pasar al siguiente perfil',
+      shortcutProfile: 'Pasar al siguiente perfil',
       welcomeTitle: '¡Bienvenido a Kylen Chat!',
       welcomeStep1: 'Escribe el nombre de tu canal y pulsa <b>Conectar</b>.',
       welcomeStep2: 'Pulsa <b>Mover y cambiar tamaño</b> y coloca el chat donde no moleste.',
@@ -161,13 +170,15 @@
       bits: '{n} bits',
       highlightedMessage: 'Destacado',
       redeemed: 'Canje',
-      editHint: 'Arrastra para mover · esquina para cambiar tamaño · Ctrl+Shift+L para fijar',
+      editHint: 'Arrastra para mover · esquina para cambiar tamaño · {keys} para fijar',
       enterChannel: 'Escribe el nombre de un canal en Ajustes.',
       connecting: 'Conectando a #{channel}…',
       connected: 'Conectado al chat de #{channel}',
       notFound: 'No se encuentra el canal "{channel}". ¿Está bien escrito?',
       connectionLost: 'Conexión perdida, reintentando…',
       chatOf: 'Chat de #{channel}',
+      deletedMessage: 'mensaje borrado',
+      chatCleared: 'Un moderador ha borrado el chat.',
 
       // Menú de la bandeja
       traySettings: 'Ajustes',
@@ -189,8 +200,8 @@
       connect: 'Connect',
       channelInvalid: 'Invalid channel name: only letters, numbers and underscores.',
       sectionPosition: 'Position and size',
-      editOff: 'Move and resize (Ctrl+Shift+L)',
-      editOn: 'Lock position (Ctrl+Shift+L)',
+      editOff: 'Move and resize ({keys})',
+      editOn: 'Lock position ({keys})',
       testOff: 'Preview mode (see how it looks)',
       testOn: 'Exit preview mode',
       placeAt: 'Snap to',
@@ -216,6 +227,8 @@
       bgColor: 'Background color',
       bgOpacity: 'Background opacity',
       barColor: 'Bar color',
+      showViewers: 'Viewers in the bar',
+      showViewersNote: 'only while live',
       barColorNote: 'the "Kylen Chat" one',
       opacity: 'Chat opacity',
       sectionMessages: 'Messages',
@@ -226,16 +239,23 @@
       animatedEmotesNote: 'uses more CPU',
       hideBots: 'Hide bots and commands',
       hideBotsNote: 'Nightbot, !commands…',
-      hideChat: 'Hide chat (Ctrl+Shift+H)',
-      showChat: 'Show chat (Ctrl+Shift+H)',
+      showDeleted: 'Show deleted messages',
+      showDeletedNote: 'shows «message deleted»',
+      hideChat: 'Hide chat ({keys})',
+      showChat: 'Show chat ({keys})',
       reset: 'Reset look to default',
       sectionStartup: 'Startup',
       autoStart: 'Start with Windows',
       autoStartNote: 'starts hidden in the tray',
       sectionShortcuts: 'Shortcuts',
-      shortcutEdit: 'move or lock the chat',
-      shortcutHide: 'hide or show the chat',
+      shortcutEdit: 'Move or lock the chat',
+      shortcutHide: 'Hide or show the chat',
       shortcutsNote: 'Set your game to <b>"Borderless"</b> mode; in exclusive fullscreen the chat can\'t show on top. If you close this window, the app keeps running in the tray (next to the clock).',
+      shortcutsHelp: 'Click a shortcut and press the combination you want (Esc to cancel).',
+      shortcutRecord: 'Press the combination…',
+      shortcutInvalid: 'Use Ctrl or Alt with a letter or number, or a key from F1 to F24.',
+      shortcutDuplicate: 'Another shortcut already uses that combination.',
+      shortcutsReset: 'Reset shortcuts',
       shortcutWarn: 'Another program is already using {keys}. That shortcut won\'t work; use the buttons in this window or the tray icon.',
       and: ' and ',
       updateAvailable: 'A new version ({version}) is available. Download it when you\'re not playing.',
@@ -288,7 +308,7 @@
       mutedUsersPlaceholder: 'comma separated: user1, user2',
       idleHide: 'Dim when chat is quiet',
       sectionProfiles: 'Profiles',
-      profilesNote: 'Save the look and position for each game. Ctrl+Alt+P switches to the next profile.',
+      profilesNote: 'Save the look and position for each game. {keys} switches to the next profile.',
       profileNamePlaceholder: 'Name (e.g. LoL)',
       saveProfile: 'Save',
       loadProfile: 'Load',
@@ -304,7 +324,7 @@
       importOk: 'Settings imported.',
       importInvalid: 'That file is not a valid settings file.',
       sectionOther: 'Other',
-      shortcutProfile: 'switch to the next profile',
+      shortcutProfile: 'Switch to the next profile',
       welcomeTitle: 'Welcome to Kylen Chat!',
       welcomeStep1: 'Type your channel name and press <b>Connect</b>.',
       welcomeStep2: 'Press <b>Move and resize</b> and place the chat where it doesn\'t get in the way.',
@@ -336,13 +356,15 @@
       bits: '{n} bits',
       highlightedMessage: 'Highlighted',
       redeemed: 'Redeemed',
-      editHint: 'Drag to move · corner to resize · Ctrl+Shift+L to lock',
+      editHint: 'Drag to move · corner to resize · {keys} to lock',
       enterChannel: 'Enter a channel name in Settings.',
       connecting: 'Connecting to #{channel}…',
       connected: 'Connected to #{channel}\'s chat',
       notFound: 'Channel "{channel}" not found. Is it spelled correctly?',
       connectionLost: 'Connection lost, retrying…',
       chatOf: '#{channel} chat',
+      deletedMessage: 'message deleted',
+      chatCleared: 'A moderator cleared the chat.',
 
       traySettings: 'Settings',
       trayEditOff: 'Move and resize',
@@ -360,6 +382,9 @@
     es: {
       '1.1.4': [
         'Las actualizaciones ya no se descargan solas: te avisamos y la descargas cuando tú quieras, para no afectar al ping en partida.',
+        'Espectadores en la barra "Kylen Chat" mientras estás en directo.',
+        'Atajos de teclado configurables en Ajustes → General.',
+        'Opción para ver «mensaje borrado» cuando un moderador borra algo.',
       ],
       '1.1.3': [
         'En los directos con chat compartido, cada mensaje muestra el icono del canal del que viene.',
@@ -382,6 +407,9 @@
     en: {
       '1.1.4': [
         'Updates no longer download on their own: you get a notice and download them when you want, so your ping is never affected mid-game.',
+        'Viewer count in the "Kylen Chat" bar while you\'re live.',
+        'Configurable keyboard shortcuts in Settings → General.',
+        'Option to show «message deleted» when a moderator deletes something.',
       ],
       '1.1.3': [
         'In shared chat streams, each message shows the icon of the channel it comes from.',
@@ -445,6 +473,14 @@
 
   const LANGUAGES = Object.keys(STRINGS);
 
+  // Atajos de teclado: los de serie y cómo se enseñan ("CommandOrControl+Shift+L" -> "Ctrl+Shift+L").
+  const DEFAULT_SHORTCUTS = {
+    edit: 'CommandOrControl+Shift+L',
+    hide: 'CommandOrControl+Shift+H',
+    profile: 'CommandOrControl+Alt+P',
+  };
+  const shortcutLabel = (accelerator) => String(accelerator || '').replace('CommandOrControl', 'Ctrl');
+
   function t(lang, key, vars) {
     const table = STRINGS[lang] || STRINGS.es;
     let text = table[key] !== undefined ? table[key] : STRINGS.es[key];
@@ -453,7 +489,7 @@
     return text;
   }
 
-  const api = { STRINGS, SAMPLES, CHANGELOG, LANGUAGES, t };
+  const api = { STRINGS, SAMPLES, CHANGELOG, LANGUAGES, DEFAULT_SHORTCUTS, shortcutLabel, t };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.i18n = api;
 })(this);

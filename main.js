@@ -4,7 +4,7 @@ const {
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
-const { t, LANGUAGES } = require('./i18n');
+const { t, LANGUAGES, DEFAULT_SHORTCUTS, shortcutLabel } = require('./i18n');
 
 const REPO_URL = 'https://github.com/AleixAj/kylenchat';
 
@@ -19,6 +19,7 @@ const DEFAULTS = {
   bgColor: '#000000',
   bgOpacity: 25,
   barColor: '#9146ff',
+  showViewers: true,
   outline: true,
   opacity: 100,
   maxMessages: 20,
@@ -31,6 +32,8 @@ const DEFAULTS = {
   showBadges: true,
   timestamps: false,
   mutedUsers: '',
+  showDeleted: false,
+  shortcuts: { ...DEFAULT_SHORTCUTS },
   align: 'left',
   newestOnTop: false,
   idleHide: 120,
@@ -57,6 +60,14 @@ const isBool = (v) => typeof v === 'boolean';
 const isHex = (v) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v);
 const inRange = (min, max) => (v) => Number.isFinite(v) && v >= min && v <= max;
 const isText = (max) => (v) => typeof v === 'string' && v.length <= max && !/[\u0000-\u001f]/.test(v);
+// Atajo válido: Ctrl y/o Alt (y opcional Shift) con una letra o número, o una tecla F1-F24 sola o combinada.
+const isAccelerator = (v) => {
+  const m = typeof v === 'string' && /^(CommandOrControl\+)?(Alt\+)?(Shift\+)?([A-Z0-9]|F(?:[1-9]|1[0-9]|2[0-4]))$/.exec(v);
+  return Boolean(m) && (Boolean(m[1] || m[2]) || m[4].length > 1);
+};
+const isShortcuts = (v) => v && typeof v === 'object'
+  && Object.keys(DEFAULT_SHORTCUTS).every((k) => isAccelerator(v[k]))
+  && new Set(Object.keys(DEFAULT_SHORTCUTS).map((k) => v[k])).size === Object.keys(DEFAULT_SHORTCUTS).length;
 const SCHEMA = {
   language: (v) => LANGUAGES.includes(v),
   channel: (v) => typeof v === 'string' && /^[a-z0-9_]{0,25}$/.test(v),
@@ -69,6 +80,7 @@ const SCHEMA = {
   bgColor: isHex,
   bgOpacity: inRange(0, 100),
   barColor: isHex,
+  showViewers: isBool,
   outline: isBool,
   opacity: inRange(10, 100),
   maxMessages: inRange(3, 100),
@@ -81,6 +93,8 @@ const SCHEMA = {
   showBadges: isBool,
   timestamps: isBool,
   mutedUsers: isText(1000),
+  showDeleted: isBool,
+  shortcuts: isShortcuts,
   align: (v) => v === 'left' || v === 'right',
   newestOnTop: isBool,
   idleHide: inRange(0, 300),
@@ -98,6 +112,8 @@ function sanitize(patch) {
   for (const [key, value] of Object.entries(patch)) {
     if (key === 'profiles') {
       if (Array.isArray(value)) clean.profiles = cleanProfiles(value);
+    } else if (key === 'shortcuts') {
+      if (isShortcuts(value)) clean.shortcuts = pick(value, Object.keys(DEFAULT_SHORTCUTS));
     } else if (SCHEMA[key] && SCHEMA[key](value)) {
       clean[key] = value;
     }
@@ -119,9 +135,6 @@ const APP_ICON = path.join(__dirname, 'assets', 'icon.ico');
 // Electron elige solo tray@2x.png en pantallas con escalado alto.
 const TRAY_ICON = path.join(__dirname, 'assets', 'tray.png');
 
-const SHORTCUT_EDIT = 'CommandOrControl+Shift+L';
-const SHORTCUT_HIDE = 'CommandOrControl+Shift+H';
-const SHORTCUT_PROFILE = 'CommandOrControl+Alt+P';
 
 let settings;
 let overlay;
@@ -218,6 +231,11 @@ function updateSettings(patch) {
   Object.assign(settings, clean);
   if ('autoStart' in clean) applyAutoStart();
   if ('language' in clean) applyLanguage();
+  if ('shortcuts' in clean) {
+    registerShortcuts();
+    updateTrayMenu();
+    sendState();
+  }
   saveSettings();
   broadcastSettings();
 }
@@ -382,6 +400,7 @@ function createPanel() {
     backgroundColor: '#18181b',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), spellcheck: false },
   });
+  panel.removeMenu(); // sin barra de menú (Alt ya no la hace aparecer al grabar atajos)
   panel.loadFile('panel.html');
   // Al cerrarla se destruye (no se esconde) para liberar memoria mientras se juega.
   panel.on('closed', () => {
@@ -407,7 +426,8 @@ function state() {
     updateProgress,
     updateError,
     updateReady,
-    shortcutErrors,
+    shortcutErrors: [...shortcutErrors],
+    defaultShortcuts: DEFAULT_SHORTCUTS,
     canAutoStart: app.isPackaged,
     whatsNew,
   };
@@ -424,8 +444,8 @@ function updateTrayMenu() {
       ? [{ label: tr('trayDownload', { version: updateAvailable }), click: downloadUpdate }, { type: 'separator' }]
       : []),
     { label: tr('traySettings'), click: createPanel },
-    { label: tr(editMode ? 'trayEditOn' : 'trayEditOff'), accelerator: SHORTCUT_EDIT, click: () => setEditMode(!editMode) },
-    { label: tr(visible ? 'trayHide' : 'trayShow'), accelerator: SHORTCUT_HIDE, click: () => setVisible(!visible) },
+    { label: tr(editMode ? 'trayEditOn' : 'trayEditOff'), accelerator: settings.shortcuts.edit, click: () => setEditMode(!editMode) },
+    { label: tr(visible ? 'trayHide' : 'trayShow'), accelerator: settings.shortcuts.hide, click: () => setVisible(!visible) },
     ...(settings.profiles.length ? [{
       label: tr('trayProfiles'),
       submenu: settings.profiles.map((p) => ({
@@ -435,6 +455,25 @@ function updateTrayMenu() {
     { type: 'separator' },
     { label: tr('trayQuit'), click: () => app.quit() },
   ]));
+}
+
+// ---------- Atajos de teclado (configurables) ----------
+
+// Registra los atajos elegidos. Si otro programa ya usa alguno, se avisa en los ajustes.
+function registerShortcuts() {
+  globalShortcut.unregisterAll();
+  shortcutErrors.length = 0;
+  const actions = { edit: () => setEditMode(!editMode), hide: () => setVisible(!visible), profile: nextProfile };
+  for (const [name, action] of Object.entries(actions)) {
+    const accelerator = settings.shortcuts[name];
+    let ok = false;
+    try {
+      ok = globalShortcut.register(accelerator, action);
+    } catch {
+      ok = false;
+    }
+    if (!ok) shortcutErrors.push(shortcutLabel(accelerator));
+  }
 }
 
 // ---------- Actualizaciones automáticas (desde GitHub Releases) ----------
@@ -610,6 +649,12 @@ ipcMain.on('dismiss-whats-new', () => {
   sendState();
 });
 ipcMain.on('install-update', installUpdate);
+// Mientras se graba un atajo nuevo en los ajustes, los actuales se sueltan para no dispararse.
+ipcMain.on('pause-shortcuts', () => globalShortcut.unregisterAll());
+ipcMain.on('resume-shortcuts', () => {
+  registerShortcuts();
+  sendState();
+});
 ipcMain.on('download-update', downloadUpdate);
 ipcMain.on('open-repo', () => shell.openExternal(REPO_URL));
 ipcMain.on('toggle-edit', () => setEditMode(!editMode));
@@ -676,10 +721,7 @@ if (!app.requestSingleInstanceLock()) {
     tray.on('click', createPanel);
     updateTrayMenu();
 
-    // Si otro programa ya usa el atajo, se avisa en los ajustes.
-    if (!globalShortcut.register(SHORTCUT_EDIT, () => setEditMode(!editMode))) shortcutErrors.push('Ctrl+Shift+L');
-    if (!globalShortcut.register(SHORTCUT_HIDE, () => setVisible(!visible))) shortcutErrors.push('Ctrl+Shift+H');
-    if (!globalShortcut.register(SHORTCUT_PROFILE, nextProfile)) shortcutErrors.push('Ctrl+Alt+P');
+    registerShortcuts();
 
     // Al volver de suspensión la conexión suele quedar muerta: se reconecta al momento.
     powerMonitor.on('resume', () => overlay.webContents.send('reconnect'));

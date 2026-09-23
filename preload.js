@@ -15,6 +15,8 @@ contextBridge.exposeInMainWorld('api', {
   dismissWhatsNew: () => ipcRenderer.send('dismiss-whats-new'),
   installUpdate: () => ipcRenderer.send('install-update'),
   downloadUpdate: () => ipcRenderer.send('download-update'),
+  pauseShortcuts: () => ipcRenderer.send('pause-shortcuts'),
+  resumeShortcuts: () => ipcRenderer.send('resume-shortcuts'),
   openRepo: () => ipcRenderer.send('open-repo'),
   toggleEdit: () => ipcRenderer.send('toggle-edit'),
   toggleVisible: () => ipcRenderer.send('toggle-visible'),

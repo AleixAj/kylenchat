@@ -61,7 +61,8 @@ function applySettings(s) {
   document.body.classList.toggle('align-right', s.align === 'right');
   document.body.classList.toggle('newest-top', s.newestOnTop);
   resetIdle();
-  document.getElementById('hint').textContent = tr('editHint');
+  document.getElementById('hint').textContent = tr('editHint', { keys: i18n.shortcutLabel(s.shortcuts.edit) });
+  if (s.showViewers !== viewersShown) startViewers();
   trim();
 
   if (s.channel !== joined) connect(s.channel);
@@ -92,6 +93,7 @@ function connect(channel) {
   }
   joined = channel;
   document.getElementById('barChannel').textContent = channel ? `#${channel}` : '';
+  startViewers();
   if (!channel) {
     system(tr('enterChannel'));
     return;
@@ -237,6 +239,30 @@ function connectPaints(roomId) {
   };
 }
 
+// ---------- Espectadores en la barra ----------
+// Solo mientras el canal está en directo. Se consulta cada 30 s (una petición pequeña
+// a api.ivr.fi, pública y sin cuenta), así que no afecta al ping.
+let viewersTimer = null;
+let viewersShown = null;
+
+function startViewers() {
+  clearInterval(viewersTimer);
+  viewersShown = Boolean(settings && settings.showViewers);
+  document.getElementById('barViewers').textContent = '';
+  if (!viewersShown || !joined) return;
+  updateViewers();
+  viewersTimer = setInterval(updateViewers, 30000);
+}
+
+async function updateViewers() {
+  const channel = joined;
+  const data = await getJSON(`https://api.ivr.fi/v2/twitch/user?login=${encodeURIComponent(channel)}`);
+  if (channel !== joined || !settings.showViewers) return; // cambió algo mientras esperaba
+  const stream = Array.isArray(data) && data[0] && data[0].stream;
+  const count = stream && Number(stream.viewersCount);
+  document.getElementById('barViewers').textContent = Number.isFinite(count) ? count.toLocaleString(settings.language) : '';
+}
+
 // Twitch manda un PING cada ~5 min. Si pasa mucho sin recibir nada (p. ej. tras suspender
 // el PC o cambiar de wifi), la conexión está muerta aunque no lo parezca: se rehace.
 setInterval(() => {
@@ -326,12 +352,16 @@ function handle(m, sock) {
       if (!testMode) addNotice(noticeText(m.tags), m.trailing ? messageFrom(m) : null);
       break;
     case 'CLEARCHAT': // un moderador ha borrado el chat o baneado a alguien
-      removeWhere(m.trailing ? (el) => el.dataset.user === m.trailing.toLowerCase() : () => true);
+      if (m.trailing) moderate((el) => el.dataset.user === m.trailing.toLowerCase());
+      else {
+        moderate(() => true);
+        if (settings.showDeleted) system(tr('chatCleared'));
+      }
       break;
     case 'CLEARMSG': {
       // En chat compartido el borrado puede referirse al id del mensaje en su canal de origen.
       const target = m.tags['target-msg-id'];
-      if (target) removeWhere((el) => el.dataset.id === target || el.dataset.sid === target);
+      if (target) moderate((el) => el.dataset.id === target || el.dataset.sid === target);
       break;
     }
     case 'NOTICE':
@@ -786,11 +816,24 @@ function trim() {
   while (chat.children.length > max) chat.firstChild.remove();
 }
 
-// Borra mensajes ya pintados y también los que están esperando a pintarse.
-function removeWhere(fn) {
+// Lo que borra un moderador: desaparece, o se queda como «mensaje borrado» si el usuario lo
+// prefiere. Afecta a lo ya pintado y a lo que está esperando a pintarse.
+function moderate(fn) {
   const matches = (el) => !el.classList.contains('system') && fn(el);
+  if (settings.showDeleted) {
+    pending.filter(matches).forEach(markDeleted);
+    [...chat.children].filter(matches).forEach(markDeleted);
+    return;
+  }
   pending = pending.filter((el) => !matches(el));
   for (const el of [...chat.children]) if (matches(el)) el.remove();
+}
+
+function markDeleted(el) {
+  if (el.classList.contains('deleted')) return;
+  el.classList.add('deleted');
+  el.querySelectorAll('.reply').forEach((reply) => reply.remove());
+  el.querySelectorAll('.text').forEach((text) => text.replaceChildren(tr('deletedMessage')));
 }
 
 function system(text) {
