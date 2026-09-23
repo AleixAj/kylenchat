@@ -7,6 +7,7 @@
 <p align="center">
   <a href="README.md"><img src="assets/readme/lang-es.svg" alt="Español" width="170"></a>
   <img src="assets/readme/lang-en-active.svg" alt="English" width="170">
+  <a href="README.ca.md"><img src="assets/readme/lang-ca.svg" alt="Català" width="170"></a>
 </p>
 
 <p align="center">
@@ -60,12 +61,12 @@
 - Shows the chat of any Twitch channel in a **transparent** window that stays **always on top** of your game.
 - Clicks **pass through** the chat, so it never gets in the way while you play.
 - Shows **Twitch, 7TV, BTTV and FFZ** emotes.
-- A small **"Kylen Chat"** bar above the chat shows the connected channel and, when you're live, **your viewer count**.
+- An unobtrusive **"Kylen Chat"** bar above the chat shows the connected channel and, when you're live, **your viewer count**.
 
 **Never miss what matters**
 - **Highlighted mentions and keywords**: if someone writes your name or a word you choose, the message stands out.
 - Marks each person's **first message**, so you can greet them.
-- **Badges** for broadcaster, moderator, VIP and subscriber.
+- **Badges** for streamer, moderator, VIP and subscriber.
 - Highlights **subs, gifts, raids, bits, channel point redemptions and highlighted messages**, and shows who each message is replying to.
 - In **shared chat**, each message shows the icon of the channel it comes from.
 - Names with a **7TV paint** (gradients) show their colors.
@@ -93,7 +94,7 @@
 
 1. Click the **Download for Windows** button above.
 2. Open `KylenChat-Setup.exe`. It installs in a few seconds and opens by itself.
-3. If Windows shows *"Windows protected your PC"*, click **More info → Run anyway**. It appears because the app doesn't have a paid digital signature yet, not because it's dangerous.
+3. If Windows shows *"Windows protected your PC"*, click **More info → Run anyway**. This warning appears because the app doesn't have a paid digital signature yet, not because it's dangerous.
 
 With the installer, the app **lets you know when a new version is out**: click **Download** when you're not playing, then **Restart** to install it (or it installs itself when you close the app).
 
@@ -103,7 +104,7 @@ With the installer, the app **lets you know when a new version is out**: click *
 
 1. Click the **Download for Mac** button above. It works on both Intel and Apple Silicon Macs (M1, M2…).
 2. Open `KylenChat-Mac.dmg` and drag **Kylen Chat for Twitch** into the **Applications** folder.
-3. The first time, macOS will say it can't verify the app. Go to **System Settings → Privacy & Security**, scroll down to the Kylen Chat notice and click **Open Anyway**. It appears because the app doesn't have Apple's paid signature, not because it's dangerous.
+3. The first time, macOS will say it can't verify the app. Go to **System Settings → Privacy & Security**, scroll down to the Kylen Chat notice and click **Open Anyway**. This warning appears because the app doesn't have Apple's paid signature, not because it's dangerous.
 
 The app lives in the **menu bar** (top right), not in the Dock. On Mac, shortcuts use **Cmd** instead of Ctrl and **Option** instead of Alt.
 
@@ -147,14 +148,14 @@ It's built not to affect your FPS or ping:
 - In very fast chats it groups messages and updates the screen about 6 times per second at most.
 - Animated emotes can be turned off in settings to use even less CPU.
 - The chat only receives text: it uses less internet than a web page.
-- Style fonts are only loaded when you pick that style.
+- Each style's fonts are only loaded when you pick that style.
 
 ## Reliability
 
-- If the internet drops or the computer wakes from sleep, it reconnects by itself without flooding the network, and retries any emotes it couldn't download.
+- If the internet drops or the computer wakes from sleep, it reconnects by itself without flooding the network, and recovers any emotes it couldn't download.
 - The chat window never takes the keyboard away from the game: it can only have it while you're moving it.
 - If you unplug the monitor the chat was on, it moves back to the main screen by itself.
-- Your settings are saved safely: they survive crashes and restarts.
+- Your settings are saved safely: they survive crashes and computer restarts.
 - An unexpected error never pops up a window mid-stream: it's written to a log and the app keeps running.
 
 ## Troubleshooting

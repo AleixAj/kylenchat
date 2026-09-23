@@ -7,6 +7,7 @@
 <p align="center">
   <img src="assets/readme/lang-es-active.svg" alt="Español" width="170">
   <a href="README.en.md"><img src="assets/readme/lang-en.svg" alt="English" width="170"></a>
+  <a href="README.ca.md"><img src="assets/readme/lang-ca.svg" alt="Català" width="170"></a>
 </p>
 
 <p align="center">
