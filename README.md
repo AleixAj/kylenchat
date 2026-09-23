@@ -5,6 +5,10 @@
 <h1 align="center">Kylen Chat for Twitch</h1>
 
 <p align="center">
+  <b>🇪🇸 Español</b> · <a href="README.en.md">🇬🇧 English</a>
+</p>
+
+<p align="center">
   El chat de Twitch encima de tu juego, con fondo transparente.<br>
   Para streamers con una sola pantalla que no quieren mirar el chat en el móvil.
 </p>
