@@ -87,6 +87,7 @@ function connect(channel) {
   if (channel !== joined) {
     channelEmotes = new Map();
     emotesRoomId = null;
+    channelEmotesLoaded = false;
     retries = 0;
   }
   joined = channel;
@@ -137,7 +138,9 @@ function onJoined(roomId) {
   clearTimeout(notFoundTimer);
   retries = 0;
   system(tr('connected', { channel: joined }));
-  if (roomId && roomId !== emotesRoomId) loadChannelEmotes(roomId);
+  // Si la app arrancó sin internet, aquí se recuperan los emotes que no se pudieron bajar.
+  if (!globalEmotesLoaded) loadGlobalEmotes();
+  if (roomId && (roomId !== emotesRoomId || !channelEmotesLoaded)) loadChannelEmotes(roomId);
   if (roomId) connectPaints(roomId);
 }
 
@@ -207,6 +210,10 @@ function connectPaints(roomId) {
     paintSocket.onclose = null;
     paintSocket.close();
   }
+  if (paintRoom !== roomId) {
+    // Las pinturas de usuarios del canal anterior ya no hacen falta (se conserva la de ejemplo).
+    for (const id of userPaint.keys()) if (id !== 'demo-paint') userPaint.delete(id);
+  }
   paintRoom = roomId;
   const sock = new WebSocket('wss://events.7tv.io/v3');
   paintSocket = sock;
@@ -243,6 +250,12 @@ function reconnectNow() {
   if (!joined) return;
   retries = 0;
   connect(joined);
+  if (paintSocket) {
+    paintSocket.onclose = null;
+    paintSocket.close();
+    paintSocket = null;
+  }
+  // Las pinturas se vuelven a conectar solas en cuanto el chat entra en el canal (onJoined).
 }
 
 // Los valores de las etiquetas de Twitch vienen "escapados" (\s = espacio, etc.).
@@ -290,6 +303,7 @@ function messageFrom(m) {
     // En chat compartido las insignias del canal de origen vienen en source-badges.
     badges: tags['source-badges'] || tags.badges || '',
     sourceRoom: tags['source-room-id'] || '',
+    sourceId: tags['source-id'] || '',
     first: tags['first-msg'] === '1',
     bits: Number(tags.bits) || 0,
     highlighted: tags['msg-id'] === 'highlighted-message',
@@ -314,9 +328,12 @@ function handle(m, sock) {
     case 'CLEARCHAT': // un moderador ha borrado el chat o baneado a alguien
       removeWhere(m.trailing ? (el) => el.dataset.user === m.trailing.toLowerCase() : () => true);
       break;
-    case 'CLEARMSG':
-      removeWhere((el) => el.dataset.id === m.tags['target-msg-id']);
+    case 'CLEARMSG': {
+      // En chat compartido el borrado puede referirse al id del mensaje en su canal de origen.
+      const target = m.tags['target-msg-id'];
+      if (target) removeWhere((el) => el.dataset.id === target || el.dataset.sid === target);
       break;
+    }
     case 'NOTICE':
       if (m.trailing) system(m.trailing);
       break;
@@ -333,11 +350,17 @@ function handle(m, sock) {
 let globalEmotes = new Map();
 let channelEmotes = new Map();
 let emotesRoomId = null;
+let globalEmotesLoaded = false;  // false si falló la descarga (p. ej. sin internet): se reintenta
+let channelEmotesLoaded = false;
 
-const getJSON = (url) => fetch(url).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+// Devuelve los datos, {} si el servicio responde que no hay nada (p. ej. 404: el canal no usa
+// 7TV) o null si no se pudo conectar. Así se sabe cuándo merece la pena reintentar.
+const getJSON = (url) => fetch(url)
+  .then((r) => (r.ok ? r.json() : {}))
+  .catch(() => null);
 
 function add7tv(map, list) {
-  for (const e of list || []) {
+  for (const e of Array.isArray(list) ? list : []) {
     const host = e.data && e.data.host && e.data.host.url;
     if (!host) continue;
     const zeroWidth = (e.flags & 1) === 1 || ((e.data.flags || 0) & 256) === 256;
@@ -349,13 +372,13 @@ function add7tv(map, list) {
   }
 }
 function addBttv(map, list) {
-  for (const e of list || []) {
+  for (const e of Array.isArray(list) ? list : []) {
     const base = `https://cdn.betterttv.net/emote/${e.id}`;
     map.set(e.code, { url: `${base}/2x.webp`, still: e.animated ? `${base}/static/2x.webp` : null });
   }
 }
 function addFfz(map, list) {
-  for (const e of list || []) {
+  for (const e of Array.isArray(list) ? list : []) {
     const url = e.images && (e.images['2x'] || e.images['1x']);
     if (url) map.set(e.code, { url });
   }
@@ -372,6 +395,7 @@ async function loadGlobalEmotes() {
   addBttv(map, bttv);
   add7tv(map, stv && stv.emotes);
   globalEmotes = map;
+  globalEmotesLoaded = Boolean(stv || bttv || ffz);
 }
 
 async function loadChannelEmotes(roomId) {
@@ -382,6 +406,8 @@ async function loadChannelEmotes(roomId) {
     getJSON(`https://api.betterttv.net/3/cached/frankerfacez/users/twitch/${roomId}`),
   ]);
   if (emotesRoomId !== roomId) return; // se cambió de canal mientras cargaba
+  // 404 = el canal no usa ese servicio (normal); null en los tres = sin conexión: se reintentará.
+  channelEmotesLoaded = Boolean(stv || bttv || ffz);
   const map = new Map();
   addFfz(map, ffz);
   addBttv(map, bttv && [...(bttv.channelEmotes || []), ...(bttv.sharedEmotes || [])]);
@@ -467,7 +493,9 @@ function noticeText(tags) {
   const months = Number(p('cumulative-months')) || 0;
   const sender = p('sender-name') || p('prior-gifter-display-name');
 
-  switch (tags['msg-id']) {
+  // Los avisos que llegan de otro canal del chat compartido traen su tipo real en source-msg-id.
+  const type = tags['msg-id'] === 'sharedchatnotice' ? tags['source-msg-id'] : tags['msg-id'];
+  switch (type) {
     case 'sub':
       return tr('noticeSub', { name, plan });
     case 'resub':
@@ -518,6 +546,7 @@ function addNotice(systemText, msg) {
     fillMessage(line, msg);
     el.dataset.id = line.dataset.id;
     el.dataset.user = line.dataset.user;
+    if (line.dataset.sid) el.dataset.sid = line.dataset.sid;
     el.append(line);
   }
   push(el);
@@ -587,6 +616,7 @@ function fillMessage(el, msg) {
   if (action) el.classList.add('action');
   el.dataset.id = id || '';
   el.dataset.user = user || '';
+  if (msg.sourceId) el.dataset.sid = msg.sourceId;
 
   const nameEl = document.createElement('span');
   nameEl.className = 'name';
@@ -673,7 +703,7 @@ function appendWords(parent, str) {
   if (buf) parent.append(buf);
 }
 
-// Los emotes animados gastan CPU sin parar; por defecto se usa su versión quieta.
+// Con "Emotes animados" apagado se usa la versión quieta, que gasta menos CPU.
 function emoteImg(emote, name) {
   const img = document.createElement('img');
   img.className = 'emote';

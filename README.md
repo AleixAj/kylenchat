@@ -57,11 +57,11 @@
 - Mensajes **alineados a la derecha** y **nuevos arriba**, si lo prefieres.
 - **Perfiles por juego**: guarda el aspecto y la posición para cada juego y cambia con `Ctrl + Alt + P`.
 - **Filtros**: silenciar usuarios y ocultar bots y comandos. No hay filtro de palabras a propósito: el streamer tiene que ver todo lo que le escriben.
-- El chat puede **atenuarse cuando está tranquilo** (sigue legible) y recuperarse con el siguiente mensaje.
+- El chat se **atenúa cuando está tranquilo** (a los 2 minutos, sigue legible) y se recupera con el siguiente mensaje. Se puede cambiar o desactivar.
 - **Modo prueba** con mensajes de ejemplo para ajustarlo viendo el resultado final.
 
 **Y además**
-- En **español e inglés**.
+- En **español e inglés**; la primera vez elige solo según el idioma de tu Windows.
 - **Guía rápida** la primera vez y aviso de **novedades** tras cada actualización.
 - **Exporta e importa** tu configuración.
 - Puede **iniciarse con Windows**, oculta en la bandeja.
@@ -113,7 +113,21 @@ Está hecha para no afectar a los FPS ni al ping:
 - En chats muy rápidos agrupa los mensajes y actualiza la pantalla unas 6 veces por segundo como mucho.
 - Los emotes animados se pueden desactivar en ajustes para gastar aún menos CPU.
 - El chat solo recibe texto: gasta menos internet que una página web.
-- Si se corta internet o el PC vuelve de suspensión, se reconecta sola sin saturar la red.
+- Las fuentes de los estilos solo se cargan cuando eliges ese estilo.
+
+## Fiabilidad
+
+- Si se corta internet o el PC vuelve de suspensión, se reconecta sola sin saturar la red, y recupera los emotes que no pudo descargar.
+- La ventana del chat nunca le quita el teclado al juego: solo puede tenerlo mientras la estás moviendo.
+- Si desconectas el monitor donde estaba el chat, vuelve solo a la pantalla principal.
+- Tus ajustes se guardan de forma segura: aguantan cierres inesperados y reinicios del PC.
+- Un error inesperado nunca te saca una ventana en pleno directo: se apunta en un registro y la app sigue funcionando.
+
+## Solución de problemas
+
+- **No veo el chat encima del juego:** pon el juego en modo **"Sin bordes"**.
+- **Un atajo no funciona:** otro programa ya lo usa. La app te avisa en Ajustes → General; puedes usar los botones de la ventana o el icono de la bandeja.
+- **Algo no va bien:** en `%APPDATA%\Kylen Chat for Twitch\error.log` hay un registro de errores. Si abres un aviso en [Issues](https://github.com/AleixAj/kylenchat/issues), adjúntalo.
 
 ---
 

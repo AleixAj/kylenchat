@@ -118,6 +118,7 @@
       exportSettings: 'Exportar',
       importSettings: 'Importar',
       exportOk: 'Configuración exportada.',
+      exportError: 'No se pudo guardar el archivo. Prueba en otra carpeta.',
       importOk: 'Configuración importada.',
       importInvalid: 'Ese archivo no es una configuración válida.',
       sectionOther: 'Otros',
@@ -288,6 +289,7 @@
       exportSettings: 'Export',
       importSettings: 'Import',
       exportOk: 'Settings exported.',
+      exportError: 'The file could not be saved. Try another folder.',
       importOk: 'Settings imported.',
       importInvalid: 'That file is not a valid settings file.',
       sectionOther: 'Other',
@@ -350,6 +352,7 @@
         'Los emotes animados vienen activados y la guía de inicio solo sale la primera vez.',
         '7 estilos rápidos nuevos (Neón, Rúnico, Viñeta, Glaciar, Bosque, Pizarra y Arcade) y fuentes propias para cada estilo.',
         'Puedes cambiar el color de la barra "Kylen Chat", y cada estilo trae el suyo.',
+        'Más fiable: la ventana del chat nunca le quita el teclado al juego y todo se recupera solo tras cortes de internet.',
       ],
       '1.1.2': [
         'Los avisos de Twitch (subs, regalos, raids, rachas de visualización…) salen ahora en tu idioma, en vez de en inglés.',
@@ -368,6 +371,7 @@
         'Animated emotes are on by default, and the welcome guide only shows the first time.',
         '7 new quick styles (Neon, Runic, Comic, Glacier, Forest, Chalkboard and Arcade) and a dedicated font for each style.',
         'You can change the "Kylen Chat" bar color, and each style brings its own.',
+        'More reliable: the chat window never steals keyboard focus from your game, and everything recovers after connection drops.',
       ],
       '1.1.2': [
         'Twitch notices (subs, gifts, raids, watch streaks…) now appear in your language.',

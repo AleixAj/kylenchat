@@ -140,6 +140,24 @@ app.disableHardwareAcceleration();
 // Une el proceso gráfico al principal: unos 40 MB menos de RAM, mismo consumo de CPU.
 app.commandLine.appendSwitch('in-process-gpu');
 
+// ---------- Registro de errores ----------
+// Un error inesperado no debe sacar una ventana en mitad del directo: se apunta en
+// error.log (carpeta de datos de la app) para poder revisarlo, y la app sigue.
+const LOG_MAX_BYTES = 256 * 1024;
+
+function logError(message) {
+  try {
+    const file = path.join(app.getPath('userData'), 'error.log');
+    if (fs.existsSync(file) && fs.statSync(file).size > LOG_MAX_BYTES) fs.renameSync(file, `${file}.old`);
+    fs.appendFileSync(file, `[${new Date().toISOString()}] v${app.getVersion()} ${message}\n`);
+  } catch {
+    // si ni siquiera se puede escribir el registro, no hay nada más que hacer
+  }
+}
+
+process.on('uncaughtException', (err) => logError(err && err.stack ? err.stack : String(err)));
+process.on('unhandledRejection', (err) => logError(err && err.stack ? err.stack : String(err)));
+
 // ---------- Ajustes guardados en disco ----------
 
 const settingsFile = () => path.join(app.getPath('userData'), 'settings.json');
@@ -184,7 +202,7 @@ function writeSettings() {
     fs.writeFileSync(`${file}.tmp`, JSON.stringify(settings, null, 2));
     fs.renameSync(`${file}.tmp`, file);
   } catch (err) {
-    console.error('No se pudieron guardar los ajustes:', err);
+    logError(`No se pudieron guardar los ajustes: ${err.message}`);
   }
 }
 
@@ -245,20 +263,43 @@ function createOverlay() {
     maximizable: false,
     minimizable: false,
     fullscreenable: false,
+    focusable: false, // nunca le quita el teclado al juego (salvo al moverla)
     hasShadow: false,
     show: false,
     webPreferences: { preload: path.join(__dirname, 'preload.js'), spellcheck: false },
   });
   overlay.setAlwaysOnTop(true, 'screen-saver');
   overlay.setIgnoreMouseEvents(true); // los clics atraviesan el chat y llegan al juego
+  overlay.setFocusable(false); // y nunca le quita el teclado al juego (se reaplica tras lo anterior)
   overlay.loadFile('overlay.html');
-  overlay.once('ready-to-show', () => overlay.showInactive());
+  overlay.once('ready-to-show', () => {
+    overlay.showInactive();
+    overlay.setFocusable(editMode); // al mostrarse por primera vez Windows lo reactiva
+  });
+  // Si el proceso de la ventana se cae (muy raro), se recarga en vez de quedarse en blanco.
+  overlay.webContents.on('render-process-gone', (_e, details) => {
+    logError(`Ventana del chat cerrada inesperadamente: ${details.reason}`);
+    if (!overlay.isDestroyed()) overlay.reload();
+  });
+  overlay.webContents.on('did-finish-load', () => {
+    if (editMode) overlay.webContents.send('edit-mode', true);
+    if (testMode) overlay.webContents.send('test-mode', true);
+  });
   overlay.on('moved', rememberBounds);
 
   // Algunos juegos en modo "sin bordes" se ponen delante; lo volvemos a subir de vez en cuando.
   setInterval(() => {
     if (!overlay.isDestroyed() && visible) overlay.setAlwaysOnTop(true, 'screen-saver');
   }, 10000);
+}
+
+// Si se desconecta el monitor donde estaba el chat, se trae a la pantalla principal.
+function keepOnScreen() {
+  if (!overlay || overlay.isDestroyed()) return;
+  if (!boundsOnScreen(overlay.getBounds())) {
+    overlay.setBounds(defaultBounds());
+    rememberBounds();
+  }
 }
 
 function rememberBounds() {
@@ -270,6 +311,10 @@ function rememberBounds() {
 function setEditMode(on) {
   editMode = on;
   overlay.setIgnoreMouseEvents(!on);
+  // Después de setIgnoreMouseEvents, que en Windows reescribe los estilos de la ventana.
+  overlay.setFocusable(on);
+  // Al fijarla, devuelve el teclado a la ventana de detrás (normalmente el juego).
+  if (!on) overlay.blur();
   if (on && !visible) setVisible(true);
   overlay.webContents.send('edit-mode', on);
   sendState();
@@ -390,7 +435,7 @@ function setupAutoUpdate() {
     sendState();
     updateTrayMenu();
   });
-  autoUpdater.on('error', (err) => console.error('Error al buscar actualizaciones:', err));
+  autoUpdater.on('error', (err) => logError(`Actualización: ${err.message}`));
   const check = () => autoUpdater.checkForUpdates().catch(() => {});
   check();
   setInterval(check, 4 * 60 * 60 * 1000);
@@ -467,8 +512,13 @@ async function exportSettings() {
   settings.bounds = overlay.getBounds();
   const data = { app: 'kylen-chat-for-twitch', version: app.getVersion(), settings: { ...settings } };
   for (const key of LOCAL_KEYS) delete data.settings[key];
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-  return 'ok';
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    return 'ok';
+  } catch (err) {
+    logError(`No se pudo exportar la configuración: ${err.message}`);
+    return 'error';
+  }
 }
 
 async function importSettings() {
@@ -586,6 +636,8 @@ if (!app.requestSingleInstanceLock()) {
 
     // Al volver de suspensión la conexión suele quedar muerta: se reconecta al momento.
     powerMonitor.on('resume', () => overlay.webContents.send('reconnect'));
+    screen.on('display-removed', keepOnScreen);
+    screen.on('display-metrics-changed', keepOnScreen);
 
     setupAutoUpdate();
   });

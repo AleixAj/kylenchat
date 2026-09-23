@@ -306,8 +306,8 @@ $('profileLoad').addEventListener('click', () => api.loadProfile($('profileList'
 $('profileDelete').addEventListener('click', () => api.deleteProfile($('profileList').value));
 $('exportSettings').addEventListener('click', async () => {
   const result = await api.exportSettings();
-  $('backupStatus').classList.remove('bad');
-  $('backupStatus').textContent = result === 'ok' ? tr('exportOk') : '';
+  $('backupStatus').classList.toggle('bad', result === 'error');
+  $('backupStatus').textContent = { ok: tr('exportOk'), error: tr('exportError') }[result] || '';
 });
 $('importSettings').addEventListener('click', async () => {
   const result = await api.importSettings();
