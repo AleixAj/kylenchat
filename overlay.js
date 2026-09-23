@@ -93,6 +93,7 @@ function connect(channel) {
   }
   joined = channel;
   document.getElementById('barChannel').textContent = channel ? `#${channel}` : '';
+  if (channel) showChannelName(channel);
   startViewers();
   if (!channel) {
     system(tr('enterChannel'));
@@ -134,6 +135,14 @@ function connect(channel) {
     retries++;
     reconnectTimer = setTimeout(() => connect(joined), delay);
   };
+}
+
+// En la barra, el canal escrito como lo escribe el streamer ("#AlvaroStorm"), no en minúsculas.
+async function showChannelName(channel) {
+  const data = await getJSON(`https://api.ivr.fi/v2/twitch/user?login=${encodeURIComponent(channel)}`);
+  const name = Array.isArray(data) && data[0] && data[0].displayName;
+  if (channel !== joined || typeof name !== 'string' || name.toLowerCase() !== channel) return;
+  document.getElementById('barChannel').textContent = `#${name}`;
 }
 
 function onJoined(roomId) {

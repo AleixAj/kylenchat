@@ -148,7 +148,7 @@ function fillFields(newSettings) {
 // Acepta "nombre", "#nombre", "@nombre" o el enlace completo de twitch.tv.
 function normalizeChannel(value) {
   return value.trim()
-    .replace(/^https?:\/\/(www\.|m\.)?twitch\.tv\//i, '')
+    .replace(/^(https?:\/\/)?(www\.|m\.)?twitch\.tv\//i, '')
     .replace(/^[#@]/, '')
     .split(/[/?]/)[0]
     .toLowerCase();
@@ -386,10 +386,17 @@ function saveLiveList(list) {
   api.setSettings({ liveChannels: list.join(', ') });
 }
 
+let liveListKey = '';
+
 function renderLiveList() {
   if (!settings) return;
   const live = (lastState && lastState.liveNow) || {};
+  const names = (lastState && lastState.channelNames) || {};
   const list = liveList();
+  // El estado llega muy a menudo (p. ej. al redimensionar): solo se redibuja si algo cambia.
+  const key = JSON.stringify([lang, list, live, names]);
+  if (key === liveListKey) return;
+  liveListKey = key;
   const ul = $('liveList');
   ul.replaceChildren(...list.map((channel) => {
     const li = document.createElement('li');
@@ -398,20 +405,27 @@ function renderLiveList() {
     dot.className = 'dot';
     const name = document.createElement('span');
     name.className = 'name';
-    name.textContent = live[channel] || channel;
+    name.textContent = channelLabel(channel, names[channel] || live[channel]);
     const tag = document.createElement('span');
     tag.className = 'tag';
     tag.textContent = tr('liveOn');
     const remove = document.createElement('button');
     remove.className = 'remove';
     remove.textContent = '×';
-    remove.title = tr('liveRemove', { name: live[channel] || channel });
+    remove.title = tr('liveRemove', { name: channelLabel(channel, names[channel] || live[channel]) });
     remove.setAttribute('aria-label', remove.title);
     remove.addEventListener('click', () => saveLiveList(liveList().filter((c) => c !== channel)));
     li.append(dot, name, tag, remove);
     return li;
   }));
   $('liveEmpty').hidden = list.length > 0;
+}
+
+// Como lo escribe el propio streamer ("AlvaroStorm"). Si su nombre visible está en otro
+// alfabeto, se añade el nombre de usuario para que se sepa qué canal es.
+function channelLabel(channel, displayName) {
+  if (!displayName) return channel;
+  return displayName.toLowerCase() === channel ? displayName : `${displayName} (${channel})`;
 }
 
 function addLiveChannel() {

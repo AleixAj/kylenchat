@@ -124,7 +124,7 @@ Si cierras la ventana de ajustes, la app sigue funcionando en la bandeja (junto 
 
 ### Avisos de directo
 
-En la pestaña **Avisos** escribe un canal (o pega su enlace de twitch.tv) y pulsa **Añadir**. Los que están en directo en ese momento salen con un punto rojo. La app lo comprueba cada minuto con una consulta muy pequeña, sin iniciar sesión en Twitch.
+En la pestaña **Avisos** escribe un canal (o pega su enlace de twitch.tv) y pulsa **Añadir**. Los que están en directo en ese momento salen con un punto rojo. La app lo comprueba cada minuto con una consulta ligera, sin iniciar sesión en Twitch.
 
 Cuando uno empieza directo te avisa con:
 

@@ -99,11 +99,12 @@ const SCHEMA = {
   showBadges: isBool,
   timestamps: isBool,
   mutedUsers: isText(1000),
-  liveChannels: isText(1500),
+  liveChannels: isText(2700), // 100 canales de hasta 25 letras, separados por comas
   liveDuration: inRange(3, 30),
   liveSound: isBool,
   liveVolume: inRange(0, 100),
-  alertBounds: (v) => v === null || (v && ['x', 'y', 'width', 'height'].every((k) => Number.isFinite(v[k]))),
+  alertBounds: (v) => v === null || (v && ['x', 'y'].every((k) => Number.isFinite(v[k]))
+    && inRange(200, 4000)(v.width) && inRange(60, 2000)(v.height)),
   showDeleted: isBool,
   shortcuts: isShortcuts,
   align: (v) => v === 'left' || v === 'right',
@@ -329,6 +330,7 @@ function createOverlay() {
   // Algunos juegos en modo "sin bordes" se ponen delante; lo volvemos a subir de vez en cuando.
   setInterval(() => {
     if (!overlay.isDestroyed() && visible) overlay.setAlwaysOnTop(true, 'screen-saver');
+    if (alertWin && !alertWin.isDestroyed() && alertWin.isVisible()) alertWin.setAlwaysOnTop(true, 'screen-saver');
   }, 10000);
 }
 
@@ -433,6 +435,7 @@ function createPanel() {
     // Al cerrar los ajustes se vuelve al chat real y se fija la posición.
     if (editMode) setEditMode(false);
     if (testMode) setTestMode(false);
+    if (alertEdit) setAlertEdit(false);
   });
 }
 
@@ -455,6 +458,7 @@ function state() {
     canAutoStart: app.isPackaged,
     whatsNew,
     liveNow: Object.fromEntries(liveNow), // canal -> nombre visible
+    channelNames: Object.fromEntries(channelNames),
     alertEdit,
   };
 }
@@ -567,7 +571,7 @@ function installUpdate() {
 
 // ---------- Avisos de directo ----------
 // Cada minuto se pregunta a api.ivr.fi (la misma que da los espectadores) qué canales de la
-// lista están en directo: una sola petición pequeña para todos, sin iniciar sesión en Twitch.
+// lista están en directo: una petición ligera por cada 50 canales, sin iniciar sesión en Twitch.
 // El aviso sale en un recuadro propio encima del juego (no como notificación de Windows,
 // que además Windows suele esconder mientras se juega).
 
@@ -579,6 +583,7 @@ let liveRound = 0; // si se cambia la lista a mitad de una comprobación, la vie
 let liveErrorLogged = false;
 const liveSeen = new Map(); // canal -> id del directo visto la última vez (null si no estaba en directo)
 const liveNow = new Map(); // canal -> nombre visible, de los que están en directo ahora
+const channelNames = new Map(); // canal -> nombre tal como lo escribe el streamer ("AlvaroStorm")
 const liveNotified = new Set(); // directos (por id) ya avisados, por si la API parpadea
 
 function liveChannelList() {
@@ -598,6 +603,7 @@ function restartLiveWatch() {
     if (!channels.includes(c)) {
       liveSeen.delete(c);
       liveNow.delete(c);
+      channelNames.delete(c);
     }
   }
   sendState();
@@ -609,12 +615,22 @@ async function checkLive(round) {
   try {
     for (let i = 0; i < channels.length; i += LIVE_BATCH) {
       const batch = channels.slice(i, i + LIVE_BATCH);
-      const res = await net.fetch(`https://api.ivr.fi/v2/twitch/user?login=${batch.join(',')}`);
+      const res = await net.fetch(`https://api.ivr.fi/v2/twitch/user?login=${batch.join(',')}`, {
+        signal: AbortSignal.timeout(15000), // si no contesta, se reintenta en el siguiente minuto
+      });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const users = await res.json();
       if (!Array.isArray(users)) throw new Error('respuesta inesperada');
       if (round !== liveRound) return; // la lista ha cambiado mientras tanto
       for (const user of users) onLiveStatus(user);
+      // Un canal que ya no aparece (baneado, renombrado...) deja de marcarse en directo.
+      const answered = new Set(users.map((u) => String((u && u.login) || '').toLowerCase()));
+      for (const channel of batch) {
+        if (!answered.has(channel)) {
+          liveSeen.set(channel, null);
+          liveNow.delete(channel);
+        }
+      }
     }
     liveErrorLogged = false;
     sendState();
@@ -631,6 +647,7 @@ function onLiveStatus(user) {
   if (!/^[a-z0-9_]{1,25}$/.test(login)) return;
   const stream = user.stream && user.stream.type === 'live' ? user.stream : null;
   const name = typeof user.displayName === 'string' && user.displayName ? user.displayName : login;
+  channelNames.set(login, name);
   const firstLook = !liveSeen.has(login);
   const previous = liveSeen.get(login);
   liveSeen.set(login, stream ? String(stream.id) : null);
@@ -664,6 +681,7 @@ let alertWin = null;
 let alertReady = false; // la ventana ya ha cargado y tiene los ajustes
 let alertEdit = false; // se está moviendo y ajustando con el aviso de ejemplo
 const alertQueue = [];
+let alertSent = 0; // avisos enviados a la ventana actual (para no cerrarla con uno recién llegado)
 
 function defaultAlertBounds() {
   const wa = screen.getPrimaryDisplay().workArea;
@@ -675,8 +693,9 @@ function defaultAlertBounds() {
 function ensureAlertWindow() {
   if (alertWin && !alertWin.isDestroyed()) return;
   alertReady = false;
+  alertSent = 0;
   const b = boundsOnScreen(settings.alertBounds) || defaultAlertBounds();
-  alertWin = new BrowserWindow({
+  const win = new BrowserWindow({
     ...b,
     frame: false,
     transparent: true,
@@ -696,19 +715,21 @@ function ensureAlertWindow() {
       autoplayPolicy: 'no-user-gesture-required', // el sonido suena sin haber hecho clic antes
     },
   });
-  alertWin.setAlwaysOnTop(true, 'screen-saver');
-  if (isMac) alertWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  alertWin.setIgnoreMouseEvents(!alertEdit);
-  alertWin.setFocusable(alertEdit);
-  alertWin.loadFile('alert.html');
-  alertWin.on('moved', rememberAlertBounds);
-  alertWin.on('closed', () => {
+  alertWin = win;
+  win.setAlwaysOnTop(true, 'screen-saver');
+  if (isMac) win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  win.setIgnoreMouseEvents(!alertEdit);
+  win.setFocusable(alertEdit);
+  win.loadFile('alert.html');
+  win.on('moved', rememberAlertBounds);
+  win.on('closed', () => {
+    if (alertWin !== win) return; // ya hay otra ventana nueva
     alertWin = null;
     alertReady = false;
   });
-  alertWin.webContents.on('render-process-gone', (_e, details) => {
+  win.webContents.on('render-process-gone', (_e, details) => {
     logError(`Ventana del aviso cerrada inesperadamente: ${details.reason}`);
-    if (alertWin && !alertWin.isDestroyed()) alertWin.destroy();
+    if (!win.isDestroyed()) win.destroy();
   });
 }
 
@@ -723,7 +744,10 @@ function queueAlert(info) {
 }
 
 function flushAlerts() {
-  while (alertReady && alertQueue.length) sendToAlert('live-alert', alertQueue.shift());
+  while (alertReady && alertQueue.length) {
+    alertSent++;
+    sendToAlert('live-alert', alertQueue.shift());
+  }
 }
 
 function setAlertEdit(on) {
@@ -766,6 +790,7 @@ ipcMain.on('alert-ready', (e) => {
   if (!fromAlert(e)) return;
   alertReady = true;
   if (alertEdit) sendToAlert('alert-edit', true);
+  else if (!alertQueue.length) return alertWin.destroy(); // se apagó "Mover" antes de que cargara
   flushAlerts();
 });
 ipcMain.on('alert-show', (e) => {
@@ -773,8 +798,9 @@ ipcMain.on('alert-show', (e) => {
   alertWin.showInactive();
   alertWin.setFocusable(alertEdit); // al mostrarse Windows lo reactiva
 });
-ipcMain.on('alert-idle', (e) => {
-  if (fromAlert(e) && !alertEdit && !alertQueue.length) alertWin.destroy();
+// La ventana dice cuántos avisos ha recibido: si llegó otro mientras tanto, no se cierra.
+ipcMain.on('alert-idle', (e, received) => {
+  if (fromAlert(e) && !alertEdit && !alertQueue.length && received === alertSent) alertWin.destroy();
 });
 ipcMain.on('toggle-alert-edit', () => setAlertEdit(!alertEdit));
 ipcMain.on('set-alert-position', (_e, pos) => setAlertPosition(pos));
@@ -867,6 +893,7 @@ async function importSettings() {
     const { bounds, ...rest } = clean;
     Object.assign(settings, rest);
     if (bounds) applyBounds(bounds);
+    if ('liveChannels' in rest) restartLiveWatch();
     applyLanguage();
     afterProfileChange();
     return 'ok';

@@ -141,7 +141,6 @@
       liveTag: 'EN DIRECTO',
       liveTest: 'Probar aviso',
       liveTestTitle: 'Así se verá el aviso cuando un canal empiece directo.',
-      liveAlert: '🔴 {name} está en directo',
       idleHide: 'Atenuar si no hay mensajes',
       sectionProfiles: 'Perfiles',
       profilesNote: 'Guarda el aspecto y la posición para cada juego. {keys} pasa al siguiente perfil.',
@@ -353,7 +352,6 @@
       liveTag: 'LIVE',
       liveTest: 'Test alert',
       liveTestTitle: 'This is how the alert will look when a channel goes live.',
-      liveAlert: '🔴 {name} is live',
       idleHide: 'Dim when chat is quiet',
       sectionProfiles: 'Profiles',
       profilesNote: 'Save the look and position for each game. {keys} switches to the next profile.',
@@ -430,6 +428,7 @@
     es: {
       '1.2.0': [
         'Avisos de directo: añade canales en la pestaña Avisos y te avisamos cuando empiecen directo, con un recuadro encima del juego que puedes mover y ajustar, y sonido.',
+        'Los nombres de los canales se ven como los escribe cada streamer (p. ej. #TheGrefg en vez de #thegrefg).',
       ],
       '1.1.5': [
         'Primera versión para Mac (en pruebas).',
@@ -461,6 +460,7 @@
     en: {
       '1.2.0': [
         'Live alerts: add channels in the Alerts tab and get notified when they go live, with an alert box on top of your game that you can move and resize, and a sound.',
+        'Channel names now show the way each streamer writes them (e.g. #TheGrefg instead of #thegrefg).',
       ],
       '1.1.5': [
         'First version for Mac (beta).',

@@ -21,7 +21,7 @@ contextBridge.exposeInMainWorld('api', {
   resetAlertBounds: () => ipcRenderer.send('reset-alert-bounds'),
   alertReady: () => ipcRenderer.send('alert-ready'),
   alertShow: () => ipcRenderer.send('alert-show'),
-  alertIdle: () => ipcRenderer.send('alert-idle'),
+  alertIdle: (received) => ipcRenderer.send('alert-idle', received),
   pauseShortcuts: () => ipcRenderer.send('pause-shortcuts'),
   resumeShortcuts: () => ipcRenderer.send('resume-shortcuts'),
   openRepo: () => ipcRenderer.send('open-repo'),

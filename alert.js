@@ -8,7 +8,9 @@ const queue = [];
 let settings = null;
 let editing = false;
 let current = null; // tarjeta que se está viendo
+let currentInfo = null; // y sus datos, por si hay que volver a enseñarla
 let hideTimer = null;
+let received = 0; // avisos recibidos (el proceso principal lo compara antes de cerrar la ventana)
 
 const tr = (key, vars) => i18n.t(settings ? settings.language : 'es', key, vars);
 
@@ -49,6 +51,7 @@ function dismissCurrent(then) {
   clearTimeout(hideTimer);
   const card = current;
   current = null;
+  currentInfo = null;
   if (!card) return then && then();
   card.classList.add('hide');
   setTimeout(() => { card.remove(); if (then) then(); }, 600); // lo que dura la animación de salida
@@ -59,13 +62,15 @@ function showNext() {
   const info = queue.shift();
   if (!info) return maybeIdle();
   api.alertShow();
+  playSound(); // suena con cada aviso que aparece
   present(makeCard(info));
+  currentInfo = info;
   hideTimer = setTimeout(() => dismissCurrent(showNext), settings.liveDuration * 1000);
 }
 
 // Nada en pantalla, nada en cola y el sonido ya ha terminado: la ventana se puede cerrar.
 function maybeIdle() {
-  if (!current && !queue.length && !editing && sound.paused) api.alertIdle();
+  if (!current && !queue.length && !editing && sound.paused) api.alertIdle(received);
 }
 
 function playSound() {
@@ -76,7 +81,7 @@ function playSound() {
 }
 
 function onAlert(info) {
-  playSound();
+  received++;
   queue.push(info);
   showNext();
 }
@@ -86,6 +91,8 @@ function setEditing(on) {
   document.body.classList.toggle('edit', on);
   if (on) {
     // Un aviso de ejemplo que se queda fijo mientras se mueve y se ajusta el recuadro.
+    // Si se estaba viendo uno de verdad, vuelve a la cola y sale al fijar el recuadro.
+    if (currentInfo) queue.unshift(currentInfo);
     dismissCurrent();
     for (const el of document.querySelectorAll('.card')) el.remove();
     api.alertShow();
