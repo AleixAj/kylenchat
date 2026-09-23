@@ -1,7 +1,7 @@
 {
   "name": "kylen-chat-for-twitch",
   "productName": "Kylen Chat for Twitch",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Chat de Twitch transparente encima del juego, para streamers con una sola pantalla",
   "main": "main.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "author": "Aleix Aj",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AleixAj/kylentwitchchat.git"
+    "url": "https://github.com/AleixAj/kylenchat.git"
   },
   "build": {
     "appId": "com.kylen.twitchchat",
@@ -57,7 +57,7 @@
     "publish": {
       "provider": "github",
       "owner": "AleixAj",
-      "repo": "kylentwitchchat",
+      "repo": "kylenchat",
       "releaseType": "draft"
     },
     "electronLanguages": [

@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const { t, LANGUAGES } = require('./i18n');
 
-const REPO_URL = 'https://github.com/AleixAj/kylentwitchchat';
+const REPO_URL = 'https://github.com/AleixAj/kylenchat';
 
 const DEFAULTS = {
   language: 'es',

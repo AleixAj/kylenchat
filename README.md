@@ -12,17 +12,17 @@
 <h2 align="center">DESCARGAS</h2>
 
 <p align="center">
-  <a href="https://github.com/AleixAj/kylentwitchchat/releases/latest/download/KylenChat-Setup.exe">
+  <a href="https://github.com/AleixAj/kylenchat/releases/latest/download/KylenChat-Setup.exe">
     <img src="assets/readme/btn-download.svg" alt="Descargar para Windows (instalador)" width="460">
   </a>
 </p>
 <p align="center">
-  <a href="https://github.com/AleixAj/kylentwitchchat/releases/latest/download/KylenChat-Portable.zip">
+  <a href="https://github.com/AleixAj/kylenchat/releases/latest/download/KylenChat-Portable.zip">
     <img src="assets/readme/btn-portable.svg" alt="Descargar versión portable (.zip)" width="320">
   </a>
 </p>
 <p align="center">
-  <sub>Windows 10 y 11 · Gratis · <a href="https://github.com/AleixAj/kylentwitchchat/releases">Todas las versiones</a></sub>
+  <sub>Windows 10 y 11 · Gratis · <a href="https://github.com/AleixAj/kylenchat/releases">Todas las versiones</a></sub>
 </p>
 
 ---
@@ -143,7 +143,7 @@ El instalador queda en `dist/`.
 
    Necesita la [CLI de GitHub](https://cli.github.com/) (`gh`) con la sesión iniciada.
 
-   Esto sube el instalador, la versión portable, `latest.yml` y el `.blockmap` a un borrador en [Releases](https://github.com/AleixAj/kylentwitchchat/releases). Nadie lo ve todavía.
+   Esto sube el instalador, la versión portable, `latest.yml` y el `.blockmap` a un borrador en [Releases](https://github.com/AleixAj/kylenchat/releases). Nadie lo ve todavía.
 3. Cuando quieras que esté disponible, abre el borrador en GitHub, escribe las novedades y pulsa **Publish release**.
 4. Desde ese momento, la gente puede descargarla y las apps ya instaladas se actualizan solas: buscan versiones nuevas al arrancar y cada 4 horas, la descargan y avisan para reiniciar. Si no se reinicia, se instala al cerrar la app.
 
