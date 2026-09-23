@@ -17,6 +17,8 @@ contextBridge.exposeInMainWorld('api', {
   downloadUpdate: () => ipcRenderer.send('download-update'),
   testLiveAlert: () => ipcRenderer.send('test-live-alert'),
   toggleAlertEdit: () => ipcRenderer.send('toggle-alert-edit'),
+  setAlertPosition: (pos) => ipcRenderer.send('set-alert-position', pos),
+  resetAlertBounds: () => ipcRenderer.send('reset-alert-bounds'),
   alertReady: () => ipcRenderer.send('alert-ready'),
   alertShow: () => ipcRenderer.send('alert-show'),
   alertIdle: () => ipcRenderer.send('alert-idle'),

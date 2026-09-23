@@ -455,6 +455,8 @@ $('connect').addEventListener('click', connect);
 $('channel').addEventListener('keydown', (e) => e.key === 'Enter' && connect());
 $('liveTest').addEventListener('click', () => api.testLiveAlert());
 $('liveMove').addEventListener('click', () => api.toggleAlertEdit());
+$('liveReset').addEventListener('click', () => api.resetAlertBounds());
+document.querySelectorAll('[data-alert-pos]').forEach((b) => b.addEventListener('click', () => api.setAlertPosition(b.dataset.alertPos)));
 $('liveAddBtn').addEventListener('click', addLiveChannel);
 $('liveAdd').addEventListener('keydown', (e) => { if (e.key === 'Enter') addLiveChannel(); });
 $('liveAdd').addEventListener('input', () => { $('liveAddError').textContent = ''; });

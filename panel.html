@@ -250,14 +250,31 @@
     </section>
 
     <section>
-      <h2 data-i18n="sectionLiveHow"></h2>
+      <h2 data-i18n="sectionPosition"></h2>
       <p class="note" data-i18n="liveBoxNote"></p>
-      <div class="row"><label for="liveDuration" data-i18n="liveDuration"></label><input type="range" id="liveDuration" min="3" max="30"><span class="val" id="liveDurationVal"></span></div>
-      <button class="wide" id="liveMove"></button>
+      <div class="row">
+        <label data-i18n="placeAt"></label>
+        <div class="grid">
+          <button data-alert-pos="top-left" data-i18n-title="posTopLeft">↖</button>
+          <button data-alert-pos="top-center" data-i18n-title="posTopCenter">↑</button>
+          <button data-alert-pos="top-right" data-i18n-title="posTopRight">↗</button>
+          <button data-alert-pos="middle-left" data-i18n-title="posMiddleLeft">←</button>
+          <button data-alert-pos="middle-center" data-i18n-title="posMiddleCenter">•</button>
+          <button data-alert-pos="middle-right" data-i18n-title="posMiddleRight">→</button>
+          <button data-alert-pos="bottom-left" data-i18n-title="posBottomLeft">↙</button>
+          <button data-alert-pos="bottom-center" data-i18n-title="posBottomCenter">↓</button>
+          <button data-alert-pos="bottom-right" data-i18n-title="posBottomRight">↘</button>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="liveMove"></button>
+        <button id="liveReset" data-i18n="liveReset"></button>
+      </div>
     </section>
 
     <section>
-      <h2 data-i18n="sectionLiveSound"></h2>
+      <h2 data-i18n="sectionLiveAlert"></h2>
+      <div class="row"><label for="liveDuration" data-i18n="liveDuration"></label><input type="range" id="liveDuration" min="3" max="30"><span class="val" id="liveDurationVal"></span></div>
       <div class="row"><label for="liveSound" data-i18n="liveSound"></label><input type="checkbox" id="liveSound"></div>
       <div class="row"><label for="liveVolume" data-i18n="liveVolume"></label><input type="range" id="liveVolume" min="0" max="100" step="5"><span class="val" id="liveVolumeVal"></span></div>
       <button class="wide" id="liveTest" data-i18n="liveTest"></button>

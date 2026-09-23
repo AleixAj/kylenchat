@@ -384,15 +384,19 @@ function setTestMode(on) {
 
 const POSITIONS = ['top-left', 'top-center', 'top-right', 'middle-left', 'middle-center', 'middle-right', 'bottom-left', 'bottom-center', 'bottom-right'];
 
-function setPosition(pos) {
-  if (!POSITIONS.includes(pos)) return;
-  const b = overlay.getBounds();
+// Coloca una ventana en una esquina, un borde o el centro de su pantalla, a 10 px del borde.
+function placedAt(b, pos) {
   const wa = screen.getDisplayMatching(b).workArea;
   const m = 10;
   const [v, h] = pos.split('-');
   const xs = { left: wa.x + m, center: wa.x + Math.round((wa.width - b.width) / 2), right: wa.x + wa.width - b.width - m };
   const ys = { top: wa.y + m, middle: wa.y + Math.round((wa.height - b.height) / 2), bottom: wa.y + wa.height - b.height - m };
-  overlay.setBounds({ ...b, x: xs[h], y: ys[v] });
+  return { ...b, x: xs[h], y: ys[v] };
+}
+
+function setPosition(pos) {
+  if (!POSITIONS.includes(pos)) return;
+  overlay.setBounds(placedAt(overlay.getBounds(), pos));
   rememberBounds();
 }
 
@@ -743,6 +747,19 @@ function rememberAlertBounds() {
   saveSettings();
 }
 
+// Las flechas y el botón de restablecer enseñan el aviso de ejemplo para ver dónde queda.
+function setAlertBounds(b) {
+  if (!alertEdit) setAlertEdit(true);
+  alertWin.setBounds(b);
+  rememberAlertBounds();
+}
+
+function setAlertPosition(pos) {
+  if (!POSITIONS.includes(pos)) return;
+  const current = (alertWin && !alertWin.isDestroyed() && alertWin.getBounds()) || boundsOnScreen(settings.alertBounds) || defaultAlertBounds();
+  setAlertBounds(placedAt(current, pos));
+}
+
 const fromAlert = (e) => Boolean(alertWin) && !alertWin.isDestroyed() && e.sender === alertWin.webContents;
 
 ipcMain.on('alert-ready', (e) => {
@@ -760,6 +777,8 @@ ipcMain.on('alert-idle', (e) => {
   if (fromAlert(e) && !alertEdit && !alertQueue.length) alertWin.destroy();
 });
 ipcMain.on('toggle-alert-edit', () => setAlertEdit(!alertEdit));
+ipcMain.on('set-alert-position', (_e, pos) => setAlertPosition(pos));
+ipcMain.on('reset-alert-bounds', () => setAlertBounds(defaultAlertBounds()));
 
 // ---------- Perfiles (una configuración por juego) ----------
 
