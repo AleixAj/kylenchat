@@ -213,7 +213,7 @@ function handle(m, sock) {
       if (!testMode) addMessage(messageFrom(m));
       break;
     case 'USERNOTICE': // subs, regalos, raids, anuncios...
-      if (!testMode) addNotice(unescapeTag(m.tags['system-msg'] || ''), m.trailing ? messageFrom(m) : null);
+      if (!testMode) addNotice(noticeText(m.tags), m.trailing ? messageFrom(m) : null);
       break;
     case 'CLEARCHAT': // un moderador ha borrado el chat o baneado a alguien
       removeWhere(m.trailing ? (el) => el.dataset.user === m.trailing.toLowerCase() : () => true);
@@ -357,6 +357,55 @@ function addMessage(msg) {
 }
 
 // Aviso destacado: "X se ha suscrito", "Y está haciendo raid con 50 espectadores"...
+// Twitch manda el texto de los avisos solo en inglés ("system-msg"). Para los tipos
+// conocidos se construye en el idioma de la app con los datos del aviso; para el resto
+// se usa el texto de Twitch tal cual.
+const ANON_GIFTERS = new Set(['ananonymousgifter', 'ananonymouscheerer']);
+
+function noticeText(tags) {
+  const p = (key) => unescapeTag(tags[`msg-param-${key}`] || '');
+  const user = unescapeTag(tags['display-name'] || tags.login || '');
+  const name = ANON_GIFTERS.has(tags.login) ? tr('anonymous') : user;
+  const planCode = p('sub-plan');
+  const plan = planCode === 'Prime' ? tr('planPrime') : tr('planTier', { n: String(Number(planCode) / 1000 || 1) });
+  const months = Number(p('cumulative-months')) || 0;
+  const sender = p('sender-name') || p('prior-gifter-display-name');
+
+  switch (tags['msg-id']) {
+    case 'sub':
+      return tr('noticeSub', { name, plan });
+    case 'resub':
+      return months > 1 ? tr('noticeResub', { name, plan, months }) : tr('noticeSub', { name, plan });
+    case 'subgift': {
+      const giftMonths = Number(p('gift-months')) || 1;
+      const recipient = p('recipient-display-name');
+      return giftMonths > 1
+        ? tr('noticeSubGiftMonths', { name, plan, recipient, months: giftMonths })
+        : tr('noticeSubGift', { name, plan, recipient });
+    }
+    case 'submysterygift':
+      return tr('noticeMysteryGift', { name, plan, count: p('mass-gift-count') });
+    case 'raid':
+      return tr('noticeRaid', { name: p('displayName') || user, count: p('viewerCount') });
+    case 'viewermilestone':
+      if (p('category') === 'watch-streak') return tr('noticeWatchStreak', { name, count: p('value') });
+      break;
+    case 'giftpaidupgrade':
+      return tr('noticeGiftUpgrade', { name, sender });
+    case 'anongiftpaidupgrade':
+      return tr('noticeGiftUpgradeAnon', { name });
+    case 'primepaidupgrade':
+      return tr('noticePrimeUpgrade', { name, plan });
+    case 'bitsbadgetier':
+      return tr('noticeBitsBadge', { name, count: p('threshold') });
+    case 'standardpayforward':
+      return tr('noticePayForward', { name, sender });
+    case 'communitypayforward':
+      return tr('noticePayForwardCommunity', { name, sender });
+  }
+  return unescapeTag(tags['system-msg'] || '');
+}
+
 function addNotice(systemText, msg) {
   if (msg && isFiltered(msg)) msg = null; // el aviso se ve, pero sin el mensaje filtrado
   if (!systemText && !msg) return;
