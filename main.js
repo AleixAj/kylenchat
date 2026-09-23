@@ -20,7 +20,7 @@ const DEFAULTS = {
   bgOpacity: 35,
   outline: true,
   opacity: 100,
-  maxMessages: 30,
+  maxMessages: 20,
   fadeAfter: 0,
   animatedEmotes: true,
   hideBots: false,
@@ -32,7 +32,7 @@ const DEFAULTS = {
   mutedUsers: '',
   align: 'left',
   newestOnTop: false,
-  idleHide: 0,
+  idleHide: 120,
   emoteScale: 1.6,
   autoStart: false,
   bounds: null,
@@ -144,11 +144,19 @@ const settingsFile = () => path.join(app.getPath('userData'), 'settings.json');
 // Ignora la marca invisible (BOM) que añaden algunos editores como el Bloc de notas.
 const readJSON = (file) => JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
 
+// Primera vez: idioma según el de Windows. Castellano para España y sus otras lenguas
+// (catalán, gallego, euskera) y para Latinoamérica; inglés para el resto.
+function systemLanguage() {
+  const code = app.getLocale().toLowerCase().split('-')[0];
+  return ['es', 'ca', 'gl', 'eu'].includes(code) ? 'es' : 'en';
+}
+
 function loadSettings() {
+  const defaults = { ...DEFAULTS, language: systemLanguage() };
   try {
-    return { ...DEFAULTS, ...sanitize(readJSON(settingsFile())) };
+    return { ...defaults, ...sanitize(readJSON(settingsFile())) };
   } catch {
-    return { ...DEFAULTS };
+    return defaults;
   }
 }
 
