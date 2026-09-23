@@ -25,6 +25,15 @@
   <sub>Windows 10 y 11 · Gratis · <a href="https://github.com/AleixAj/kylenchat/releases">Todas las versiones</a></sub>
 </p>
 
+## Así se ve
+
+<p align="center">
+  <img src="assets/readme/demo.png" alt="Kylen Chat encima de una partida de League of Legends, con menciones, subs, bits y raids destacados" width="520">
+</p>
+<p align="center">
+  <sub>El chat encima de una partida, alineado a la derecha, en modo prueba.</sub>
+</p>
+
 ---
 
 ## Qué hace

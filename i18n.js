@@ -326,6 +326,9 @@
   // Novedades de cada versión, para el aviso que sale tras actualizar.
   const CHANGELOG = {
     es: {
+      '1.1.2': [
+        'Los avisos de Twitch (subs, regalos, raids, rachas de visualización…) salen ahora en tu idioma, en vez de en inglés.',
+      ],
       '1.1.0': [
         'Menciones y palabras clave destacadas, primer mensaje, insignias, bits, canjes y respuestas.',
         '7 estilos rápidos (nuevo: Sakura 🌸), silenciar usuarios, alineación a la derecha y mensajes nuevos arriba.',
@@ -334,6 +337,9 @@
       ],
     },
     en: {
+      '1.1.2': [
+        'Twitch notices (subs, gifts, raids, watch streaks…) now appear in your language.',
+      ],
       '1.1.0': [
         'Highlighted mentions and keywords, first messages, badges, bits, redemptions and replies.',
         '7 quick styles (new: Sakura 🌸), mute users, right alignment and newest messages on top.',
