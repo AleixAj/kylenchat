@@ -5,6 +5,9 @@
 <h1 align="center">Kylen Chat for Twitch</h1>
 
 <p align="center">
+  <sub>Leer esta página en:</sub>
+</p>
+<p align="center">
   <img src="assets/readme/lang-es-active.svg" alt="Español" width="170">
   <a href="README.en.md"><img src="assets/readme/lang-en.svg" alt="English" width="170"></a>
   <a href="README.ca.md"><img src="assets/readme/lang-ca.svg" alt="Català" width="170"></a>
@@ -36,7 +39,7 @@
   </a>
 </p>
 <p align="center">
-  <sub><a href="#mac-en-pruebas">Leer antes de instalar en Mac</a> · <a href="https://github.com/AleixAj/kylenchat/releases">Todas las versiones</a></sub>
+  <sub>La app viene en español e inglés · <a href="#mac-en-pruebas">Leer antes de instalar en Mac</a> · <a href="https://github.com/AleixAj/kylenchat/releases">Todas las versiones</a></sub>
 </p>
 
 ## Así se ve
