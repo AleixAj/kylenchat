@@ -131,7 +131,12 @@ let editMode = false;
 let visible = true;
 let testMode = false;
 let resizeStartBounds = null;
-let updateReady = null; // versión nueva ya descargada, lista para instalar
+// Actualizaciones: primero solo se comprueba (un archivo de 1 KB); la descarga (~100 MB)
+// empieza únicamente cuando el usuario pulsa "Descargar", para no subirle el ping en partida.
+let updateAvailable = null; // versión nueva publicada, todavía sin descargar
+let updateProgress = null;  // 0-100 mientras se descarga; null si no se está descargando
+let updateError = false;    // la última descarga falló (se puede reintentar)
+let updateReady = null;     // versión ya descargada, lista para instalar
 let whatsNew = null; // versión recién actualizada cuyas novedades hay que enseñar
 const shortcutErrors = [];
 
@@ -398,6 +403,9 @@ function state() {
     bounds,
     maxSize: { width: workArea.width, height: workArea.height },
     version: app.getVersion(),
+    updateAvailable,
+    updateProgress,
+    updateError,
     updateReady,
     shortcutErrors,
     canAutoStart: app.isPackaged,
@@ -412,6 +420,9 @@ function updateTrayMenu() {
   if (!tray) return;
   tray.setContextMenu(Menu.buildFromTemplate([
     ...(updateReady ? [{ label: tr('trayUpdate', { version: updateReady }), click: installUpdate }, { type: 'separator' }] : []),
+    ...(!updateReady && updateAvailable && updateProgress === null
+      ? [{ label: tr('trayDownload', { version: updateAvailable }), click: downloadUpdate }, { type: 'separator' }]
+      : []),
     { label: tr('traySettings'), click: createPanel },
     { label: tr(editMode ? 'trayEditOn' : 'trayEditOff'), accelerator: SHORTCUT_EDIT, click: () => setEditMode(!editMode) },
     { label: tr(visible ? 'trayHide' : 'trayShow'), accelerator: SHORTCUT_HIDE, click: () => setVisible(!visible) },
@@ -430,15 +441,50 @@ function updateTrayMenu() {
 
 function setupAutoUpdate() {
   if (!app.isPackaged) return; // solo en la versión instalada, no al programar
+  autoUpdater.autoDownload = false;        // nada de descargas por sorpresa
+  autoUpdater.autoInstallOnAppQuit = true; // lo ya descargado se instala al cerrar la app
+  autoUpdater.on('update-available', (info) => {
+    updateAvailable = info.version;
+    afterUpdateChange();
+  });
+  let lastPercent = -1;
+  autoUpdater.on('download-progress', (p) => {
+    const percent = Math.floor(p.percent);
+    if (percent === lastPercent) return; // avisa a la ventana solo cuando cambia el número
+    lastPercent = percent;
+    updateProgress = percent;
+    sendState();
+  });
   autoUpdater.on('update-downloaded', (info) => {
     updateReady = info.version;
-    sendState();
-    updateTrayMenu();
+    updateProgress = null;
+    afterUpdateChange();
   });
-  autoUpdater.on('error', (err) => logError(`Actualización: ${err.message}`));
+  autoUpdater.on('error', (err) => {
+    logError(`Actualización: ${err.message}`);
+    if (updateProgress !== null) {
+      updateProgress = null;
+      updateError = true;
+      afterUpdateChange();
+    }
+  });
   const check = () => autoUpdater.checkForUpdates().catch(() => {});
   check();
   setInterval(check, 4 * 60 * 60 * 1000);
+}
+
+function afterUpdateChange() {
+  sendState();
+  updateTrayMenu();
+}
+
+// Solo cuando el usuario lo pide (botón "Descargar" o menú de la bandeja).
+function downloadUpdate() {
+  if (!updateAvailable || updateReady || updateProgress !== null) return;
+  updateProgress = 0;
+  updateError = false;
+  afterUpdateChange();
+  autoUpdater.downloadUpdate().catch(() => {}); // los fallos llegan por el evento 'error'
 }
 
 // Si no se reinicia a mano, se instala sola al cerrar la app.
@@ -564,6 +610,7 @@ ipcMain.on('dismiss-whats-new', () => {
   sendState();
 });
 ipcMain.on('install-update', installUpdate);
+ipcMain.on('download-update', downloadUpdate);
 ipcMain.on('open-repo', () => shell.openExternal(REPO_URL));
 ipcMain.on('toggle-edit', () => setEditMode(!editMode));
 ipcMain.on('toggle-visible', () => setVisible(!visible));

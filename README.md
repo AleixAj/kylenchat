@@ -65,7 +65,7 @@
 - **Guía rápida** la primera vez y aviso de **novedades** tras cada actualización.
 - **Exporta e importa** tu configuración.
 - Puede **iniciarse con Windows**, oculta en la bandeja.
-- Se **actualiza sola** y no necesitas iniciar sesión en Twitch.
+- Te **avisa de las versiones nuevas** y las descargas cuando tú quieras (nunca por sorpresa en mitad de una partida). No necesitas iniciar sesión en Twitch.
 
 ## Descarga e instalación
 
@@ -75,7 +75,7 @@
 2. Abre `KylenChat-Setup.exe`. Se instala en unos segundos y se abre sola.
 3. Si Windows muestra *"Windows protegió tu PC"*, pulsa **Más información → Ejecutar de todas formas**. Sale porque la app todavía no tiene firma digital de pago, no porque sea peligrosa.
 
-Con el instalador, la app **se actualiza sola** cuando sale una versión nueva.
+Con el instalador, la app **te avisa cuando sale una versión nueva**: pulsas **Descargar** cuando no estés jugando y luego **Reiniciar** para instalarla (o se instala sola al cerrar la app).
 
 **Versión portable (sin instalar):** descarga `KylenChat-Portable.zip`, descomprímelo donde quieras y abre `Kylen Chat for Twitch.exe`. Esta versión **no se actualiza sola**: para tener la última, vuelve a descargarla.
 
@@ -171,7 +171,7 @@ El instalador queda en `dist/`.
 
    Esto sube el instalador, la versión portable, `latest.yml` y el `.blockmap` a un borrador en [Releases](https://github.com/AleixAj/kylenchat/releases). Nadie lo ve todavía.
 3. Cuando quieras que esté disponible, abre el borrador en GitHub, escribe las novedades y pulsa **Publish release**.
-4. Desde ese momento, la gente puede descargarla y las apps ya instaladas se actualizan solas: buscan versiones nuevas al arrancar y cada 4 horas, la descargan y avisan para reiniciar. Si no se reinicia, se instala al cerrar la app.
+4. Desde ese momento, la gente puede descargarla. Las apps ya instaladas lo comprueban al arrancar y cada 4 horas (un archivo de 1 KB) y avisan en los ajustes; la descarga solo empieza cuando el usuario pulsa **Descargar**, y se instala al reiniciar o al cerrar la app.
 
 > No borres `latest.yml` ni el `.blockmap` de la release: la actualización automática los necesita.
 

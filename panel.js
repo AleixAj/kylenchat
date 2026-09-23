@@ -230,7 +230,7 @@ function saveProfile() {
 
 function applyState(state) {
   lastState = state;
-  const { editMode, visible, testMode, bounds, maxSize, version, updateReady, shortcutErrors, canAutoStart, whatsNew } = state;
+  const { editMode, visible, testMode, bounds, maxSize, version, shortcutErrors, canAutoStart, whatsNew } = state;
   $('edit').textContent = tr(editMode ? 'editOn' : 'editOff');
   $('edit').classList.toggle('primary', editMode); // morado solo mientras se puede mover
   $('visible').textContent = tr(visible ? 'hideChat' : 'showChat');
@@ -245,8 +245,7 @@ function applyState(state) {
   $('heightVal').textContent = `${bounds.height} px`;
 
   $('version').textContent = `v${version}`;
-  $('update').classList.toggle('show', Boolean(updateReady));
-  if (updateReady) $('updateText').textContent = tr('updateReady', { version: updateReady });
+  renderUpdate(state);
 
   const notes = whatsNew && ((i18n.CHANGELOG[lang] || {})[whatsNew] || (i18n.CHANGELOG.es || {})[whatsNew]);
   $('whatsNew').classList.toggle('show', Boolean(notes));
@@ -263,6 +262,24 @@ function applyState(state) {
     ? tr('shortcutWarn', { keys: shortcutErrors.join(tr('and')) })
     : '';
   $('startupSection').hidden = !canAutoStart; // solo tiene sentido en la versión instalada
+}
+
+// ---------- Actualización (solo se descarga si el usuario pulsa el botón) ----------
+
+function renderUpdate({ updateAvailable, updateProgress, updateError, updateReady }) {
+  const banner = $('update');
+  const button = $('installUpdate');
+  banner.classList.toggle('show', Boolean(updateAvailable || updateReady));
+  button.hidden = updateProgress !== null;
+  if (updateReady) {
+    $('updateText').textContent = tr('updateReady', { version: updateReady });
+    button.textContent = tr('restart');
+  } else if (updateProgress !== null) {
+    $('updateText').textContent = tr('updateDownloading', { version: updateAvailable, percent: updateProgress });
+  } else if (updateAvailable) {
+    $('updateText').textContent = tr(updateError ? 'updateError' : 'updateAvailable', { version: updateAvailable });
+    button.textContent = tr(updateError ? 'retry' : 'download');
+  }
 }
 
 // ---------- Pestañas ----------
@@ -288,7 +305,10 @@ for (const [key, { type }] of Object.entries(FIELDS)) {
 
 $('connect').addEventListener('click', connect);
 $('channel').addEventListener('keydown', (e) => e.key === 'Enter' && connect());
-$('installUpdate').addEventListener('click', () => api.installUpdate());
+$('installUpdate').addEventListener('click', () => {
+  if (lastState && lastState.updateReady) api.installUpdate();
+  else api.downloadUpdate();
+});
 $('whatsNewOk').addEventListener('click', () => api.dismissWhatsNew());
 $('edit').addEventListener('click', () => api.toggleEdit());
 $('visible').addEventListener('click', () => api.toggleVisible());

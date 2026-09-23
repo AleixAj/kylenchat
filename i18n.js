@@ -61,7 +61,12 @@
       shortcutsNote: 'Pon el juego en modo <b>"Sin bordes"</b>; en pantalla completa el chat no se ve encima. Si cierras esta ventana, la app sigue en la bandeja (junto al reloj).',
       shortcutWarn: 'Otro programa ya usa {keys}. Ese atajo no funcionará; usa los botones de esta ventana o el icono de la bandeja.',
       and: ' y ',
+      updateAvailable: 'Hay una versión nueva ({version}). Descárgala cuando no estés jugando.',
+      updateDownloading: 'Descargando la versión {version}… {percent} %',
+      updateError: 'No se pudo descargar la versión {version}. Inténtalo más tarde.',
       updateReady: 'Nueva versión {version} lista para instalar.',
+      download: 'Descargar',
+      retry: 'Reintentar',
       restart: 'Reiniciar',
       createdBy: 'Creada por',
       disclaimer: 'Proyecto independiente, no afiliado a Twitch.',
@@ -171,6 +176,7 @@
       trayHide: 'Ocultar chat',
       trayShow: 'Mostrar chat',
       trayUpdate: 'Reiniciar para actualizar a v{version}',
+      trayDownload: 'Descargar la versión {version}',
       trayQuit: 'Salir',
     },
 
@@ -232,7 +238,12 @@
       shortcutsNote: 'Set your game to <b>"Borderless"</b> mode; in exclusive fullscreen the chat can\'t show on top. If you close this window, the app keeps running in the tray (next to the clock).',
       shortcutWarn: 'Another program is already using {keys}. That shortcut won\'t work; use the buttons in this window or the tray icon.',
       and: ' and ',
+      updateAvailable: 'A new version ({version}) is available. Download it when you\'re not playing.',
+      updateDownloading: 'Downloading version {version}… {percent}%',
+      updateError: 'Version {version} could not be downloaded. Try again later.',
       updateReady: 'New version {version} ready to install.',
+      download: 'Download',
+      retry: 'Retry',
       restart: 'Restart',
       createdBy: 'Made by',
       disclaimer: 'Independent project, not affiliated with Twitch.',
@@ -339,6 +350,7 @@
       trayHide: 'Hide chat',
       trayShow: 'Show chat',
       trayUpdate: 'Restart to update to v{version}',
+      trayDownload: 'Download version {version}',
       trayQuit: 'Quit',
     },
   };
@@ -346,6 +358,9 @@
   // Novedades de cada versión, para el aviso que sale tras actualizar.
   const CHANGELOG = {
     es: {
+      '1.1.4': [
+        'Las actualizaciones ya no se descargan solas: te avisamos y la descargas cuando tú quieras, para no afectar al ping en partida.',
+      ],
       '1.1.3': [
         'En los directos con chat compartido, cada mensaje muestra el icono del canal del que viene.',
         'Los nombres con pintura de 7TV (degradados) se ven con sus colores.',
@@ -365,6 +380,9 @@
       ],
     },
     en: {
+      '1.1.4': [
+        'Updates no longer download on their own: you get a notice and download them when you want, so your ping is never affected mid-game.',
+      ],
       '1.1.3': [
         'In shared chat streams, each message shows the icon of the channel it comes from.',
         'Names with 7TV paints (gradients) now show their colors.',

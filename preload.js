@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('api', {
   importSettings: () => ipcRenderer.invoke('import-settings'),
   dismissWhatsNew: () => ipcRenderer.send('dismiss-whats-new'),
   installUpdate: () => ipcRenderer.send('install-update'),
+  downloadUpdate: () => ipcRenderer.send('download-update'),
   openRepo: () => ipcRenderer.send('open-repo'),
   toggleEdit: () => ipcRenderer.send('toggle-edit'),
   toggleVisible: () => ipcRenderer.send('toggle-visible'),
