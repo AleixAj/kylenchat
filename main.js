@@ -1,5 +1,5 @@
 const {
-  app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, screen, shell, session, powerMonitor, dialog, net, Notification,
+  app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, screen, shell, session, powerMonitor, dialog, net,
 } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
@@ -34,8 +34,6 @@ const DEFAULTS = {
   timestamps: false,
   mutedUsers: '',
   liveChannels: '',
-  liveDesktop: true,
-  liveBox: true,
   liveDuration: 8,
   liveSound: true,
   liveVolume: 70,
@@ -102,8 +100,6 @@ const SCHEMA = {
   timestamps: isBool,
   mutedUsers: isText(1000),
   liveChannels: isText(1500),
-  liveDesktop: isBool,
-  liveBox: isBool,
   liveDuration: inRange(3, 30),
   liveSound: isBool,
   liveVolume: inRange(0, 100),
@@ -246,7 +242,7 @@ function updateSettings(patch) {
   Object.assign(settings, clean);
   if ('autoStart' in clean) applyAutoStart();
   if ('language' in clean) applyLanguage();
-  if (['liveChannels', 'liveDesktop', 'liveBox', 'liveSound'].some((k) => k in clean)) restartLiveWatch();
+  if ('liveChannels' in clean) restartLiveWatch();
   if ('shortcuts' in clean) {
     registerShortcuts();
     updateTrayMenu();
@@ -568,8 +564,8 @@ function installUpdate() {
 // ---------- Avisos de directo ----------
 // Cada minuto se pregunta a api.ivr.fi (la misma que da los espectadores) qué canales de la
 // lista están en directo: una sola petición pequeña para todos, sin iniciar sesión en Twitch.
-// El aviso sale como notificación del sistema y/o dentro del chat, que se ve encima del juego
-// aunque Windows esconda las notificaciones mientras se juega.
+// El aviso sale en un recuadro propio encima del juego (no como notificación de Windows,
+// que además Windows suele esconder mientras se juega).
 
 const LIVE_POLL_MS = 60 * 1000;
 const LIVE_RECENT_MS = 10 * 60 * 1000; // al arrancar solo se avisa de directos que acaban de empezar
@@ -580,7 +576,6 @@ let liveErrorLogged = false;
 const liveSeen = new Map(); // canal -> id del directo visto la última vez (null si no estaba en directo)
 const liveNow = new Map(); // canal -> nombre visible, de los que están en directo ahora
 const liveNotified = new Set(); // directos (por id) ya avisados, por si la API parpadea
-const liveNotifications = new Set(); // referencia para que Windows no pierda el clic en la notificación
 
 function liveChannelList() {
   const channels = settings.liveChannels
@@ -602,7 +597,7 @@ function restartLiveWatch() {
     }
   }
   sendState();
-  if (channels.length && (settings.liveDesktop || settings.liveBox || settings.liveSound)) checkLive(liveRound);
+  if (channels.length) checkLive(liveRound);
 }
 
 async function checkLive(round) {
@@ -654,24 +649,7 @@ function onLiveStatus(user) {
 }
 
 function announceLive(info) {
-  const ownSound = settings.liveSound && settings.liveVolume > 0;
-  if (settings.liveBox || ownSound) queueAlert(info);
-  if (settings.liveDesktop && Notification.isSupported()) {
-    const notification = new Notification({
-      title: tr('liveAlert', { name: info.name }),
-      body: [info.title, info.game].filter(Boolean).join(' · '),
-      icon: path.join(__dirname, 'assets', 'icon.png'),
-      silent: ownSound, // si ya suena el sonido propio, sin el de Windows encima
-    });
-    liveNotifications.add(notification);
-    const forget = () => liveNotifications.delete(notification);
-    notification.on('click', () => {
-      forget();
-      if (info.login) shell.openExternal(`https://www.twitch.tv/${info.login}`);
-    });
-    notification.on('close', forget);
-    notification.show();
-  }
+  queueAlert(info);
 }
 
 // ---------- Recuadro del aviso de directo ----------

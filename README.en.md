@@ -68,7 +68,7 @@
 - Marks each person's **first message**, so you can greet them.
 - **Badges** for streamer, moderator, VIP and subscriber.
 - Highlights **subs, gifts, raids, bits, channel point redemptions and highlighted messages**, and shows who each message is replying to.
-- **Live alerts**: add the channels you follow and get notified as soon as they go live, with an alert box on top of your game, a sound and a system notification.
+- **Live alerts**: add the channels you follow and get notified as soon as they go live, with an alert box on top of your game and a sound.
 - In **shared chat**, each message shows the icon of the channel it comes from.
 - Names with a **7TV paint** (gradients) show their colors.
 
@@ -130,7 +130,6 @@ When one of them goes live, you get:
 
 - An **alert box on top of your game** with the channel's picture, title and game. Click **Move and resize the alert** to place it and change its size with a sample alert. You also choose how many seconds it stays on screen.
 - A **sound**, which you can mute or turn down.
-- A **system notification**. Clicking it opens the channel.
 
 When the app starts, it only alerts you about streams that started less than 10 minutes ago, so you don't get a flood of alerts at once. **Test alert** lets you see and hear how it looks.
 

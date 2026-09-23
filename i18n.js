@@ -131,9 +131,7 @@
       liveDuplicate: 'Ese canal ya está en la lista.',
       liveFull: 'Como mucho {max} canales.',
       sectionLiveHow: 'Cómo avisar',
-      liveDesktop: 'Notificación del sistema',
-      liveBox: 'Recuadro de aviso',
-      liveBoxNote: 'Sale encima del juego, aunque Windows esconda las notificaciones mientras juegas.',
+      liveBoxNote: 'El aviso sale en un recuadro encima del juego. Colócalo donde no te moleste.',
       liveDuration: 'Tiempo en pantalla',
       liveMove: 'Mover y ajustar el aviso',
       liveMoveOn: 'Fijar el aviso',
@@ -345,9 +343,7 @@
       liveDuplicate: 'That channel is already in the list.',
       liveFull: '{max} channels at most.',
       sectionLiveHow: 'How to alert you',
-      liveDesktop: 'System notification',
-      liveBox: 'Alert box',
-      liveBoxNote: 'Shows on top of your game, even when Windows hides notifications while you play.',
+      liveBoxNote: 'The alert shows in a box on top of your game. Place it where it won\'t get in the way.',
       liveDuration: 'Time on screen',
       liveMove: 'Move and resize the alert',
       liveMoveOn: 'Lock the alert',
@@ -433,7 +429,7 @@
   const CHANGELOG = {
     es: {
       '1.2.0': [
-        'Avisos de directo: añade canales en la pestaña Avisos y te avisamos cuando empiecen directo, con una notificación, un recuadro encima del juego que puedes mover y ajustar, y sonido.',
+        'Avisos de directo: añade canales en la pestaña Avisos y te avisamos cuando empiecen directo, con un recuadro encima del juego que puedes mover y ajustar, y sonido.',
       ],
       '1.1.5': [
         'Primera versión para Mac (en pruebas).',
@@ -464,7 +460,7 @@
     },
     en: {
       '1.2.0': [
-        'Live alerts: add channels in the Alerts tab and get notified when they go live, with a notification, an alert box on top of your game that you can move and resize, and a sound.',
+        'Live alerts: add channels in the Alerts tab and get notified when they go live, with an alert box on top of your game that you can move and resize, and a sound.',
       ],
       '1.1.5': [
         'First version for Mac (beta).',

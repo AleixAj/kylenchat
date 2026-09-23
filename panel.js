@@ -30,8 +30,6 @@ const FIELDS = {
   timestamps: { type: 'check' },
   hideBots: { type: 'check' },
   mutedUsers: { type: 'text' },
-  liveDesktop: { type: 'check' },
-  liveBox: { type: 'check' },
   liveDuration: { type: 'range', show: (v) => `${v} s` },
   liveSound: { type: 'check' },
   liveVolume: { type: 'range', show: (v) => `${v} %` },

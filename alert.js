@@ -77,12 +77,8 @@ function playSound() {
 
 function onAlert(info) {
   playSound();
-  if (settings.liveBox) {
-    queue.push(info);
-    showNext();
-  } else {
-    maybeIdle();
-  }
+  queue.push(info);
+  showNext();
 }
 
 function setEditing(on) {
