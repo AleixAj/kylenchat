@@ -53,6 +53,9 @@ function applySettings(s) {
     ? '0 0 2px #000, 1px 1px 1px #000, -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000'
     : 'none');
   root.setProperty('--opacity', String(s.opacity / 100));
+  root.setProperty('--bar-strong', hexToRgba(s.barColor, 0.38));
+  root.setProperty('--bar-soft', hexToRgba(s.barColor, 0.12));
+  root.setProperty('--bar-clear', hexToRgba(s.barColor, 0));
   root.setProperty('--emote', String(s.emoteScale));
   document.documentElement.lang = s.language;
   document.body.classList.toggle('align-right', s.align === 'right');

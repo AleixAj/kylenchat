@@ -4,9 +4,8 @@
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
 <title>Kylen Chat for Twitch</title>
+<link rel="stylesheet" href="fonts.css">
 <style>
-  /* Fuente incluida en la app (licencia OFL, ver assets/fonts/OFL.txt): se ve igual aunque el PC no la tenga. */
-  @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/SpaceGrotesk.ttf") format("truetype"); font-weight: 300 700; font-display: swap; }
   :root { color-scheme: dark; --accent: #9146ff; --accent-2: #a970ff; --line: #2f2f35; --muted: #adadb8; --panel: #1f1f23; }
   * { box-sizing: border-box; }
   body { margin: 0; padding: 18px 20px 24px; background: #18181b; color: #efeff1; font: 14px "Segoe UI", sans-serif; }
@@ -128,12 +127,18 @@
       <h2 data-i18n="sectionPresets"></h2>
       <div class="presets">
         <button data-preset="default" data-i18n="presetDefault"></button>
-        <button data-preset="minimal" data-i18n="presetMinimal"></button>
         <button data-preset="twitch" data-i18n="presetTwitch"></button>
         <button data-preset="contrast" data-i18n="presetContrast"></button>
         <button data-preset="big" data-i18n="presetBig"></button>
         <button data-preset="terminal" data-i18n="presetTerminal"></button>
         <button data-preset="sakura" data-i18n="presetSakura"></button>
+        <button data-preset="neon" data-i18n="presetNeon"></button>
+        <button data-preset="runic" data-i18n="presetRunic"></button>
+        <button data-preset="comic" data-i18n="presetComic"></button>
+        <button data-preset="glacier" data-i18n="presetGlacier"></button>
+        <button data-preset="forest" data-i18n="presetForest"></button>
+        <button data-preset="chalk" data-i18n="presetChalk"></button>
+        <button data-preset="arcade" data-i18n="presetArcade"></button>
       </div>
     </section>
 
@@ -180,6 +185,7 @@
       <h2 data-i18n="sectionBackground"></h2>
       <div class="row"><label for="bgColor" data-i18n="bgColor"></label><input type="color" id="bgColor"></div>
       <div class="row"><label for="bgOpacity" data-i18n="bgOpacity"></label><input type="range" id="bgOpacity" min="0" max="100"><span class="val" id="bgOpacityVal"></span></div>
+      <div class="row"><label for="barColor" data-i18n="barColor"></label><input type="color" id="barColor"><span class="note" data-i18n="barColorNote"></span></div>
       <div class="row"><label for="opacity" data-i18n="opacity"></label><input type="range" id="opacity" min="10" max="100"><span class="val" id="opacityVal"></span></div>
     </section>
   </div>

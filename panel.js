@@ -18,6 +18,7 @@ const FIELDS = {
   emoteScale: { type: 'range', show: (v) => `${Number(v).toFixed(1)}×` },
   bgColor: { type: 'color' },
   bgOpacity: { type: 'range', show: (v) => `${v} %` },
+  barColor: { type: 'color' },
   opacity: { type: 'range', show: (v) => `${v} %` },
   align: { type: 'select' },
   newestOnTop: { type: 'boolSelect' },
@@ -36,19 +37,25 @@ const FIELDS = {
 };
 
 // Estilos rápidos: cada uno fija todo el aspecto (fuente, colores, fondo...), así que se pueden
-// probar uno tras otro sin que queden restos del anterior. Usan fuentes de Windows o incluidas en la app.
+// probar uno tras otro sin que queden restos del anterior. Las fuentes van incluidas en la app (fonts.css).
 const LOOK_BASE = {
   fontSize: 20, fontFamily: 'Segoe UI', bold: false, textColor: '#ffffff', userColors: true,
-  bgColor: '#000000', bgOpacity: 25, outline: true, opacity: 100, emoteScale: 1.6,
+  bgColor: '#000000', bgOpacity: 25, barColor: '#9146ff', outline: true, opacity: 100, emoteScale: 1.6,
 };
 const PRESETS = {
   default: { ...LOOK_BASE },
-  minimal: { ...LOOK_BASE, fontFamily: 'Bahnschrift', fontSize: 17, bgOpacity: 0, emoteScale: 1.5 },
-  twitch: { ...LOOK_BASE, fontFamily: 'Segoe UI Semibold', fontSize: 14, textColor: '#efeff1', bgColor: '#18181b', bgOpacity: 90, outline: false },
-  contrast: { ...LOOK_BASE, fontFamily: 'Verdana', fontSize: 18, bold: true, textColor: '#ffe600', bgOpacity: 85 },
-  big: { ...LOOK_BASE, fontFamily: 'Arial Black', fontSize: 24, bgOpacity: 50, emoteScale: 1.8 },
-  terminal: { ...LOOK_BASE, fontFamily: 'Consolas', fontSize: 15, textColor: '#39ff14', bgColor: '#050805', bgOpacity: 75, outline: false },
-  sakura: { ...LOOK_BASE, fontFamily: 'Space Grotesk', fontSize: 20, bold: true, textColor: '#ffffff', bgColor: '#ff8fc8', bgOpacity: 10, outline: true },
+  twitch: { ...LOOK_BASE, fontFamily: 'Inter', fontSize: 15, bold: false, textColor: '#efeff1', bgColor: '#18181b', bgOpacity: 90, outline: false, barColor: '#9146ff' },
+  contrast: { ...LOOK_BASE, fontFamily: 'Atkinson Hyperlegible', fontSize: 19, bold: true, textColor: '#ffe600', bgOpacity: 85, barColor: '#ffe600' },
+  big: { ...LOOK_BASE, fontFamily: 'Lilita One', fontSize: 24, bold: false, bgOpacity: 50, emoteScale: 1.8, barColor: '#9146ff' },
+  terminal: { ...LOOK_BASE, fontFamily: 'Cascadia Code', fontSize: 15, textColor: '#39ff14', bgColor: '#050805', bgOpacity: 75, outline: false, barColor: '#39ff14' },
+  neon: { ...LOOK_BASE, fontFamily: 'Exo 2', fontSize: 18, bold: true, textColor: '#00f0ff', bgColor: '#12002b', bgOpacity: 55, barColor: '#00f0ff' },
+  runic: { ...LOOK_BASE, fontFamily: 'Alegreya', fontSize: 20, bold: true, textColor: '#f3dfa2', bgColor: '#2a1a0c', bgOpacity: 70, barColor: '#c9a227' },
+  comic: { ...LOOK_BASE, fontFamily: 'Comic Neue', fontSize: 19, bold: true, textColor: '#1b1b1b', userColors: false, bgColor: '#fff1a8', bgOpacity: 92, outline: false, barColor: '#ffb000' },
+  glacier: { ...LOOK_BASE, fontFamily: 'Quicksand', fontSize: 18, bold: true, textColor: '#e8f8ff', bgColor: '#0b4a73', bgOpacity: 45, barColor: '#4fc3ff' },
+  forest: { ...LOOK_BASE, fontFamily: 'Nunito', fontSize: 18, bold: true, textColor: '#e3ffd6', bgColor: '#123d22', bgOpacity: 60, barColor: '#3ddc84' },
+  chalk: { ...LOOK_BASE, fontFamily: 'Patrick Hand', fontSize: 21, bold: false, textColor: '#f4f4f4', bgColor: '#1f3326', bgOpacity: 80, outline: false, barColor: '#9ccc9c' },
+  arcade: { ...LOOK_BASE, fontFamily: 'Press Start 2P', fontSize: 12, bold: false, textColor: '#ffffff', bgColor: '#1a0b3d', bgOpacity: 70, emoteScale: 2.2, barColor: '#ff2e97' },
+  sakura: { ...LOOK_BASE, fontFamily: 'Space Grotesk', fontSize: 20, bold: true, textColor: '#ffffff', bgColor: '#ff8fc8', bgOpacity: 10, outline: true, barColor: '#ff5fae' },
 };
 
 // Cada botón de estilo se ve con su propia fuente y colores, como una muestra.
@@ -148,7 +155,7 @@ function connect() {
 // ---------- Fuentes instaladas ----------
 
 // Fuentes que trae la propia app: siempre salen en la lista, las tenga el PC o no.
-const BUNDLED_FONTS = ['Space Grotesk'];
+const BUNDLED_FONTS = ['Space Grotesk', 'Inter', 'Atkinson Hyperlegible', 'Lilita One', 'Cascadia Code', 'Exo 2', 'Alegreya', 'Comic Neue', 'Quicksand', 'Nunito', 'Patrick Hand', 'Press Start 2P'];
 const BASIC_FONTS = [...BUNDLED_FONTS, 'Segoe UI', 'Arial', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Georgia', 'Consolas', 'Impact', 'Comic Sans MS'];
 
 function fillFontList(families) {

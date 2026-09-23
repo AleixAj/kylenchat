@@ -4,9 +4,8 @@
 <meta charset="utf-8">
 <title>Kylen Chat for Twitch · Chat</title>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://static-cdn.jtvnw.net https://cdn.7tv.app https://cdn.betterttv.net https://cdn.frankerfacez.com; connect-src wss://irc-ws.chat.twitch.tv:443 wss://events.7tv.io https://7tv.io https://api.betterttv.net https://api.ivr.fi; style-src 'self' 'unsafe-inline'">
+<link rel="stylesheet" href="fonts.css">
 <style>
-  /* Fuente incluida en la app (licencia OFL, ver assets/fonts/OFL.txt): se ve igual aunque el PC no la tenga. */
-  @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/SpaceGrotesk.ttf") format("truetype"); font-weight: 300 700; font-display: swap; }
   :root {
     --fs: 16px;
     --ff: "Segoe UI";
@@ -17,7 +16,7 @@
     --opacity: 1;
   }
   html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; user-select: none; }
-  body { font-family: var(--ff), "Segoe UI", sans-serif; font-size: var(--fs); font-weight: var(--fw); color: var(--color); }
+  body { font-synthesis-weight: none; font-family: var(--ff), "Segoe UI", sans-serif; font-size: var(--fs); font-weight: var(--fw); color: var(--color); }
 
   #chat {
     position: absolute; inset: 0;
@@ -75,7 +74,7 @@
     align-items: center; gap: 6px; padding: 0 8px; box-sizing: border-box;
     font: 600 12px "Segoe UI", sans-serif; letter-spacing: .02em; color: rgba(255, 255, 255, .85);
     text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
-    background: linear-gradient(90deg, rgba(145, 70, 255, .38), rgba(145, 70, 255, .12) 60%, rgba(145, 70, 255, 0));
+    background: linear-gradient(90deg, var(--bar-strong, rgba(145, 70, 255, .38)), var(--bar-soft, rgba(145, 70, 255, .12)) 60%, var(--bar-clear, rgba(145, 70, 255, 0)));
     border-radius: 6px 6px 0 0;
     opacity: var(--opacity);
   }

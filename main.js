@@ -18,6 +18,7 @@ const DEFAULTS = {
   userColors: true,
   bgColor: '#000000',
   bgOpacity: 25,
+  barColor: '#9146ff',
   outline: true,
   opacity: 100,
   maxMessages: 20,
@@ -44,7 +45,7 @@ const DEFAULTS = {
 
 // Lo que guarda un perfil: el aspecto y la posición. El canal, el idioma y los filtros son comunes.
 const PROFILE_KEYS = [
-  'fontSize', 'fontFamily', 'bold', 'textColor', 'userColors', 'bgColor', 'bgOpacity', 'outline', 'opacity',
+  'fontSize', 'fontFamily', 'bold', 'textColor', 'userColors', 'bgColor', 'bgOpacity', 'barColor', 'outline', 'opacity',
   'maxMessages', 'fadeAfter', 'animatedEmotes', 'showBadges', 'timestamps', 'align', 'newestOnTop', 'idleHide',
   'emoteScale', 'bounds',
 ];
@@ -67,6 +68,7 @@ const SCHEMA = {
   userColors: isBool,
   bgColor: isHex,
   bgOpacity: inRange(0, 100),
+  barColor: isHex,
   outline: isBool,
   opacity: inRange(10, 100),
   maxMessages: inRange(3, 100),

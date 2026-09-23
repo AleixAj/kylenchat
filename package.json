@@ -28,6 +28,7 @@
       "main.js",
       "preload.js",
       "i18n.js",
+      "fonts.css",
       "overlay.html",
       "overlay.js",
       "panel.html",

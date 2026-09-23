@@ -1,0 +1,17 @@
+/* Fuentes incluidas en la app, para que los estilos rápidos se vean igual aunque el PC no
+   las tenga. Todas con licencia SIL Open Font License 1.1 (ver assets/fonts/OFL-*.txt). */
+
+@font-face { font-family: "Space Grotesk"; src: url("assets/fonts/SpaceGrotesk.ttf") format("truetype"); font-weight: 300 700; font-display: swap; }
+@font-face { font-family: "Inter"; src: url("assets/fonts/Inter.ttf") format("truetype"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible"; src: url("assets/fonts/AtkinsonHyperlegible-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible"; src: url("assets/fonts/AtkinsonHyperlegible-Bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Lilita One"; src: url("assets/fonts/LilitaOne.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Cascadia Code"; src: url("assets/fonts/CascadiaCode.ttf") format("truetype"); font-weight: 200 700; font-display: swap; }
+@font-face { font-family: "Exo 2"; src: url("assets/fonts/Exo2.ttf") format("truetype"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Alegreya"; src: url("assets/fonts/Alegreya.ttf") format("truetype"); font-weight: 400 900; font-display: swap; }
+@font-face { font-family: "Comic Neue"; src: url("assets/fonts/ComicNeue-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Comic Neue"; src: url("assets/fonts/ComicNeue-Bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Quicksand"; src: url("assets/fonts/Quicksand.ttf") format("truetype"); font-weight: 300 700; font-display: swap; }
+@font-face { font-family: "Nunito"; src: url("assets/fonts/Nunito.ttf") format("truetype"); font-weight: 200 1000; font-display: swap; }
+@font-face { font-family: "Patrick Hand"; src: url("assets/fonts/PatrickHand.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Press Start 2P"; src: url("assets/fonts/PressStart2P.ttf") format("truetype"); font-weight: 400; font-display: swap; }

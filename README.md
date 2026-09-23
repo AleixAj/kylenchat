@@ -52,8 +52,8 @@
 - Los nombres con **pintura de 7TV** (degradados) se ven con sus colores.
 
 **A tu gusto**
-- **7 estilos rápidos** con un clic: Por defecto, Minimalista, Clásico Twitch, Alto contraste, Texto grande, Terminal y Sakura 🌸.
-- Control total de posición, tamaño, fuente (cualquiera instalada en tu PC), colores, fondo, transparencia y tamaño de emotes.
+- **13 estilos rápidos** con un clic, cada uno con su propia fuente y colores: Por defecto, Clásico Twitch, Alto contraste, Texto grande, Terminal, Sakura 🌸, Neón ⚡, Rúnico ⚔️, Viñeta 💬, Glaciar ❄️, Bosque 🌿, Pizarra ✏️ y Arcade 👾.
+- Control total de posición, tamaño, fuente (cualquiera instalada en tu PC), colores, fondo, color de la barra, transparencia y tamaño de emotes.
 - Mensajes **alineados a la derecha** y **nuevos arriba**, si lo prefieres.
 - **Perfiles por juego**: guarda el aspecto y la posición para cada juego y cambia con `Ctrl + Alt + P`.
 - **Filtros**: silenciar usuarios y ocultar bots y comandos. No hay filtro de palabras a propósito: el streamer tiene que ver todo lo que le escriben.
@@ -133,7 +133,8 @@ npm start
 | `panel.html` / `panel.js` | La ventana de ajustes |
 | `i18n.js` | Textos en español e inglés |
 | `preload.js` | Puente seguro entre las ventanas y el proceso principal |
-| `assets/` | Iconos, insignias, banderas y la fuente Space Grotesk |
+| `assets/` | Iconos, insignias, banderas y fuentes |
+| `fonts.css` | Fuentes incluidas en la app |
 
 ### Crear el instalador
 
@@ -166,7 +167,7 @@ El instalador queda en `dist/`.
 
 [MIT](LICENSE) © Aleix Aj. Puedes usar, modificar y compartir el código siempre que mantengas el aviso de autoría.
 
-Incluye la fuente [Space Grotesk](https://github.com/floriankarsten/space-grotesk) (© The Space Grotesk Project Authors), con licencia [SIL Open Font License 1.1](assets/fonts/OFL.txt).
+Incluye estas fuentes, todas con licencia [SIL Open Font License 1.1](assets/fonts/) (cada una con su archivo `OFL-*.txt`): Space Grotesk, Inter, Atkinson Hyperlegible, Lilita One, Cascadia Code, Exo 2, Alegreya, Comic Neue, Quicksand, Nunito, Patrick Hand y Press Start 2P.
 
 > Kylen Chat for Twitch es un proyecto independiente. No está afiliado, asociado ni respaldado por Twitch Interactive, Inc. "Twitch" es una marca registrada de Twitch Interactive, Inc.
 
