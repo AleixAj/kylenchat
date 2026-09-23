@@ -39,7 +39,7 @@ const FIELDS = {
 // probar uno tras otro sin que queden restos del anterior. Usan fuentes de Windows o incluidas en la app.
 const LOOK_BASE = {
   fontSize: 20, fontFamily: 'Segoe UI', bold: false, textColor: '#ffffff', userColors: true,
-  bgColor: '#000000', bgOpacity: 35, outline: true, opacity: 100, emoteScale: 1.6,
+  bgColor: '#000000', bgOpacity: 25, outline: true, opacity: 100, emoteScale: 1.6,
 };
 const PRESETS = {
   default: { ...LOOK_BASE },

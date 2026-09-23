@@ -17,7 +17,7 @@ const DEFAULTS = {
   textColor: '#ffffff',
   userColors: true,
   bgColor: '#000000',
-  bgOpacity: 35,
+  bgOpacity: 25,
   outline: true,
   opacity: 100,
   maxMessages: 20,
