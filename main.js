@@ -11,7 +11,7 @@ const REPO_URL = 'https://github.com/AleixAj/kylenchat';
 const DEFAULTS = {
   language: 'es',
   channel: '',
-  fontSize: 16,
+  fontSize: 20,
   fontFamily: 'Segoe UI',
   bold: false,
   textColor: '#ffffff',
