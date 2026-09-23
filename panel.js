@@ -225,6 +225,7 @@ function applyState(state) {
   lastState = state;
   const { editMode, visible, testMode, bounds, maxSize, version, updateReady, shortcutErrors, canAutoStart, whatsNew } = state;
   $('edit').textContent = tr(editMode ? 'editOn' : 'editOff');
+  $('edit').classList.toggle('primary', editMode); // morado solo mientras se puede mover
   $('visible').textContent = tr(visible ? 'hideChat' : 'showChat');
   $('test').textContent = tr(testMode ? 'testOn' : 'testOff');
   $('test').classList.toggle('primary', testMode);
