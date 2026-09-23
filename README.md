@@ -5,7 +5,8 @@
 <h1 align="center">Kylen Chat for Twitch</h1>
 
 <p align="center">
-  <b>🇪🇸 Español</b> · <a href="README.en.md">🇬🇧 English</a>
+  <img src="assets/readme/lang-es-active.svg" alt="Español" width="170">
+  <a href="README.en.md"><img src="assets/readme/lang-en.svg" alt="English" width="170"></a>
 </p>
 
 <p align="center">
