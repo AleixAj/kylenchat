@@ -64,7 +64,7 @@
 - **Mencions i paraules clau destacades**: si algú escriu el teu nom o una paraula que triïs, el missatge surt ressaltat.
 - Marca el **primer missatge** de cada persona, perquè la puguis saludar.
 - **Insígnies** de streamer, moderador, VIP i subscriptor.
-- Destaca **subs, regals, raids, bits, bescanvis de punts i missatges destacats**, i mostra a qui respon cada missatge.
+- Destaca **subs, regals, raids, bits, bescanvis de punts (també els que no porten missatge, amb el nom de la recompensa) i missatges destacats**, i mostra a qui respon cada missatge.
 - **Avisos de directe**: apunta els canals que segueixes i t'avisa tan bon punt comencen directe, amb un requadre damunt del joc i so.
 - En el **xat compartit**, cada missatge mostra la icona del canal d'on ve.
 - Els noms amb **pintura de 7TV** (degradats) es veuen amb els seus colors.

@@ -26,6 +26,7 @@ const FIELDS = {
   highlightMentions: { type: 'check' },
   keywords: { type: 'text' },
   highlightFirst: { type: 'check' },
+  showRedemptions: { type: 'check' },
   showBadges: { type: 'check' },
   timestamps: { type: 'check' },
   hideBots: { type: 'check' },

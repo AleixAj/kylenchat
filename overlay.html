@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Kylen Chat for Twitch · Chat</title>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://static-cdn.jtvnw.net https://cdn.7tv.app https://cdn.betterttv.net https://cdn.frankerfacez.com; connect-src wss://irc-ws.chat.twitch.tv:443 wss://events.7tv.io https://7tv.io https://api.betterttv.net https://api.ivr.fi; style-src 'self' 'unsafe-inline'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://static-cdn.jtvnw.net https://cdn.7tv.app https://cdn.betterttv.net https://cdn.frankerfacez.com; connect-src wss://irc-ws.chat.twitch.tv:443 wss://hermes.twitch.tv wss://events.7tv.io https://7tv.io https://api.betterttv.net https://api.ivr.fi; style-src 'self' 'unsafe-inline'">
 <link rel="stylesheet" href="fonts.css">
 <style>
   :root {
@@ -38,6 +38,8 @@
   .msg.system { opacity: .75; font-size: .85em; }
   .msg.notice { --edge: #a970ff; background: linear-gradient(var(--dir), rgba(145, 70, 255, .45), var(--bg)); }
   .notice-title { font-weight: 700; font-size: .9em; }
+  /* Canje de puntos sin mensaje: con el color que el streamer le puso a la recompensa */
+  .msg.notice.redeem-notice { background: linear-gradient(var(--dir), color-mix(in srgb, var(--edge) 45%, transparent), var(--bg)); }
   /* Destacados */
   /* Mismo tono rojo con el que Twitch marca las menciones */
   .msg.mention { --edge: #eb0400; background: linear-gradient(var(--dir), rgba(235, 4, 0, .42), var(--bg)); }

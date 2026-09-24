@@ -64,7 +64,7 @@
 - **Menciones y palabras clave destacadas**: si alguien escribe tu nombre o una palabra que elijas, el mensaje sale resaltado.
 - Marca el **primer mensaje** de cada persona, para que puedas saludarla.
 - **Insignias** de streamer, moderador, VIP y suscriptor.
-- Destaca **subs, regalos, raids, bits, canjes de puntos y mensajes destacados**, y muestra a quién responde cada mensaje.
+- Destaca **subs, regalos, raids, bits, canjes de puntos (también los que no llevan mensaje, con el nombre de la recompensa) y mensajes destacados**, y muestra a quién responde cada mensaje.
 - **Avisos de directo**: apunta los canales que sigues y te avisa en cuanto empiezan directo, con un recuadro encima del juego y sonido.
 - En **chat compartido**, cada mensaje muestra el icono del canal del que viene.
 - Los nombres con **pintura de 7TV** (degradados) se ven con sus colores.

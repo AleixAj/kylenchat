@@ -89,6 +89,8 @@
       keywords: 'Palabras a destacar',
       keywordsPlaceholder: 'separadas por comas: ayuda, pregunta, gg',
       highlightFirst: 'Primer mensaje de alguien',
+      showRedemptions: 'Canjes de puntos',
+      showRedemptionsNote: 'también los que no llevan mensaje',
       showBadges: 'Insignias',
       showBadgesNote: 'streamer, mod, VIP, sub',
       timestamps: 'Hora en cada mensaje',
@@ -190,6 +192,7 @@
       noticeSubGiftMonths: '{name} ha regalado {months} meses de suscripción de {plan} a {recipient}.',
       noticeMysteryGift: '{name} está regalando {count} suscripciones de {plan} a la comunidad.',
       noticeRaid: '{name} está haciendo raid con {count} espectadores.',
+      noticeRedeem: '{name} ha canjeado «{reward}» ({cost} puntos)',
       noticeWatchStreak: '{name} ha visto {count} directos seguidos y lleva una racha de visualización.',
       noticeGiftUpgrade: '{name} sigue con la suscripción que le regaló {sender}.',
       noticeGiftUpgradeAnon: '{name} sigue con la suscripción que le regaló un anónimo.',
@@ -310,6 +313,8 @@
       keywords: 'Keywords to highlight',
       keywordsPlaceholder: 'comma separated: help, question, gg',
       highlightFirst: 'Someone\'s first message',
+      showRedemptions: 'Channel point redemptions',
+      showRedemptionsNote: 'including ones without a message',
       showBadges: 'Badges',
       showBadgesNote: 'streamer, mod, VIP, sub',
       timestamps: 'Time on each message',
@@ -409,6 +414,7 @@
       noticeSubGiftMonths: '{name} gifted {months} months of {plan} to {recipient}.',
       noticeMysteryGift: '{name} is gifting {count} {plan} subs to the community.',
       noticeRaid: '{name} is raiding with a party of {count}.',
+      noticeRedeem: '{name} redeemed "{reward}" ({cost} points)',
       noticeWatchStreak: '{name} watched {count} consecutive streams and sparked a watch streak!',
       noticeGiftUpgrade: '{name} is continuing the gift sub they got from {sender}.',
       noticeGiftUpgradeAnon: '{name} is continuing the gift sub they got from an anonymous user.',
@@ -446,6 +452,9 @@
   // Novedades de cada versión, para el aviso que sale tras actualizar.
   const CHANGELOG = {
     es: {
+      '1.2.3': [
+        'Ahora salen en el chat todos los canjes de puntos, también los que no llevan mensaje, con el nombre y el color de la recompensa. Se pueden quitar en Mensajes → Destacados.',
+      ],
       '1.2.2': [
         'Mis estilos: guarda tu aspecto con el nombre y el color que quieras (Apariencia → Estilos rápidos). La lista de estilos rápidos se puede ocultar.',
         'Letra más pequeña en Por defecto y Sakura (15 px), pensada para pantallas 1080p. Texto grande pasa a 20 px y va junto a Por defecto.',
@@ -485,6 +494,9 @@
       ],
     },
     en: {
+      '1.2.3': [
+        'All channel point redemptions now show in chat, including ones without a message, with the reward\'s name and color. You can turn them off in Messages → Highlights.',
+      ],
       '1.2.2': [
         'My styles: save your look with any name and color you like (Look → Quick styles). The quick styles list can be hidden.',
         'Smaller text in Default and Sakura (15 px), better for 1080p screens. Big text is now 20 px and sits next to Default.',
@@ -540,7 +552,8 @@
       ['TopMain_99', '#FA8E4B', '\x01ACTION se va a por un café mientras reaparece\x01'],
       ['SoporteFeliz', '#1A1A7A', 'peepoHappy RainTime', { reply: { name: 'Faker', body: '¡Qué jugada!' } }],
       ['Pentakill', '#FF7070', 'PENTAAAAA PogChamp', { bits: 500 }],
-      ['LaNoviaDelADC', '#F670DD', 'esa build no la entiendo pero si funciona... LUL', { redeem: true }],
+      ['LaNoviaDelADC', '#F670DD', 'esa build no la entiendo pero si funciona... LUL', { redeem: true, rewardTitle: 'Pregunta al streamer' }],
+      { redeem: { name: 'Pepita_22', title: 'Hidrátate', cost: 500, color: '#00C7AC' } },
       { notice: 'Kylen se ha suscrito con Prime. ¡Lleva 12 meses suscrito!', msg: ['Kylen', '#A970FF', 'PepePls PepePls PepePls'] },
       ['AnalistaDeSofá', '#00F5D4', 'Un mensaje largo de ejemplo para ver cómo se parten las líneas cuando alguien escribe mucho en el chat FeelsGoodMan', { highlighted: true }],
       { notice: 'StreamerAmigo está haciendo raid con 57 espectadores' },
@@ -557,7 +570,8 @@
       ['TopMain_99', '#FA8E4B', '\x01ACTION grabs a coffee while respawning\x01'],
       ['HappySupport', '#1A1A7A', 'peepoHappy RainTime', { reply: { name: 'Faker', body: 'What a play!' } }],
       ['Pentakill', '#FF7070', 'PENTAAAAA PogChamp', { bits: 500 }],
-      ['ADCsBestFriend', '#F670DD', 'no idea what that build is but it works... LUL', { redeem: true }],
+      ['ADCsBestFriend', '#F670DD', 'no idea what that build is but it works... LUL', { redeem: true, rewardTitle: 'Ask the streamer' }],
+      { redeem: { name: 'Penny_22', title: 'Hydrate', cost: 500, color: '#00C7AC' } },
       { notice: 'Kylen subscribed with Prime. They\'ve subscribed for 12 months!', msg: ['Kylen', '#A970FF', 'PepePls PepePls PepePls'] },
       ['CouchAnalyst', '#00F5D4', 'A long example message to see how lines wrap when someone writes a lot in chat FeelsGoodMan', { highlighted: true }],
       { notice: 'StreamerFriend is raiding with a party of 57' },

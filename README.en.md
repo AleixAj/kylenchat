@@ -64,7 +64,7 @@
 - **Highlighted mentions and keywords**: if someone writes your name or a word you choose, the message stands out.
 - Marks each person's **first message**, so you can greet them.
 - **Badges** for streamer, moderator, VIP and subscriber.
-- Highlights **subs, gifts, raids, bits, channel point redemptions and highlighted messages**, and shows who each message is replying to.
+- Highlights **subs, gifts, raids, bits, channel point redemptions (including ones without a message, with the reward's name) and highlighted messages**, and shows who each message is replying to.
 - **Live alerts**: add the channels you follow and get notified as soon as they go live, with an alert box on top of your game and a sound.
 - In **shared chat**, each message shows the icon of the channel it comes from.
 - Names with a **7TV paint** (gradients) show their colors.
