@@ -77,6 +77,78 @@ function paintPresetButtons() {
   });
 }
 
+// ---------- Mis estilos ----------
+
+const LOOK_KEYS = Object.keys(LOOK_BASE);
+const STYLES_MAX = 20;
+
+// Texto blanco o negro según lo claro que sea el color del botón.
+function readableOn(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  return (r * 299 + g * 587 + b * 114) / 1000 > 150 ? '#111' : '#fff';
+}
+
+let stylesKey = '';
+
+function renderCustomStyles() {
+  if (!settings) return;
+  const styles = settings.customStyles || [];
+  const key = JSON.stringify([lang, styles]);
+  if (key === stylesKey) return;
+  stylesKey = key;
+  $('customStyles').replaceChildren(...styles.map((style) => {
+    const chip = document.createElement('span');
+    chip.className = 'style-chip';
+    chip.style.background = style.color;
+    const apply = document.createElement('button');
+    apply.className = 'apply';
+    apply.textContent = style.name;
+    apply.style.color = readableOn(style.color);
+    apply.style.fontFamily = `"${style.data.fontFamily || 'Segoe UI'}", "Segoe UI", system-ui, sans-serif`;
+    apply.style.fontWeight = style.data.bold ? '700' : '400';
+    apply.addEventListener('click', () => api.setSettings({ ...LOOK_BASE, ...style.data }));
+    const del = document.createElement('button');
+    del.className = 'del';
+    del.textContent = '×';
+    del.style.color = readableOn(style.color);
+    del.title = tr('styleDelete', { name: style.name });
+    del.setAttribute('aria-label', del.title);
+    del.addEventListener('click', () => {
+      api.setSettings({ customStyles: (settings.customStyles || []).filter((s) => s.name !== style.name) });
+    });
+    chip.append(apply, del);
+    return chip;
+  }));
+  $('customEmpty').hidden = styles.length > 0;
+}
+
+function saveCustomStyle() {
+  const name = $('styleName').value.trim();
+  const styles = settings.customStyles || [];
+  const existing = styles.find((s) => s.name.toLowerCase() === name.toLowerCase());
+  let error = '';
+  if (!name) error = tr('styleNameMissing');
+  else if (!existing && styles.length >= STYLES_MAX) error = tr('styleFull', { max: STYLES_MAX });
+  $('styleError').textContent = error;
+  if (error) return;
+  const style = { name, color: $('styleColor').value, data: Object.fromEntries(LOOK_KEYS.map((k) => [k, settings[k]])) };
+  // Con el mismo nombre se actualiza el que ya había, en su sitio.
+  const next = existing ? styles.map((s) => (s === existing ? style : s)) : [...styles, style];
+  api.setSettings({ customStyles: next });
+  $('styleName').value = '';
+}
+
+// La lista de estilos rápidos se puede plegar; se recuerda en este PC.
+let presetsHidden = false;
+try { presetsHidden = localStorage.getItem('presetsHidden') === '1'; } catch { /* sin almacenamiento */ }
+
+function applyPresetsHidden() {
+  $('presetList').hidden = presetsHidden;
+  $('presetsToggle').textContent = tr(presetsHidden ? 'presetsShow' : 'presetsHide');
+  $('presetsToggle').setAttribute('aria-expanded', String(!presetsHidden));
+}
+
 function readField(el, type) {
   if (type === 'check') return el.checked;
   if (type === 'range') return Number(el.value);
@@ -104,6 +176,7 @@ function applyLanguage(newLang) {
     const key = el.dataset.i18n;
     el.textContent = tr(i18n.isMac && `${key}Mac` in i18n.STRINGS.es ? `${key}Mac` : key);
   });
+  if ($('presetsToggle')) applyPresetsHidden();
   document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = tr(el.dataset.i18nHtml); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = tr(el.dataset.i18nTitle); });
   document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => { el.placeholder = tr(el.dataset.i18nPlaceholder); });
@@ -143,6 +216,7 @@ function fillFields(newSettings) {
     api.setSettings({ onboarded: true });
   }
   renderLiveList();
+  renderCustomStyles();
 }
 
 // Acepta "nombre", "#nombre", "@nombre" o el enlace completo de twitch.tv.
@@ -512,6 +586,14 @@ $('importSettings').addEventListener('click', async () => {
 document.querySelectorAll('[data-lang]').forEach((b) => b.addEventListener('click', () => api.setSettings({ language: b.dataset.lang })));
 document.querySelectorAll('[data-pos]').forEach((b) => b.addEventListener('click', () => api.setPosition(b.dataset.pos)));
 document.querySelectorAll('[data-preset]').forEach((b) => b.addEventListener('click', () => api.setSettings(PRESETS[b.dataset.preset])));
+$('styleSave').addEventListener('click', saveCustomStyle);
+$('styleName').addEventListener('keydown', (e) => { if (e.key === 'Enter') saveCustomStyle(); });
+$('styleName').addEventListener('input', () => { $('styleError').textContent = ''; });
+$('presetsToggle').addEventListener('click', () => {
+  presetsHidden = !presetsHidden;
+  try { localStorage.setItem('presetsHidden', presetsHidden ? '1' : '0'); } catch { /* da igual */ }
+  applyPresetsHidden();
+});
 document.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
 
 const sendSize = () => api.setSize(Number($('width').value), Number($('height').value));
@@ -524,6 +606,7 @@ let savedTab = 'look';
 try { savedTab = localStorage.getItem('tab') || 'look'; } catch { /* sin almacenamiento */ }
 showTab(document.querySelector(`[data-tab="${savedTab}"]`) ? savedTab : 'look');
 paintPresetButtons();
+applyPresetsHidden();
 applyLanguage(lang); // textos en español mientras llegan los ajustes guardados
 
 api.onSettings(fillFields);

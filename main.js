@@ -47,6 +47,7 @@ const DEFAULTS = {
   autoStart: false,
   bounds: null,
   profiles: [],
+  customStyles: [],
   activeProfile: '',
   onboarded: false,
   lastVersion: '',
@@ -124,6 +125,8 @@ function sanitize(patch) {
   for (const [key, value] of Object.entries(patch)) {
     if (key === 'profiles') {
       if (Array.isArray(value)) clean.profiles = cleanProfiles(value);
+    } else if (key === 'customStyles') {
+      if (Array.isArray(value)) clean.customStyles = cleanStyles(value);
     } else if (key === 'shortcuts') {
       if (isShortcuts(value)) clean.shortcuts = pick(value, Object.keys(DEFAULT_SHORTCUTS));
     } else if (SCHEMA[key] && SCHEMA[key](value)) {
@@ -141,6 +144,20 @@ function cleanProfiles(list) {
     .filter((p) => p && isProfileName(p.name) && p.name.trim())
     .slice(0, 10)
     .map((p) => ({ name: p.name.trim(), data: pick(sanitize(p.data), PROFILE_KEYS) }));
+}
+
+// "Mis estilos": aspectos guardados por el usuario, con su nombre y el color de su botón.
+// Solo guardan el aspecto (como los estilos rápidos), no la posición ni el tamaño.
+const LOOK_KEYS = ['fontSize', 'fontFamily', 'bold', 'textColor', 'userColors', 'bgColor', 'bgOpacity', 'barColor', 'outline', 'opacity', 'emoteScale'];
+const STYLES_MAX = 20;
+
+function cleanStyles(list) {
+  const seen = new Set();
+  return list
+    .filter((s) => s && isText(24)(s.name) && s.name.trim() && isHex(s.color) && s.data && typeof s.data === 'object')
+    .map((s) => ({ name: s.name.trim(), color: s.color, data: pick(sanitize(s.data), LOOK_KEYS) }))
+    .filter((s) => !seen.has(s.name.toLowerCase()) && seen.add(s.name.toLowerCase()))
+    .slice(0, STYLES_MAX);
 }
 
 const APP_ICON = path.join(__dirname, 'assets', 'icon.ico');

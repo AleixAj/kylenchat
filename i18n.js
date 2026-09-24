@@ -98,6 +98,16 @@
       tabAlerts: 'Avisos',
       tabGeneral: 'General',
       sectionPresets: 'Estilos rápidos',
+      presetsHide: 'Ocultar ▴',
+      presetsShow: 'Mostrar ▾',
+      myStyles: 'Mis estilos',
+      myStylesEmpty: 'Guarda el aspecto que tienes ahora para volver a él con un clic.',
+      styleNamePlaceholder: 'Nombre del estilo',
+      styleColor: 'Color del botón',
+      styleSave: 'Guardar estilo actual',
+      styleDelete: 'Borrar {name}',
+      styleNameMissing: 'Ponle un nombre al estilo.',
+      styleFull: 'Como mucho {max} estilos.',
       presetDefault: 'Por defecto',
       presetTwitch: 'Clásico Twitch',
       presetContrast: 'Alto contraste',
@@ -309,6 +319,16 @@
       tabAlerts: 'Alerts',
       tabGeneral: 'General',
       sectionPresets: 'Quick styles',
+      presetsHide: 'Hide ▴',
+      presetsShow: 'Show ▾',
+      myStyles: 'My styles',
+      myStylesEmpty: 'Save your current look to get back to it with one click.',
+      styleNamePlaceholder: 'Style name',
+      styleColor: 'Button color',
+      styleSave: 'Save current style',
+      styleDelete: 'Delete {name}',
+      styleNameMissing: 'Give the style a name.',
+      styleFull: '{max} styles at most.',
       presetDefault: 'Default',
       presetTwitch: 'Classic Twitch',
       presetContrast: 'High contrast',
@@ -426,6 +446,10 @@
   // Novedades de cada versión, para el aviso que sale tras actualizar.
   const CHANGELOG = {
     es: {
+      '1.2.2': [
+        'Mis estilos: guarda tu aspecto con el nombre y el color que quieras (Apariencia → Estilos rápidos). La lista de estilos rápidos se puede ocultar.',
+        'Letra más pequeña en Por defecto y Sakura (15 px), pensada para pantallas 1080p. Texto grande pasa a 20 px y va junto a Por defecto.',
+      ],
       '1.2.1': [
         'Los avisos de directo llegan mucho antes: ahora se pregunta a Twitch directamente.',
       ],
@@ -461,6 +485,10 @@
       ],
     },
     en: {
+      '1.2.2': [
+        'My styles: save your look with any name and color you like (Look → Quick styles). The quick styles list can be hidden.',
+        'Smaller text in Default and Sakura (15 px), better for 1080p screens. Big text is now 20 px and sits next to Default.',
+      ],
       '1.2.1': [
         'Live alerts arrive much sooner: the app now asks Twitch directly.',
       ],

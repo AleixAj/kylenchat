@@ -42,6 +42,19 @@
   .presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
   .presets button { padding: 6px 12px; font-size: 13px; border-radius: 999px; border: 1px solid #3a3a42; }
   .presets button:hover { filter: brightness(1.2); }
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .section-head h2 { margin: 0; }
+  button.link { background: transparent; color: var(--muted); padding: 2px 6px; font-size: 12px; }
+  button.link:hover { background: transparent; color: #efeff1; }
+  #presetList[hidden], #customEmpty[hidden] { display: none; }
+  h3 { font-size: 12px; color: var(--muted); margin: 6px 0 8px; font-weight: 600; }
+  .style-chip { display: inline-flex; align-items: stretch; border-radius: 999px; overflow: hidden; border: 1px solid #3a3a42; }
+  .presets .style-chip button { border: 0; border-radius: 0; background: transparent; }
+  .presets .style-chip button:hover { background: rgba(0, 0, 0, .15); filter: none; }
+  .style-chip .apply { padding: 6px 4px 6px 12px; font-size: 13px; }
+  .style-chip .del { padding: 0 10px 0 6px; font-size: 14px; line-height: 1; opacity: .75; }
+  .style-chip .del:hover { opacity: 1; }
+  .style-chip:hover { filter: brightness(1.15); }
   .note { color: var(--muted); font-size: 12px; line-height: 1.5; }
   .status { font-size: 12px; margin: 0 0 8px; color: #8fe3a8; }
   .status.bad { color: #ff8a8a; }
@@ -137,8 +150,11 @@
   <!-- ======================= APARIENCIA ======================= -->
   <div class="tab-panel" data-panel="look">
     <section>
-      <h2 data-i18n="sectionPresets"></h2>
-      <div class="presets">
+      <div class="section-head">
+        <h2 data-i18n="sectionPresets"></h2>
+        <button class="link" id="presetsToggle" aria-controls="presetList"></button>
+      </div>
+      <div class="presets" id="presetList">
         <button data-preset="default" data-i18n="presetDefault"></button>
         <button data-preset="big" data-i18n="presetBig"></button>
         <button data-preset="twitch" data-i18n="presetTwitch"></button>
@@ -153,6 +169,16 @@
         <button data-preset="chalk" data-i18n="presetChalk"></button>
         <button data-preset="arcade" data-i18n="presetArcade"></button>
       </div>
+
+      <h3 data-i18n="myStyles"></h3>
+      <div class="presets" id="customStyles"></div>
+      <p class="note" id="customEmpty" data-i18n="myStylesEmpty"></p>
+      <div class="row">
+        <input type="text" id="styleName" maxlength="24" data-i18n-placeholder="styleNamePlaceholder">
+        <input type="color" id="styleColor" value="#9146ff" data-i18n-title="styleColor">
+        <button class="primary" id="styleSave" data-i18n="styleSave"></button>
+      </div>
+      <p class="status bad" id="styleError"></p>
     </section>
 
     <section>

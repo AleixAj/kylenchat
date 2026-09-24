@@ -71,6 +71,7 @@
 
 **A tu gusto**
 - **13 estilos rápidos** con un clic, cada uno con su propia fuente y colores: Por defecto, Texto grande, Clásico Twitch, Alto contraste, Terminal, Sakura 🌸, Neón ⚡, Rúnico ⚔️, Viñeta 💬, Glaciar ❄️, Bosque 🌿, Pizarra ✏️ y Arcade 👾.
+- **Mis estilos**: guarda el aspecto que tengas con el nombre y el color que quieras, y vuelve a él con un clic. La lista de estilos rápidos se puede ocultar.
 - Control total de posición, tamaño, fuente (cualquiera instalada en tu PC), colores, fondo, color de la barra, transparencia y tamaño de emotes.
 - Mensajes **alineados a la derecha** y **nuevos arriba**, si lo prefieres.
 - **Perfiles por juego**: guarda el aspecto y la posición para cada juego y cambia con `Ctrl + Alt + P`.

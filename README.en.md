@@ -71,6 +71,7 @@
 
 **Make it yours**
 - **13 one-click styles**, each with its own font and colors: Default, Big text, Classic Twitch, High contrast, Terminal, Sakura 🌸, Neon ⚡, Runic ⚔️, Comic 💬, Glacier ❄️, Forest 🌿, Chalkboard ✏️ and Arcade 👾.
+- **My styles**: save your current look with any name and color you like, and get back to it with one click. The quick styles list can be hidden.
 - Full control over position, size, font (any font installed on your computer), colors, background, bar color, transparency and emote size.
 - **Right-aligned** messages and **newest on top**, if you prefer.
 - **Per-game profiles**: save the look and position for each game and switch with `Ctrl + Alt + P`.
