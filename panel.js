@@ -44,7 +44,7 @@ const FIELDS = {
 // Estilos rápidos: cada uno fija todo el aspecto (fuente, colores, fondo...), así que se pueden
 // probar uno tras otro sin que queden restos del anterior. Las fuentes van incluidas en la app (fonts.css).
 const LOOK_BASE = {
-  fontSize: 20, fontFamily: 'Segoe UI', bold: false, textColor: '#ffffff', userColors: true,
+  fontSize: 15, fontFamily: 'Segoe UI', bold: false, textColor: '#ffffff', userColors: true,
   bgColor: '#000000', bgOpacity: 25, barColor: '#9146ff', outline: true, opacity: 100, emoteScale: 1.6,
 };
 const PRESETS = {
@@ -60,7 +60,7 @@ const PRESETS = {
   forest: { ...LOOK_BASE, fontFamily: 'Nunito', fontSize: 18, bold: true, textColor: '#e3ffd6', bgColor: '#123d22', bgOpacity: 60, barColor: '#3ddc84' },
   chalk: { ...LOOK_BASE, fontFamily: 'Patrick Hand', fontSize: 21, bold: false, textColor: '#f4f4f4', bgColor: '#1f3326', bgOpacity: 80, outline: false, barColor: '#9ccc9c' },
   arcade: { ...LOOK_BASE, fontFamily: 'Press Start 2P', fontSize: 12, bold: false, textColor: '#ffffff', bgColor: '#1a0b3d', bgOpacity: 70, emoteScale: 2.2, barColor: '#ff2e97' },
-  sakura: { ...LOOK_BASE, fontFamily: 'Space Grotesk', fontSize: 20, bold: true, textColor: '#ffffff', bgColor: '#ff8fc8', bgOpacity: 10, outline: true, barColor: '#ff5fae' },
+  sakura: { ...LOOK_BASE, fontFamily: 'Space Grotesk', fontSize: 15, bold: true, textColor: '#ffffff', bgColor: '#ff8fc8', bgOpacity: 10, outline: true, barColor: '#ff5fae' },
 };
 
 // Cada botón de estilo se ve con su propia fuente y colores, como una muestra.

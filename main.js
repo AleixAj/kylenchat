@@ -12,7 +12,7 @@ const isMac = process.platform === 'darwin';
 const DEFAULTS = {
   language: 'es',
   channel: '',
-  fontSize: 20,
+  fontSize: 15,
   fontFamily: 'Segoe UI',
   bold: false,
   textColor: '#ffffff',
