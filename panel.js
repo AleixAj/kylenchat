@@ -51,7 +51,7 @@ const PRESETS = {
   default: { ...LOOK_BASE },
   twitch: { ...LOOK_BASE, fontFamily: 'Inter', fontSize: 15, bold: false, textColor: '#efeff1', bgColor: '#18181b', bgOpacity: 90, outline: false, barColor: '#9146ff' },
   contrast: { ...LOOK_BASE, fontFamily: 'Atkinson Hyperlegible', fontSize: 19, bold: true, textColor: '#ffe600', bgOpacity: 85, barColor: '#ffe600' },
-  big: { ...LOOK_BASE, fontFamily: 'Lilita One', fontSize: 24, bold: false, bgOpacity: 50, emoteScale: 1.8, barColor: '#9146ff' },
+  big: { ...LOOK_BASE, fontFamily: 'Lilita One', fontSize: 20, bold: false, bgOpacity: 50, emoteScale: 1.8, barColor: '#9146ff' },
   terminal: { ...LOOK_BASE, fontFamily: 'Cascadia Code', fontSize: 15, textColor: '#39ff14', bgColor: '#050805', bgOpacity: 75, outline: false, barColor: '#39ff14' },
   neon: { ...LOOK_BASE, fontFamily: 'Exo 2', fontSize: 18, bold: true, textColor: '#00f0ff', bgColor: '#12002b', bgOpacity: 55, barColor: '#00f0ff' },
   runic: { ...LOOK_BASE, fontFamily: 'Alegreya', fontSize: 20, bold: true, textColor: '#f3dfa2', bgColor: '#2a1a0c', bgOpacity: 70, barColor: '#c9a227' },
