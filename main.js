@@ -570,12 +570,12 @@ function installUpdate() {
 }
 
 // ---------- Avisos de directo ----------
-// Cada 30 segundos se pregunta qué canales de la lista están en directo: una sola petición
+// Cada minuto se pregunta qué canales de la lista están en directo: una sola petición
 // ligera para todos, sin iniciar sesión en Twitch.
 // El aviso sale en un recuadro propio encima del juego (no como notificación de Windows,
 // que además Windows suele esconder mientras se juega).
 
-const LIVE_POLL_MS = 30 * 1000;
+const LIVE_POLL_MS = 60 * 1000;
 const LIVE_RECENT_MS = 10 * 60 * 1000; // al arrancar solo se avisa de directos que acaban de empezar
 const LIVE_BATCH = 50; // canales por petición a api.ivr.fi (Twitch acepta los 100 de una vez)
 let liveTimer = null;

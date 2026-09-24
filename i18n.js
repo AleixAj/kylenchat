@@ -122,7 +122,7 @@
       mutedUsers: 'Usuarios silenciados',
       mutedUsersPlaceholder: 'separados por comas: usuario1, usuario2',
       sectionLive: 'Avisos de directo',
-      liveNote: 'Te avisa cuando alguno de estos canales empieza directo. Se comprueba cada 30 segundos.',
+      liveNote: 'Te avisa cuando alguno de estos canales empieza directo. Se comprueba cada minuto.',
       liveAddPlaceholder: 'nombre del canal o enlace de twitch.tv',
       liveAdd: 'Añadir',
       liveEmpty: 'Todavía no hay canales en la lista.',
@@ -333,7 +333,7 @@
       mutedUsers: 'Muted users',
       mutedUsersPlaceholder: 'comma separated: user1, user2',
       sectionLive: 'Live alerts',
-      liveNote: 'Get notified when any of these channels goes live. Checked every 30 seconds.',
+      liveNote: 'Get notified when any of these channels goes live. Checked every minute.',
       liveAddPlaceholder: 'channel name or twitch.tv link',
       liveAdd: 'Add',
       liveEmpty: 'No channels in the list yet.',
@@ -427,7 +427,7 @@
   const CHANGELOG = {
     es: {
       '1.2.1': [
-        'Los avisos de directo llegan mucho antes: se pregunta a Twitch directamente cada 30 segundos.',
+        'Los avisos de directo llegan mucho antes: ahora se pregunta a Twitch directamente.',
       ],
       '1.2.0': [
         'Avisos de directo: añade canales en la pestaña Avisos y te avisamos cuando empiecen directo, con un recuadro encima del juego que puedes mover y ajustar, y sonido.',
@@ -462,7 +462,7 @@
     },
     en: {
       '1.2.1': [
-        'Live alerts arrive much sooner: the app now asks Twitch directly every 30 seconds.',
+        'Live alerts arrive much sooner: the app now asks Twitch directly.',
       ],
       '1.2.0': [
         'Live alerts: add channels in the Alerts tab and get notified when they go live, with an alert box on top of your game that you can move and resize, and a sound.',

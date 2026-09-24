@@ -121,7 +121,7 @@ If you close the settings window, the app keeps running in the tray (next to the
 
 ### Live alerts
 
-In the **Alerts** tab, type a channel (or paste its twitch.tv link) and click **Add**. Channels that are live right now show a red dot. The app checks every 30 seconds by asking Twitch directly, with a lightweight request, without logging in to Twitch.
+In the **Alerts** tab, type a channel (or paste its twitch.tv link) and click **Add**. Channels that are live right now show a red dot. The app checks every minute by asking Twitch directly, with a lightweight request, without logging in to Twitch.
 
 When one of them goes live, you get:
 
