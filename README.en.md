@@ -70,7 +70,7 @@
 - Names with a **7TV paint** (gradients) show their colors.
 
 **Make it yours**
-- **13 one-click styles**, each with its own font and colors: Default, Classic Twitch, High contrast, Big text, Terminal, Sakura 🌸, Neon ⚡, Runic ⚔️, Comic 💬, Glacier ❄️, Forest 🌿, Chalkboard ✏️ and Arcade 👾.
+- **13 one-click styles**, each with its own font and colors: Default, Big text, Classic Twitch, High contrast, Terminal, Sakura 🌸, Neon ⚡, Runic ⚔️, Comic 💬, Glacier ❄️, Forest 🌿, Chalkboard ✏️ and Arcade 👾.
 - Full control over position, size, font (any font installed on your computer), colors, background, bar color, transparency and emote size.
 - **Right-aligned** messages and **newest on top**, if you prefer.
 - **Per-game profiles**: save the look and position for each game and switch with `Ctrl + Alt + P`.

@@ -70,7 +70,7 @@
 - Los nombres con **pintura de 7TV** (degradados) se ven con sus colores.
 
 **A tu gusto**
-- **13 estilos rápidos** con un clic, cada uno con su propia fuente y colores: Por defecto, Clásico Twitch, Alto contraste, Texto grande, Terminal, Sakura 🌸, Neón ⚡, Rúnico ⚔️, Viñeta 💬, Glaciar ❄️, Bosque 🌿, Pizarra ✏️ y Arcade 👾.
+- **13 estilos rápidos** con un clic, cada uno con su propia fuente y colores: Por defecto, Texto grande, Clásico Twitch, Alto contraste, Terminal, Sakura 🌸, Neón ⚡, Rúnico ⚔️, Viñeta 💬, Glaciar ❄️, Bosque 🌿, Pizarra ✏️ y Arcade 👾.
 - Control total de posición, tamaño, fuente (cualquiera instalada en tu PC), colores, fondo, color de la barra, transparencia y tamaño de emotes.
 - Mensajes **alineados a la derecha** y **nuevos arriba**, si lo prefieres.
 - **Perfiles por juego**: guarda el aspecto y la posición para cada juego y cambia con `Ctrl + Alt + P`.

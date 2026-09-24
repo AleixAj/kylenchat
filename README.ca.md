@@ -70,7 +70,7 @@
 - Els noms amb **pintura de 7TV** (degradats) es veuen amb els seus colors.
 
 **Al teu gust**
-- **13 estils ràpids** amb un clic, cadascun amb la seva pròpia font i colors: Por defecto (per defecte), Clásico Twitch (Twitch clàssic), Alto contraste (alt contrast), Texto grande (text gran), Terminal, Sakura 🌸, Neón ⚡ (neó), Rúnico ⚔️ (rúnic), Viñeta 💬 (vinyeta), Glaciar ❄️ (glacera), Bosque 🌿 (bosc), Pizarra ✏️ (pissarra) i Arcade 👾. Els noms surten així a l'app en castellà (o en anglès, si el sistema és en anglès).
+- **13 estils ràpids** amb un clic, cadascun amb la seva pròpia font i colors: Por defecto (per defecte), Texto grande (text gran), Clásico Twitch (Twitch clàssic), Alto contraste (alt contrast), Terminal, Sakura 🌸, Neón ⚡ (neó), Rúnico ⚔️ (rúnic), Viñeta 💬 (vinyeta), Glaciar ❄️ (glacera), Bosque 🌿 (bosc), Pizarra ✏️ (pissarra) i Arcade 👾. Els noms surten així a l'app en castellà (o en anglès, si el sistema és en anglès).
 - Control total de la posició, la mida, la font (qualsevol que tinguis instal·lada a l'ordinador), els colors, el fons, el color de la barra, la transparència i la mida dels emotes.
 - Missatges **alineats a la dreta** i **els nous a dalt**, si ho prefereixes.
 - **Perfils per joc**: desa l'aspecte i la posició per a cada joc i passa d'un a l'altre amb `Ctrl + Alt + P`.
