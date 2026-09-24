@@ -122,7 +122,7 @@
       mutedUsers: 'Usuarios silenciados',
       mutedUsersPlaceholder: 'separados por comas: usuario1, usuario2',
       sectionLive: 'Avisos de directo',
-      liveNote: 'Te avisa cuando alguno de estos canales empieza directo. Se comprueba cada minuto.',
+      liveNote: 'Te avisa cuando alguno de estos canales empieza directo. Se comprueba cada 30 segundos.',
       liveAddPlaceholder: 'nombre del canal o enlace de twitch.tv',
       liveAdd: 'Añadir',
       liveEmpty: 'Todavía no hay canales en la lista.',
@@ -333,7 +333,7 @@
       mutedUsers: 'Muted users',
       mutedUsersPlaceholder: 'comma separated: user1, user2',
       sectionLive: 'Live alerts',
-      liveNote: 'Get notified when any of these channels goes live. Checked every minute.',
+      liveNote: 'Get notified when any of these channels goes live. Checked every 30 seconds.',
       liveAddPlaceholder: 'channel name or twitch.tv link',
       liveAdd: 'Add',
       liveEmpty: 'No channels in the list yet.',
@@ -426,6 +426,9 @@
   // Novedades de cada versión, para el aviso que sale tras actualizar.
   const CHANGELOG = {
     es: {
+      '1.2.1': [
+        'Los avisos de directo llegan mucho antes: se pregunta a Twitch directamente cada 30 segundos.',
+      ],
       '1.2.0': [
         'Avisos de directo: añade canales en la pestaña Avisos y te avisamos cuando empiecen directo, con un recuadro encima del juego que puedes mover y ajustar, y sonido.',
         'Los nombres de los canales se ven como los escribe cada streamer (p. ej. #TheGrefg en vez de #thegrefg).',
@@ -458,6 +461,9 @@
       ],
     },
     en: {
+      '1.2.1': [
+        'Live alerts arrive much sooner: the app now asks Twitch directly every 30 seconds.',
+      ],
       '1.2.0': [
         'Live alerts: add channels in the Alerts tab and get notified when they go live, with an alert box on top of your game that you can move and resize, and a sound.',
         'Channel names now show the way each streamer writes them (e.g. #TheGrefg instead of #thegrefg).',

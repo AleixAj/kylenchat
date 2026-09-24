@@ -121,7 +121,7 @@ Si tanques la finestra d'ajustos, l'app continua funcionant a la safata del sist
 
 ### Avisos de directe
 
-A la pestanya **Avisos** escriu un canal (o enganxa'n l'enllaç de twitch.tv) i prem **Añadir** (Afegeix). Els que són en directe en aquell moment surten amb un punt vermell. L'app ho comprova cada minut amb una consulta lleugera, sense iniciar sessió a Twitch.
+A la pestanya **Avisos** escriu un canal (o enganxa'n l'enllaç de twitch.tv) i prem **Añadir** (Afegeix). Els que són en directe en aquell moment surten amb un punt vermell. L'app ho comprova cada 30 segons preguntant directament a Twitch, amb una consulta lleugera, sense iniciar sessió a Twitch.
 
 Quan un comença directe t'avisa amb:
 

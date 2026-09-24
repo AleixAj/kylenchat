@@ -570,14 +570,14 @@ function installUpdate() {
 }
 
 // ---------- Avisos de directo ----------
-// Cada minuto se pregunta a api.ivr.fi (la misma que da los espectadores) qué canales de la
-// lista están en directo: una petición ligera por cada 50 canales, sin iniciar sesión en Twitch.
+// Cada 30 segundos se pregunta qué canales de la lista están en directo: una sola petición
+// ligera para todos, sin iniciar sesión en Twitch.
 // El aviso sale en un recuadro propio encima del juego (no como notificación de Windows,
 // que además Windows suele esconder mientras se juega).
 
-const LIVE_POLL_MS = 60 * 1000;
+const LIVE_POLL_MS = 30 * 1000;
 const LIVE_RECENT_MS = 10 * 60 * 1000; // al arrancar solo se avisa de directos que acaban de empezar
-const LIVE_BATCH = 50; // canales por petición
+const LIVE_BATCH = 50; // canales por petición a api.ivr.fi (Twitch acepta los 100 de una vez)
 let liveTimer = null;
 let liveRound = 0; // si se cambia la lista a mitad de una comprobación, la vieja no programa otra
 let liveErrorLogged = false;
@@ -610,32 +610,79 @@ function restartLiveWatch() {
   if (channels.length) checkLive(liveRound);
 }
 
+// Se pregunta a Twitch directamente, con la misma consulta pública que usa su web: se entera
+// de un directo nuevo en segundos. api.ivr.fi solo se usa si Twitch no responde, porque a
+// veces tarda varios minutos en ver un directo recién empezado.
+const TWITCH_GQL = 'https://gql.twitch.tv/gql';
+const TWITCH_WEB_CLIENT_ID = 'kimne78kx3ncx6brgo4mv6wki5h1ko'; // el de la web pública de Twitch
+const LIVE_QUERY = 'query($logins:[String!]){users(logins:$logins){login displayName profileImageURL(width:300) '
+  + 'broadcastSettings{title} stream{id createdAt type game{displayName}}}}';
+
+async function fetchLiveFromTwitch(channels) {
+  const res = await net.fetch(TWITCH_GQL, {
+    method: 'POST',
+    headers: { 'Client-Id': TWITCH_WEB_CLIENT_ID, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query: LIVE_QUERY, variables: { logins: channels } }),
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!res.ok) throw new Error(`Twitch HTTP ${res.status}`);
+  const body = await res.json();
+  const users = body && body.data && body.data.users;
+  if (!Array.isArray(users)) throw new Error('respuesta inesperada de Twitch');
+  // Mismo formato que api.ivr.fi, para tratar igual las dos fuentes.
+  return users.filter(Boolean).map((u) => ({
+    login: u.login,
+    displayName: u.displayName,
+    logo: u.profileImageURL,
+    stream: u.stream && {
+      id: u.stream.id,
+      createdAt: u.stream.createdAt,
+      type: u.stream.type,
+      title: u.broadcastSettings && u.broadcastSettings.title,
+      game: u.stream.game,
+    },
+  }));
+}
+
+async function fetchLiveFromIvr(channels) {
+  const users = [];
+  for (let i = 0; i < channels.length; i += LIVE_BATCH) {
+    const batch = channels.slice(i, i + LIVE_BATCH);
+    const res = await net.fetch(`https://api.ivr.fi/v2/twitch/user?login=${batch.join(',')}`, {
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) throw new Error(`ivr HTTP ${res.status}`);
+    const part = await res.json();
+    if (!Array.isArray(part)) throw new Error('respuesta inesperada de ivr');
+    users.push(...part);
+  }
+  return users;
+}
+
 async function checkLive(round) {
   const channels = liveChannelList();
   try {
-    for (let i = 0; i < channels.length; i += LIVE_BATCH) {
-      const batch = channels.slice(i, i + LIVE_BATCH);
-      const res = await net.fetch(`https://api.ivr.fi/v2/twitch/user?login=${batch.join(',')}`, {
-        signal: AbortSignal.timeout(15000), // si no contesta, se reintenta en el siguiente minuto
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const users = await res.json();
-      if (!Array.isArray(users)) throw new Error('respuesta inesperada');
-      if (round !== liveRound) return; // la lista ha cambiado mientras tanto
-      for (const user of users) onLiveStatus(user);
-      // Un canal que ya no aparece (baneado, renombrado...) deja de marcarse en directo.
-      const answered = new Set(users.map((u) => String((u && u.login) || '').toLowerCase()));
-      for (const channel of batch) {
-        if (!answered.has(channel)) {
-          liveSeen.set(channel, null);
-          liveNow.delete(channel);
-        }
+    let users;
+    try {
+      users = await fetchLiveFromTwitch(channels);
+    } catch (err) {
+      if (!liveErrorLogged) logError(`Avisos de directo (Twitch, se usa ivr): ${err.message}`);
+      users = await fetchLiveFromIvr(channels);
+    }
+    if (round !== liveRound) return; // la lista ha cambiado mientras tanto
+    for (const user of users) onLiveStatus(user);
+    // Un canal que ya no aparece (baneado, renombrado...) deja de marcarse en directo.
+    const answered = new Set(users.map((u) => String((u && u.login) || '').toLowerCase()));
+    for (const channel of channels) {
+      if (!answered.has(channel)) {
+        liveSeen.set(channel, null);
+        liveNow.delete(channel);
       }
     }
     liveErrorLogged = false;
     sendState();
   } catch (err) {
-    // Sin internet o la API caída: se reintenta en el siguiente minuto sin llenar el registro.
+    // Sin internet o las dos fuentes caídas: se reintenta en la siguiente vuelta sin llenar el registro.
     if (!liveErrorLogged) logError(`Avisos de directo: ${err.message}`);
     liveErrorLogged = true;
   }
