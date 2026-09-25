@@ -93,7 +93,6 @@ function renderChats() {
   chatsKey = key;
   const mainEye = $('mainEye');
   mainEye.innerHTML = settings.chatVisible ? EYE_ON : EYE_OFF; // iconos fijos de la app
-  mainEye.classList.toggle('off', !settings.chatVisible);
   mainEye.title = tr(settings.chatVisible ? 'chatHideMain' : 'chatShowMain');
   mainEye.setAttribute('aria-label', mainEye.title);
   mainEye.setAttribute('aria-pressed', String(!settings.chatVisible));
@@ -108,6 +107,7 @@ function renderChats() {
     kind.textContent = tr('chatExtra');
     name.append(kind);
     const eye = document.createElement('button');
+    eye.className = 'eye';
     eye.innerHTML = chat.visible ? EYE_ON : EYE_OFF; // iconos fijos de la app, sin datos de fuera
     eye.title = tr(chat.visible ? 'chatHide' : 'chatShow');
     eye.setAttribute('aria-label', eye.title);
@@ -115,6 +115,7 @@ function renderChats() {
     eye.addEventListener('click', () => api.setChatVisible(chat.id, !chat.visible));
     li.append(name, eye);
     const remove = document.createElement('button');
+    remove.className = 'remove-chat';
     remove.textContent = '×';
     remove.title = tr('chatRemove', { name: `#${chat.channel}` });
     remove.setAttribute('aria-label', remove.title);

@@ -70,16 +70,21 @@
   .chat-list:empty { display: none; }
   button.icon { padding: 0; width: 34px; height: 34px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--muted); font-size: 20px; line-height: 1; }
   button.icon:hover { color: #efeff1; }
-  button.icon.off { color: #ff8a8a; }
+  #mainEye { background: var(--accent); color: #fff; }
+  #mainEye:hover { background: var(--accent-2); }
   button.icon svg { width: 18px; height: 18px; }
   button.add-chat { padding: 2px 0; margin: -2px 0 8px; font-size: 13px; }
   button.add-chat[hidden] { display: none; }
-  .chat-list li { display: flex; align-items: center; gap: 8px; background: #0e0e10; border: 1px solid var(--line); border-radius: 6px; padding: 4px 4px 4px 10px; }
+  .chat-list li { display: flex; align-items: center; gap: 6px; background: #0e0e10; border: 1px solid var(--line); border-radius: 6px; padding: 4px 4px 4px 10px; }
   .chat-list li.off { opacity: .55; }
   .chat-list .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
   .chat-list .kind { font-size: 11px; color: var(--muted); font-weight: 400; margin-left: 6px; }
-  .chat-list button { background: transparent; padding: 5px 8px; color: var(--muted); display: inline-flex; align-items: center; }
-  .chat-list button:hover { background: #3a3a42; color: #efeff1; }
+  .chat-list button { width: 30px; height: 30px; padding: 0; display: inline-flex; align-items: center; justify-content: center; color: #fff; }
+  /* Ojo en morado y quitar en rojo, para distinguirlos de un vistazo */
+  .chat-list .eye { background: var(--accent); }
+  .chat-list .eye:hover { background: var(--accent-2); }
+  .chat-list .remove-chat { background: #d93636; font-size: 18px; font-weight: 700; line-height: 1; }
+  .chat-list .remove-chat:hover { background: #ef4b4b; }
   .chat-list svg { width: 18px; height: 18px; }
   .live-list { list-style: none; margin: 0 0 6px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
   .live-list li { display: flex; align-items: center; gap: 10px; background: #0e0e10; border: 1px solid var(--line); border-radius: 6px; padding: 6px 6px 6px 12px; }
