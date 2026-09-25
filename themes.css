@@ -355,7 +355,7 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-fortnite :is(#barBrand, .bar-brand), .theme-fortnite :is(#barChannel, .bar-tab) {
   height: 19px; padding: 0 10px; border-radius: 999px; display: flex; align-items: center; gap: 4px; white-space: nowrap;
 }
-.theme-fortnite :is(#barBrand, .bar-brand) { background: #E8EAF0; color: #1B1D26; text-shadow: none; }
+.theme-fortnite :is(#barBrand, .bar-brand) { background: rgba(30, 34, 48, .85); color: #FFFFFF; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .55); }
 .theme-fortnite :is(#barChannel, .bar-tab) { color: #FFFFFF; font-weight: 600; justify-self: auto; }
 .theme-fortnite #barViewers { margin-left: auto; }
 .theme-fortnite .fn-input { height: 26px; gap: 6px; padding: 0 2px; }
