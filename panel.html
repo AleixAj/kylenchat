@@ -66,7 +66,14 @@
   .tabs button:hover { color: #efeff1; background: transparent; }
   .tabs button.active { color: #efeff1; border-bottom-color: var(--accent); }
   .tab-panel[hidden] { display: none; }
-  .chat-list { list-style: none; margin: 10px 0 8px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .chat-list { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .chat-list:empty { display: none; }
+  button.icon { padding: 0; width: 34px; height: 34px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--muted); font-size: 20px; line-height: 1; }
+  button.icon:hover { color: #efeff1; }
+  button.icon.off { color: #ff8a8a; }
+  button.icon svg { width: 18px; height: 18px; }
+  button.add-chat { padding: 2px 0; margin: -2px 0 8px; font-size: 13px; }
+  button.add-chat[hidden] { display: none; }
   .chat-list li { display: flex; align-items: center; gap: 8px; background: #0e0e10; border: 1px solid var(--line); border-radius: 6px; padding: 4px 4px 4px 10px; }
   .chat-list li.off { opacity: .55; }
   .chat-list .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
@@ -139,14 +146,16 @@
     <div class="row">
       <input type="text" id="channel" data-i18n-placeholder="channelPlaceholder">
       <button class="primary" id="connect" data-i18n="connect"></button>
+      <button class="icon" id="mainEye"></button>
     </div>
     <p class="error" id="channelError"></p>
-      <ul class="chat-list" id="chatList"></ul>
-      <div class="row" id="chatAddRow">
-        <input type="text" id="chatAdd" maxlength="80" data-i18n-placeholder="chatAddPlaceholder">
-        <button id="chatAddBtn" data-i18n="chatAdd"></button>
-      </div>
-      <p class="status bad" id="chatAddError"></p>
+    <ul class="chat-list" id="chatList"></ul>
+    <button class="link add-chat" id="chatAddToggle" aria-controls="chatAddRow" data-i18n="chatAddShow"></button>
+    <div class="row" id="chatAddRow" hidden>
+      <input type="text" id="chatAdd" maxlength="80" data-i18n-placeholder="chatAddPlaceholder">
+      <button id="chatAddBtn" data-i18n="chatAdd"></button>
+    </div>
+    <p class="status bad" id="chatAddError"></p>
   </section>
 
   <div class="actions">

@@ -123,9 +123,9 @@ Si tanques la finestra d'ajustos, l'app continua funcionant a la safata del sist
 
 ### Diversos xats i amagar finestres
 
-Sota el canal, escriu un altre canal i prem **Añadir chat** (Afegeix xat): s'obre en una finestra a part, al costat de la principal (fins a 3 més). Totes es mouen alhora amb la drecera de moure i fan servir el mateix aspecte. Les mencions al teu canal es destaquen a totes.
+Sota el canal, prem **+ Añadir otro chat** (Afegeix un altre xat), escriu el canal i prem **Añadir chat** (Afegeix xat): s'obre en una finestra a part, al costat de la principal (fins a 3 més). Totes es mouen alhora amb la drecera de moure i fan servir el mateix aspecte. Les mencions al teu canal es destaquen a totes.
 
-Cada finestra té un **ull** per amagar-la o mostrar-la, i l'app ho recorda en reiniciar. Així pots deixar l'app oberta només per als **avisos de directe**, sense cap finestra de xat a la vista. Les finestres extra amagades es tanquen del tot i no gasten res.
+Cada finestra té un **ull** per amagar-la o mostrar-la (el de la principal és al costat de **Conectar**), i l'app ho recorda en reiniciar. Així pots deixar l'app oberta només per als **avisos de directe**, sense cap finestra de xat a la vista. Les finestres extra amagades es tanquen del tot i no gasten res.
 
 ### Avisos de directe
 

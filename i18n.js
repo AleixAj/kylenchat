@@ -11,7 +11,9 @@
       channelPlaceholder: 'nombre del canal o enlace de twitch.tv',
       connect: 'Conectar',
       channelInvalid: 'Nombre de canal no válido: solo letras, números y guion bajo.',
-      chatMain: 'principal',
+      chatHideMain: 'Ocultar la ventana del chat (la app sigue funcionando, p. ej. para los avisos)',
+      chatShowMain: 'Mostrar la ventana del chat',
+      chatAddShow: '+ Añadir otro chat',
       chatExtra: 'otra ventana',
       chatNoChannel: 'sin canal',
       chatHide: 'Ocultar esta ventana',
@@ -244,7 +246,9 @@
       channelPlaceholder: 'channel name or twitch.tv link',
       connect: 'Connect',
       channelInvalid: 'Invalid channel name: only letters, numbers and underscores.',
-      chatMain: 'main',
+      chatHideMain: 'Hide the chat window (the app keeps running, e.g. for alerts)',
+      chatShowMain: 'Show the chat window',
+      chatAddShow: '+ Add another chat',
       chatExtra: 'extra window',
       chatNoChannel: 'no channel',
       chatHide: 'Hide this window',
@@ -470,6 +474,9 @@
   // Novedades de cada versión, para el aviso que sale tras actualizar.
   const CHANGELOG = {
     es: {
+      '1.3.2': [
+        'Zona del canal más compacta: el ojo para ocultar la ventana va junto a Conectar, y "+ Añadir otro chat" abre la casilla solo cuando la necesitas.',
+      ],
       '1.3.1': [
         'Las versiones nuevas se detectan antes: la app las busca cada hora y al abrir los ajustes, aunque lleve días en la bandeja.',
       ],
@@ -519,6 +526,9 @@
       ],
     },
     en: {
+      '1.3.2': [
+        'More compact channel area: the eye to hide the window sits next to Connect, and "+ Add another chat" opens the field only when you need it.',
+      ],
       '1.3.1': [
         'New versions are found sooner: the app checks every hour and when you open the settings, even if it has been in the tray for days.',
       ],

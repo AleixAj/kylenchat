@@ -87,13 +87,16 @@ let chatsKey = '';
 
 function renderChats() {
   if (!settings) return;
-  const chats = [
-    { id: 'main', channel: settings.channel, visible: settings.chatVisible, main: true },
-    ...(settings.extraChats || []),
-  ];
-  const key = JSON.stringify([lang, chats]);
+  const chats = settings.extraChats || [];
+  const key = JSON.stringify([lang, chats, settings.chatVisible]);
   if (key === chatsKey) return;
   chatsKey = key;
+  const mainEye = $('mainEye');
+  mainEye.innerHTML = settings.chatVisible ? EYE_ON : EYE_OFF; // iconos fijos de la app
+  mainEye.classList.toggle('off', !settings.chatVisible);
+  mainEye.title = tr(settings.chatVisible ? 'chatHideMain' : 'chatShowMain');
+  mainEye.setAttribute('aria-label', mainEye.title);
+  mainEye.setAttribute('aria-pressed', String(!settings.chatVisible));
   $('chatList').replaceChildren(...chats.map((chat) => {
     const li = document.createElement('li');
     li.classList.toggle('off', !chat.visible);
@@ -102,7 +105,7 @@ function renderChats() {
     name.textContent = chat.channel ? `#${chat.channel}` : tr('chatNoChannel');
     const kind = document.createElement('span');
     kind.className = 'kind';
-    kind.textContent = chat.main ? tr('chatMain') : tr('chatExtra');
+    kind.textContent = tr('chatExtra');
     name.append(kind);
     const eye = document.createElement('button');
     eye.innerHTML = chat.visible ? EYE_ON : EYE_OFF; // iconos fijos de la app, sin datos de fuera
@@ -111,17 +114,28 @@ function renderChats() {
     eye.setAttribute('aria-pressed', String(!chat.visible));
     eye.addEventListener('click', () => api.setChatVisible(chat.id, !chat.visible));
     li.append(name, eye);
-    if (!chat.main) {
-      const remove = document.createElement('button');
-      remove.textContent = '×';
-      remove.title = tr('chatRemove', { name: `#${chat.channel}` });
-      remove.setAttribute('aria-label', remove.title);
-      remove.addEventListener('click', () => api.removeChat(chat.id));
-      li.append(remove);
-    }
+    const remove = document.createElement('button');
+    remove.textContent = '×';
+    remove.title = tr('chatRemove', { name: `#${chat.channel}` });
+    remove.setAttribute('aria-label', remove.title);
+    remove.addEventListener('click', () => api.removeChat(chat.id));
+    li.append(remove);
     return li;
   }));
-  $('chatAddRow').hidden = (settings.extraChats || []).length >= EXTRA_CHATS_MAX;
+  // Con el máximo de chats ya no se ofrece añadir más.
+  if (chats.length >= EXTRA_CHATS_MAX) showChatAdd(false);
+  $('chatAddToggle').hidden = chats.length >= EXTRA_CHATS_MAX || !$('chatAddRow').hidden;
+}
+
+// La casilla para añadir otro chat solo aparece al pulsar "+".
+function showChatAdd(on) {
+  $('chatAddRow').hidden = !on;
+  $('chatAddToggle').hidden = on || (settings && (settings.extraChats || []).length >= EXTRA_CHATS_MAX);
+  $('chatAddToggle').setAttribute('aria-expanded', String(on));
+  if (!on) {
+    $('chatAdd').value = '';
+    $('chatAddError').textContent = '';
+  } else $('chatAdd').focus();
 }
 
 function addChat() {
@@ -133,7 +147,7 @@ function addChat() {
   $('chatAddError').textContent = error;
   if (error) return;
   api.addChat(channel);
-  $('chatAdd').value = '';
+  showChatAdd(false);
 }
 
 // ---------- Mis estilos ----------
@@ -648,7 +662,12 @@ document.querySelectorAll('[data-pos]').forEach((b) => b.addEventListener('click
 document.querySelectorAll('[data-preset]').forEach((b) => b.addEventListener('click', () => api.setSettings(PRESETS[b.dataset.preset])));
 $('styleSave').addEventListener('click', saveCustomStyle);
 $('chatAddBtn').addEventListener('click', addChat);
-$('chatAdd').addEventListener('keydown', (e) => { if (e.key === 'Enter') addChat(); });
+$('chatAdd').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') addChat();
+  if (e.key === 'Escape') showChatAdd(false);
+});
+$('chatAddToggle').addEventListener('click', () => showChatAdd(true));
+$('mainEye').addEventListener('click', () => api.setChatVisible('main', !settings.chatVisible));
 $('chatAdd').addEventListener('input', () => { $('chatAddError').textContent = ''; });
 $('styleName').addEventListener('keydown', (e) => { if (e.key === 'Enter') saveCustomStyle(); });
 $('styleName').addEventListener('input', () => { $('styleError').textContent = ''; });

@@ -123,9 +123,9 @@ Si cierras la ventana de ajustes, la app sigue funcionando en la bandeja (junto 
 
 ### Varios chats y ocultar ventanas
 
-Debajo del canal, escribe otro canal y pulsa **Añadir chat**: se abre en una ventana aparte, al lado de la principal (hasta 3 más). Todas se mueven a la vez con el atajo de mover y usan el mismo aspecto. Las menciones a tu canal se destacan en todas.
+Debajo del canal, pulsa **+ Añadir otro chat**, escribe el canal y pulsa **Añadir chat**: se abre en una ventana aparte, al lado de la principal (hasta 3 más). Todas se mueven a la vez con el atajo de mover y usan el mismo aspecto. Las menciones a tu canal se destacan en todas.
 
-Cada ventana tiene un **ojo** para ocultarla o mostrarla, y la app lo recuerda al reiniciar. Así puedes dejar la app abierta solo para los **avisos de directo**, sin ninguna ventana de chat a la vista. Las ventanas extra ocultas se cierran del todo y no gastan nada.
+Cada ventana tiene un **ojo** para ocultarla o mostrarla (el de la principal está junto a **Conectar**), y la app lo recuerda al reiniciar. Así puedes dejar la app abierta solo para los **avisos de directo**, sin ninguna ventana de chat a la vista. Las ventanas extra ocultas se cierran del todo y no gastan nada.
 
 ### Avisos de directo
 

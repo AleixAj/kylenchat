@@ -123,9 +123,9 @@ If you close the settings window, the app keeps running in the tray (next to the
 
 ### Several chats and hiding windows
 
-Below the channel, type another channel and click **Add chat**: it opens in its own window next to the main one (up to 3 more). They all move together with the move shortcut and share the same look. Mentions of your channel are highlighted in all of them.
+Below the channel, click **+ Add another chat**, type the channel and click **Add chat**: it opens in its own window next to the main one (up to 3 more). They all move together with the move shortcut and share the same look. Mentions of your channel are highlighted in all of them.
 
-Each window has an **eye** button to hide or show it, and the app remembers it after a restart. That way you can keep the app open just for **live alerts**, with no chat window on screen. Hidden extra windows are fully closed and use nothing.
+Each window has an **eye** button to hide or show it (the main one is next to **Connect**), and the app remembers it after a restart. That way you can keep the app open just for **live alerts**, with no chat window on screen. Hidden extra windows are fully closed and use nothing.
 
 ### Live alerts
 
