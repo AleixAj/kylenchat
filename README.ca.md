@@ -56,6 +56,7 @@
 ## Què fa
 
 - Mostra el xat de qualsevol canal de Twitch en una finestra **transparent** que queda **sempre per sobre** del joc.
+- **Diversos xats alhora**: afegeix fins a 3 canals més, cadascun a la seva pròpia finestra, per seguir diversos directes.
 - Els clics **travessen** el xat, de manera que no molesta mentre jugues.
 - Mostra els emotes de **Twitch, 7TV, BTTV i FFZ**.
 - Una barra discreta **"Kylen Chat"** damunt del xat mostra el canal connectat i, si estàs en directe, **els teus espectadors**.
@@ -119,6 +120,12 @@ La versió de Mac **t'avisa quan surt una versió nova**, però no s'instal·la 
 4. Prem **Modo prueba** (mode de prova) i ajusta la lletra, els colors i la transparència veient com queda. Tot es desa automàticament.
 
 Si tanques la finestra d'ajustos, l'app continua funcionant a la safata del sistema (al costat del rellotge; al Mac, a la barra de menús). Fes clic a la seva icona per tornar-la a obrir.
+
+### Diversos xats i amagar finestres
+
+Sota el canal, escriu un altre canal i prem **Añadir chat** (Afegeix xat): s'obre en una finestra a part, al costat de la principal (fins a 3 més). Totes es mouen alhora amb la drecera de moure i fan servir el mateix aspecte. Les mencions al teu canal es destaquen a totes.
+
+Cada finestra té un **ull** per amagar-la o mostrar-la, i l'app ho recorda en reiniciar. Així pots deixar l'app oberta només per als **avisos de directe**, sense cap finestra de xat a la vista. Les finestres extra amagades es tanquen del tot i no gasten res.
 
 ### Avisos de directe
 

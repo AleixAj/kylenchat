@@ -39,6 +39,15 @@ function hexToRgba(hex, alpha) {
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
 }
 
+// Esta ventana es el chat principal o uno de los "otros chats" (lleva ?win=<id> en la dirección).
+const WIN_ID = new URLSearchParams(location.search).get('win') || '';
+
+function myChannel(s) {
+  if (!WIN_ID) return s.channel;
+  const chat = (s.extraChats || []).find((c) => c.id === WIN_ID);
+  return chat ? chat.channel : '';
+}
+
 // ---------- Aspecto ----------
 
 function applySettings(s) {
@@ -65,7 +74,8 @@ function applySettings(s) {
   if (s.showViewers !== viewersShown) startViewers();
   trim();
 
-  if (s.channel !== joined) connect(s.channel);
+  const channel = myChannel(s);
+  if (channel !== joined) connect(channel);
 }
 
 // ---------- Conexión al chat de Twitch (anónima, solo lectura) ----------
@@ -575,7 +585,7 @@ function isFiltered(msg) {
 let mentionRegex = null;
 let mentionKey = '';
 function getMentionRegex() {
-  const target = joined || (testMode ? 'streamer' : '');
+  const target = settings.channel || joined || (testMode ? 'streamer' : '');
   const words = splitList(settings.keywords);
   if (settings.highlightMentions && target) words.push(target);
   const key = words.join(',');

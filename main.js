@@ -49,6 +49,8 @@ const DEFAULTS = {
   bounds: null,
   profiles: [],
   customStyles: [],
+  chatVisible: true, // la ventana del chat principal se ve (se puede ocultar y dejar solo los avisos)
+  extraChats: [], // otros chats en ventanas aparte: { id, channel, visible, bounds }
   activeProfile: '',
   onboarded: false,
   lastVersion: '',
@@ -61,7 +63,7 @@ const PROFILE_KEYS = [
   'emoteScale', 'bounds',
 ];
 // Lo que no se exporta ni se importa: depende de cada PC.
-const LOCAL_KEYS = ['autoStart', 'onboarded', 'lastVersion'];
+const LOCAL_KEYS = ['autoStart', 'onboarded', 'lastVersion', 'chatVisible', 'extraChats'];
 
 // Qué valores acepta cada ajuste. Lo que no encaje se descarta, venga del disco o de las ventanas.
 const isBool = (v) => typeof v === 'boolean';
@@ -98,6 +100,7 @@ const SCHEMA = {
   highlightMentions: isBool,
   keywords: isText(300),
   highlightFirst: isBool,
+  chatVisible: isBool,
   showRedemptions: isBool,
   showBadges: isBool,
   timestamps: isBool,
@@ -129,6 +132,8 @@ function sanitize(patch) {
       if (Array.isArray(value)) clean.profiles = cleanProfiles(value);
     } else if (key === 'customStyles') {
       if (Array.isArray(value)) clean.customStyles = cleanStyles(value);
+    } else if (key === 'extraChats') {
+      if (Array.isArray(value)) clean.extraChats = cleanChats(value);
     } else if (key === 'shortcuts') {
       if (isShortcuts(value)) clean.shortcuts = pick(value, Object.keys(DEFAULT_SHORTCUTS));
     } else if (SCHEMA[key] && SCHEMA[key](value)) {
@@ -162,6 +167,20 @@ function cleanStyles(list) {
     .slice(0, STYLES_MAX);
 }
 
+// Otros chats en ventanas aparte (además del principal), para seguir varios canales a la vez.
+const EXTRA_CHATS_MAX = 3;
+const isBounds = (v) => v === null || (v && ['x', 'y', 'width', 'height'].every((k) => Number.isFinite(v[k])));
+
+function cleanChats(list) {
+  const ids = new Set();
+  return list
+    .filter((c) => c && typeof c.id === 'string' && /^[a-z0-9]{1,16}$/.test(c.id)
+      && typeof c.channel === 'string' && /^[a-z0-9_]{1,25}$/.test(c.channel))
+    .filter((c) => !ids.has(c.id) && ids.add(c.id))
+    .slice(0, EXTRA_CHATS_MAX)
+    .map((c) => ({ id: c.id, channel: c.channel, visible: c.visible !== false, bounds: isBounds(c.bounds) ? c.bounds || null : null }));
+}
+
 const APP_ICON = path.join(__dirname, 'assets', 'icon.ico');
 // Electron elige solo tray@2x.png en pantallas con escalado alto.
 const TRAY_ICON = path.join(__dirname, 'assets', 'tray.png');
@@ -172,7 +191,7 @@ let overlay;
 let panel;
 let tray;
 let editMode = false;
-let visible = true;
+let visible = true; // alguna ventana de chat se ve (se ajusta al cargar los ajustes)
 let testMode = false;
 let resizing = null; // { win, bounds, min } mientras se cambia el tamaño desde la esquina
 // Actualizaciones: primero solo se comprueba (un archivo de 1 KB); la descarga (~100 MB)
@@ -258,6 +277,8 @@ function writeSettings() {
 function updateSettings(patch) {
   const clean = sanitize(patch);
   delete clean.profiles; // los perfiles solo se tocan con sus propias acciones
+  delete clean.extraChats; // las ventanas de chat también tienen sus propias acciones
+  delete clean.chatVisible;
   if (!Object.keys(clean).length) return;
   Object.assign(settings, clean);
   if ('autoStart' in clean) applyAutoStart();
@@ -273,7 +294,7 @@ function updateSettings(patch) {
 }
 
 function broadcastSettings() {
-  overlay.webContents.send('settings', settings);
+  for (const win of chatWindows()) win.webContents.send('settings', settings);
   if (panel && !panel.isDestroyed()) panel.webContents.send('settings', settings);
   sendToAlert('settings', settings);
 }
@@ -307,10 +328,10 @@ function boundsOnScreen(b) {
   return visibleSomewhere ? b : null;
 }
 
-function createOverlay() {
-  const b = boundsOnScreen(settings.bounds) || defaultBounds();
-  overlay = new BrowserWindow({
-    ...b,
+// Crea una ventana de chat transparente. La principal no lleva "win"; las extra llevan su id.
+function makeChatWindow(bounds, winId, show) {
+  const win = new BrowserWindow({
+    ...bounds,
     frame: false,
     transparent: true,
     backgroundColor: '#00000000',
@@ -325,32 +346,124 @@ function createOverlay() {
     show: false,
     webPreferences: { preload: path.join(__dirname, 'preload.js'), spellcheck: false },
   });
-  overlay.setAlwaysOnTop(true, 'screen-saver');
+  win.setAlwaysOnTop(true, 'screen-saver');
   // En Mac, que se vea en todos los escritorios y encima de las apps a pantalla completa.
-  if (isMac) overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  overlay.setIgnoreMouseEvents(true); // los clics atraviesan el chat y llegan al juego
-  overlay.setFocusable(false); // y nunca le quita el teclado al juego (se reaplica tras lo anterior)
-  overlay.loadFile('overlay.html');
-  overlay.once('ready-to-show', () => {
-    overlay.showInactive();
-    overlay.setFocusable(editMode); // al mostrarse por primera vez Windows lo reactiva
+  if (isMac) win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  win.setIgnoreMouseEvents(!editMode); // los clics atraviesan el chat y llegan al juego
+  win.setFocusable(editMode); // y nunca le quita el teclado al juego (se reaplica tras lo anterior)
+  win.loadFile('overlay.html', winId ? { query: { win: winId } } : undefined);
+  win.once('ready-to-show', () => {
+    if (!show) return;
+    win.showInactive();
+    win.setFocusable(editMode); // al mostrarse por primera vez Windows lo reactiva
   });
   // Si el proceso de la ventana se cae (muy raro), se recarga en vez de quedarse en blanco.
-  overlay.webContents.on('render-process-gone', (_e, details) => {
+  win.webContents.on('render-process-gone', (_e, details) => {
     logError(`Ventana del chat cerrada inesperadamente: ${details.reason}`);
-    if (!overlay.isDestroyed()) overlay.reload();
+    if (!win.isDestroyed()) win.reload();
   });
-  overlay.webContents.on('did-finish-load', () => {
-    if (editMode) overlay.webContents.send('edit-mode', true);
-    if (testMode) overlay.webContents.send('test-mode', true);
+  win.webContents.on('did-finish-load', () => {
+    if (editMode) win.webContents.send('edit-mode', true);
+    if (testMode) win.webContents.send('test-mode', true);
   });
+  return win;
+}
+
+function createOverlay() {
+  overlay = makeChatWindow(boundsOnScreen(settings.bounds) || defaultBounds(), '', settings.chatVisible);
   overlay.on('moved', rememberBounds);
+  for (const chat of settings.extraChats) if (chat.visible) openExtraChat(chat);
 
   // Algunos juegos en modo "sin bordes" se ponen delante; lo volvemos a subir de vez en cuando.
   setInterval(() => {
-    if (!overlay.isDestroyed() && visible) overlay.setAlwaysOnTop(true, 'screen-saver');
+    for (const win of chatWindows()) if (win.isVisible()) win.setAlwaysOnTop(true, 'screen-saver');
     if (alertWin && !alertWin.isDestroyed() && alertWin.isVisible()) alertWin.setAlwaysOnTop(true, 'screen-saver');
   }, 10000);
+}
+
+// ---------- Otros chats en ventanas aparte ----------
+
+const extraWindows = new Map(); // id -> ventana (solo las que se ven; las ocultas no gastan nada)
+
+function chatWindows() {
+  return [overlay, ...extraWindows.values()].filter((w) => w && !w.isDestroyed());
+}
+
+// Una ventana nueva sale al lado de la principal (y de las anteriores), sin taparlas.
+function extraDefaultBounds(index) {
+  const main = overlay.getBounds();
+  const wa = screen.getDisplayMatching(main).workArea;
+  const x = Math.min(main.x + (main.width + 12) * (index + 1), wa.x + wa.width - main.width);
+  return { width: main.width, height: main.height, x, y: main.y };
+}
+
+function openExtraChat(chat) {
+  if (extraWindows.has(chat.id)) return;
+  const index = settings.extraChats.indexOf(chat);
+  const win = makeChatWindow(boundsOnScreen(chat.bounds) || extraDefaultBounds(index), chat.id, true);
+  extraWindows.set(chat.id, win);
+  win.on('moved', () => rememberExtraBounds(chat.id));
+  win.on('closed', () => { if (extraWindows.get(chat.id) === win) extraWindows.delete(chat.id); });
+}
+
+function closeExtraChat(id) {
+  const win = extraWindows.get(id);
+  extraWindows.delete(id);
+  if (win && !win.isDestroyed()) win.destroy();
+}
+
+function rememberExtraBounds(id) {
+  const chat = settings.extraChats.find((c) => c.id === id);
+  const win = extraWindows.get(id);
+  if (!chat || !win || win.isDestroyed()) return;
+  chat.bounds = win.getBounds();
+  saveSettings();
+}
+
+function afterChatsChange() {
+  saveSettings();
+  broadcastSettings();
+  sendState();
+  updateTrayMenu();
+}
+
+function addExtraChat(channel) {
+  if (typeof channel !== 'string' || !/^[a-z0-9_]{1,25}$/.test(channel)) return;
+  if (settings.extraChats.length >= EXTRA_CHATS_MAX) return;
+  const chat = { id: Date.now().toString(36), channel, visible: true, bounds: null };
+  settings.extraChats.push(chat);
+  openExtraChat(chat);
+  afterChatsChange();
+}
+
+function removeExtraChat(id) {
+  closeExtraChat(id);
+  settings.extraChats = settings.extraChats.filter((c) => c.id !== id);
+  afterChatsChange();
+}
+
+// Ocultar o mostrar una ventana concreta ("main" es la principal). Se recuerda al reiniciar.
+function setChatVisible(id, on) {
+  if (id === 'main') {
+    settings.chatVisible = on;
+    if (on) {
+      overlay.showInactive();
+      overlay.setFocusable(editMode);
+    } else overlay.hide();
+  } else {
+    const chat = settings.extraChats.find((c) => c.id === id);
+    if (!chat) return;
+    chat.visible = on;
+    if (on) openExtraChat(chat);
+    else closeExtraChat(id);
+  }
+  visible = anyChatVisible();
+  if (!visible && editMode) setEditMode(false);
+  afterChatsChange();
+}
+
+function anyChatVisible() {
+  return settings.chatVisible || settings.extraChats.some((c) => c.visible);
 }
 
 // Si se desconecta el monitor donde estaba el chat, se trae a la pantalla principal.
@@ -358,6 +471,12 @@ function keepOnScreen() {
   if (alertWin && !alertWin.isDestroyed() && !boundsOnScreen(alertWin.getBounds())) {
     alertWin.setBounds(defaultAlertBounds());
     rememberAlertBounds();
+  }
+  for (const [id, win] of extraWindows) {
+    if (!win.isDestroyed() && !boundsOnScreen(win.getBounds())) {
+      win.setBounds(extraDefaultBounds(0));
+      rememberExtraBounds(id);
+    }
   }
   if (!overlay || overlay.isDestroyed()) return;
   if (!boundsOnScreen(overlay.getBounds())) {
@@ -372,34 +491,43 @@ function rememberBounds() {
   sendState();
 }
 
+// Mover y cambiar el tamaño: se desbloquean a la vez todas las ventanas de chat que se ven.
 function setEditMode(on) {
+  if (on && !anyChatVisible()) setChatVisible('main', true);
   editMode = on;
-  overlay.setIgnoreMouseEvents(!on);
-  // Después de setIgnoreMouseEvents, que en Windows reescribe los estilos de la ventana.
-  overlay.setFocusable(on);
-  // Al fijarla, devuelve el teclado a la ventana de detrás (normalmente el juego).
-  if (!on) overlay.blur();
-  if (on && !visible) setVisible(true);
-  overlay.webContents.send('edit-mode', on);
-  sendState();
-  updateTrayMenu();
-}
-
-function setVisible(on) {
-  visible = on;
-  if (on) overlay.showInactive();
-  else {
-    if (editMode) setEditMode(false);
-    overlay.hide();
+  for (const win of chatWindows()) {
+    win.setIgnoreMouseEvents(!on);
+    // Después de setIgnoreMouseEvents, que en Windows reescribe los estilos de la ventana.
+    win.setFocusable(on);
+    // Al fijarla, devuelve el teclado a la ventana de detrás (normalmente el juego).
+    if (!on) win.blur();
+    win.webContents.send('edit-mode', on);
   }
   sendState();
   updateTrayMenu();
 }
 
+// El atajo de ocultar (y el botón "Ocultar chat") muestra u oculta todas las ventanas de chat.
+function setVisible(on) {
+  if (!on && editMode) setEditMode(false);
+  settings.chatVisible = on;
+  if (on) {
+    overlay.showInactive();
+    overlay.setFocusable(editMode);
+  } else overlay.hide();
+  for (const chat of settings.extraChats) {
+    chat.visible = on;
+    if (on) openExtraChat(chat);
+    else closeExtraChat(chat.id);
+  }
+  visible = on;
+  afterChatsChange();
+}
+
 function setTestMode(on) {
   testMode = on;
-  if (on && !visible) setVisible(true);
-  overlay.webContents.send('test-mode', on);
+  if (on && !anyChatVisible()) setChatVisible('main', true);
+  for (const win of chatWindows()) win.webContents.send('test-mode', on);
   sendState();
 }
 
@@ -479,6 +607,11 @@ function state() {
     liveNow: Object.fromEntries(liveNow), // canal -> nombre visible
     channelNames: Object.fromEntries(channelNames),
     alertEdit,
+    chats: [
+      { id: 'main', channel: settings.channel, visible: settings.chatVisible },
+      ...settings.extraChats.map((c) => ({ id: c.id, channel: c.channel, visible: c.visible })),
+    ],
+    extraChatsMax: EXTRA_CHATS_MAX,
   };
 }
 function sendState() {
@@ -1001,11 +1134,15 @@ ipcMain.on('open-repo', () => shell.openExternal(REPO_URL));
 ipcMain.on('toggle-edit', () => setEditMode(!editMode));
 ipcMain.on('toggle-visible', () => setVisible(!visible));
 ipcMain.on('toggle-test', () => setTestMode(!testMode));
+ipcMain.on('add-chat', (_e, channel) => addExtraChat(channel));
+ipcMain.on('remove-chat', (_e, id) => removeExtraChat(id));
+ipcMain.on('set-chat-visible', (_e, id, on) => { if (typeof on === 'boolean') setChatVisible(id, on); });
 ipcMain.on('set-position', (_e, pos) => setPosition(pos));
 ipcMain.on('set-size', (_e, w, h) => setSize(w, h));
 // Cambiar el tamaño desde la esquina: vale para el chat y para el recuadro del aviso.
 ipcMain.on('resize-start', (e) => {
-  if (e.sender === overlay.webContents && editMode) resizing = { win: overlay, bounds: overlay.getBounds(), min: [160, 80] };
+  const chat = chatWindows().find((w) => w.webContents === e.sender);
+  if (chat && editMode) resizing = { win: chat, bounds: chat.getBounds(), min: [160, 80] };
   else if (fromAlert(e) && alertEdit) resizing = { win: alertWin, bounds: alertWin.getBounds(), min: [200, 60] };
 });
 ipcMain.on('resize-move', (_e, dx, dy) => {
@@ -1023,7 +1160,8 @@ ipcMain.on('resize-end', () => {
   const { win } = resizing;
   resizing = null;
   if (win === overlay) rememberBounds();
-  else rememberAlertBounds();
+  else if (win === alertWin) rememberAlertBounds();
+  else for (const [id, w] of extraWindows) if (w === win) rememberExtraBounds(id);
 });
 
 // ---------- Seguridad ----------
@@ -1061,6 +1199,7 @@ if (!app.requestSingleInstanceLock()) {
     settings.lastVersion = app.getVersion();
     saveSettings();
     applyAutoStart();
+    visible = anyChatVisible();
     createOverlay();
     restartLiveWatch();
     if (!process.argv.includes('--hidden')) createPanel();
@@ -1076,7 +1215,7 @@ if (!app.requestSingleInstanceLock()) {
     registerShortcuts();
 
     // Al volver de suspensión la conexión suele quedar muerta: se reconecta al momento.
-    powerMonitor.on('resume', () => overlay.webContents.send('reconnect'));
+    powerMonitor.on('resume', () => { for (const win of chatWindows()) win.webContents.send('reconnect'); });
     screen.on('display-removed', keepOnScreen);
     screen.on('display-metrics-changed', keepOnScreen);
 
@@ -1087,6 +1226,10 @@ if (!app.requestSingleInstanceLock()) {
     app.isQuitting = true;
     clearTimeout(saveTimer);
     if (overlay && !overlay.isDestroyed()) settings.bounds = overlay.getBounds();
+    for (const [id, win] of extraWindows) {
+      const chat = settings.extraChats.find((c) => c.id === id);
+      if (chat && !win.isDestroyed()) chat.bounds = win.getBounds();
+    }
     if (settings) writeSettings();
   });
   app.on('will-quit', () => globalShortcut.unregisterAll());

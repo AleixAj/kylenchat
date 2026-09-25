@@ -11,6 +11,15 @@
       channelPlaceholder: 'nombre del canal o enlace de twitch.tv',
       connect: 'Conectar',
       channelInvalid: 'Nombre de canal no válido: solo letras, números y guion bajo.',
+      chatMain: 'principal',
+      chatExtra: 'otra ventana',
+      chatNoChannel: 'sin canal',
+      chatHide: 'Ocultar esta ventana',
+      chatShow: 'Mostrar esta ventana',
+      chatRemove: 'Quitar {name}',
+      chatAddPlaceholder: 'otro canal, en una ventana aparte',
+      chatAdd: 'Añadir chat',
+      chatDuplicate: 'Ese canal ya tiene su ventana.',
       sectionPosition: 'Posición y tamaño',
       editOff: 'Mover y cambiar tamaño ({keys})',
       editOn: 'Fijar posición ({keys})',
@@ -235,6 +244,15 @@
       channelPlaceholder: 'channel name or twitch.tv link',
       connect: 'Connect',
       channelInvalid: 'Invalid channel name: only letters, numbers and underscores.',
+      chatMain: 'main',
+      chatExtra: 'extra window',
+      chatNoChannel: 'no channel',
+      chatHide: 'Hide this window',
+      chatShow: 'Show this window',
+      chatRemove: 'Remove {name}',
+      chatAddPlaceholder: 'another channel, in its own window',
+      chatAdd: 'Add chat',
+      chatDuplicate: 'That channel already has its window.',
       sectionPosition: 'Position and size',
       editOff: 'Move and resize ({keys})',
       editOn: 'Lock position ({keys})',
@@ -452,6 +470,10 @@
   // Novedades de cada versión, para el aviso que sale tras actualizar.
   const CHANGELOG = {
     es: {
+      '1.3.0': [
+        'Varios chats a la vez: añade hasta 3 canales más, cada uno en su propia ventana (debajo del canal, en Añadir chat).',
+        'Cada ventana de chat tiene un ojo para ocultarla y se recuerda al reiniciar: puedes dejar la app abierta solo para los avisos de directo.',
+      ],
       '1.2.3': [
         'Ahora salen en el chat todos los canjes de puntos, también los que no llevan mensaje, con el nombre y el color de la recompensa. Se pueden quitar en Mensajes → Destacados.',
       ],
@@ -494,6 +516,10 @@
       ],
     },
     en: {
+      '1.3.0': [
+        'Several chats at once: add up to 3 more channels, each in its own window (below the channel, in Add chat).',
+        'Each chat window has an eye button to hide it, remembered after a restart: you can keep the app open just for live alerts.',
+      ],
       '1.2.3': [
         'All channel point redemptions now show in chat, including ones without a message, with the reward\'s name and color. You can turn them off in Messages → Highlights.',
       ],

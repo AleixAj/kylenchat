@@ -56,6 +56,7 @@
 ## What it does
 
 - Shows the chat of any Twitch channel in a **transparent** window that stays **always on top** of your game.
+- **Several chats at once**: add up to 3 more channels, each in its own window, to follow several streams.
 - Clicks **pass through** the chat, so it never gets in the way while you play.
 - Shows **Twitch, 7TV, BTTV and FFZ** emotes.
 - An unobtrusive **"Kylen Chat"** bar above the chat shows the connected channel and, when you're live, **your viewer count**.
@@ -119,6 +120,12 @@ The Mac version **lets you know when a new version is out**, but doesn't install
 4. Click **Preview mode** and adjust the font, colors and transparency while you see how it looks. Everything saves automatically.
 
 If you close the settings window, the app keeps running in the tray (next to the clock; on Mac, in the menu bar). Click its icon to open it again.
+
+### Several chats and hiding windows
+
+Below the channel, type another channel and click **Add chat**: it opens in its own window next to the main one (up to 3 more). They all move together with the move shortcut and share the same look. Mentions of your channel are highlighted in all of them.
+
+Each window has an **eye** button to hide or show it, and the app remembers it after a restart. That way you can keep the app open just for **live alerts**, with no chat window on screen. Hidden extra windows are fully closed and use nothing.
 
 ### Live alerts
 

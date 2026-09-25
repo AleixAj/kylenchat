@@ -56,6 +56,7 @@
 ## Qué hace
 
 - Muestra el chat de cualquier canal de Twitch en una ventana **transparente** que queda **siempre encima** del juego.
+- **Varios chats a la vez**: añade hasta 3 canales más, cada uno en su propia ventana, para seguir varios directos.
 - Los clics **atraviesan** el chat, así que no molesta mientras juegas.
 - Muestra los emotes de **Twitch, 7TV, BTTV y FFZ**.
 - Una barra discreta **"Kylen Chat"** encima del chat muestra el canal conectado y, si estás en directo, **tus espectadores**.
@@ -119,6 +120,12 @@ La versión de Mac **te avisa cuando sale una versión nueva**, pero no se insta
 4. Pulsa **Modo prueba** y ajusta la letra, los colores y la transparencia viendo cómo queda. Todo se guarda solo.
 
 Si cierras la ventana de ajustes, la app sigue funcionando en la bandeja (junto al reloj; en Mac, en la barra de menú). Haz clic en su icono para volver a abrirla.
+
+### Varios chats y ocultar ventanas
+
+Debajo del canal, escribe otro canal y pulsa **Añadir chat**: se abre en una ventana aparte, al lado de la principal (hasta 3 más). Todas se mueven a la vez con el atajo de mover y usan el mismo aspecto. Las menciones a tu canal se destacan en todas.
+
+Cada ventana tiene un **ojo** para ocultarla o mostrarla, y la app lo recuerda al reiniciar. Así puedes dejar la app abierta solo para los **avisos de directo**, sin ninguna ventana de chat a la vista. Las ventanas extra ocultas se cierran del todo y no gastan nada.
 
 ### Avisos de directo
 

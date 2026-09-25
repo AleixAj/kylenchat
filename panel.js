@@ -78,6 +78,64 @@ function paintPresetButtons() {
   });
 }
 
+// ---------- Ventanas de chat (la principal y los otros chats) ----------
+
+const EYE_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.1 4M6.6 6.6A17.3 17.3 0 0 0 2 12s3.5 7 10 7a10 10 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+const EXTRA_CHATS_MAX = 3;
+let chatsKey = '';
+
+function renderChats() {
+  if (!settings) return;
+  const chats = [
+    { id: 'main', channel: settings.channel, visible: settings.chatVisible, main: true },
+    ...(settings.extraChats || []),
+  ];
+  const key = JSON.stringify([lang, chats]);
+  if (key === chatsKey) return;
+  chatsKey = key;
+  $('chatList').replaceChildren(...chats.map((chat) => {
+    const li = document.createElement('li');
+    li.classList.toggle('off', !chat.visible);
+    const name = document.createElement('span');
+    name.className = 'name';
+    name.textContent = chat.channel ? `#${chat.channel}` : tr('chatNoChannel');
+    const kind = document.createElement('span');
+    kind.className = 'kind';
+    kind.textContent = chat.main ? tr('chatMain') : tr('chatExtra');
+    name.append(kind);
+    const eye = document.createElement('button');
+    eye.innerHTML = chat.visible ? EYE_ON : EYE_OFF; // iconos fijos de la app, sin datos de fuera
+    eye.title = tr(chat.visible ? 'chatHide' : 'chatShow');
+    eye.setAttribute('aria-label', eye.title);
+    eye.setAttribute('aria-pressed', String(!chat.visible));
+    eye.addEventListener('click', () => api.setChatVisible(chat.id, !chat.visible));
+    li.append(name, eye);
+    if (!chat.main) {
+      const remove = document.createElement('button');
+      remove.textContent = '×';
+      remove.title = tr('chatRemove', { name: `#${chat.channel}` });
+      remove.setAttribute('aria-label', remove.title);
+      remove.addEventListener('click', () => api.removeChat(chat.id));
+      li.append(remove);
+    }
+    return li;
+  }));
+  $('chatAddRow').hidden = (settings.extraChats || []).length >= EXTRA_CHATS_MAX;
+}
+
+function addChat() {
+  const channel = normalizeChannel($('chatAdd').value);
+  let error = '';
+  if (!channel) return;
+  if (!/^[a-z0-9_]{1,25}$/.test(channel)) error = tr('channelInvalid');
+  else if (channel === settings.channel || (settings.extraChats || []).some((c) => c.channel === channel)) error = tr('chatDuplicate');
+  $('chatAddError').textContent = error;
+  if (error) return;
+  api.addChat(channel);
+  $('chatAdd').value = '';
+}
+
 // ---------- Mis estilos ----------
 
 const LOOK_KEYS = Object.keys(LOOK_BASE);
@@ -218,6 +276,7 @@ function fillFields(newSettings) {
   }
   renderLiveList();
   renderCustomStyles();
+  renderChats();
 }
 
 // Acepta "nombre", "#nombre", "@nombre" o el enlace completo de twitch.tv.
@@ -588,6 +647,9 @@ document.querySelectorAll('[data-lang]').forEach((b) => b.addEventListener('clic
 document.querySelectorAll('[data-pos]').forEach((b) => b.addEventListener('click', () => api.setPosition(b.dataset.pos)));
 document.querySelectorAll('[data-preset]').forEach((b) => b.addEventListener('click', () => api.setSettings(PRESETS[b.dataset.preset])));
 $('styleSave').addEventListener('click', saveCustomStyle);
+$('chatAddBtn').addEventListener('click', addChat);
+$('chatAdd').addEventListener('keydown', (e) => { if (e.key === 'Enter') addChat(); });
+$('chatAdd').addEventListener('input', () => { $('chatAddError').textContent = ''; });
 $('styleName').addEventListener('keydown', (e) => { if (e.key === 'Enter') saveCustomStyle(); });
 $('styleName').addEventListener('input', () => { $('styleError').textContent = ''; });
 $('presetsToggle').addEventListener('click', () => {
