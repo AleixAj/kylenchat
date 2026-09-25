@@ -562,6 +562,7 @@ function createPanel() {
   if (panel) {
     panel.show();
     panel.focus();
+    checkForUpdatesSoon();
     return;
   }
   panel = new BrowserWindow({
@@ -574,6 +575,7 @@ function createPanel() {
     webPreferences: { preload: path.join(__dirname, 'preload.js'), spellcheck: false },
   });
   panel.removeMenu(); // sin barra de menú (Alt ya no la hace aparecer al grabar atajos)
+  checkForUpdatesSoon();
   panel.loadFile('panel.html');
   // Al cerrarla se destruye (no se esconde) para liberar memoria mientras se juega.
   panel.on('closed', () => {
@@ -660,6 +662,16 @@ function registerShortcuts() {
 
 // ---------- Actualizaciones automáticas (desde GitHub Releases) ----------
 
+// Busca versiones nuevas (un archivo de 1 KB). Se llama al arrancar, cada hora y al abrir los
+// ajustes, porque la app puede pasar días en la bandeja sin reiniciarse.
+let lastUpdateCheck = 0;
+function checkForUpdatesSoon() {
+  if (!app.isPackaged || updateReady || updateProgress !== null) return;
+  if (Date.now() - lastUpdateCheck < 5 * 60 * 1000) return; // como mucho una vez cada 5 minutos
+  lastUpdateCheck = Date.now();
+  autoUpdater.checkForUpdates().catch(() => {});
+}
+
 function setupAutoUpdate() {
   if (!app.isPackaged) return; // solo en la versión instalada, no al programar
   autoUpdater.autoDownload = false;        // nada de descargas por sorpresa
@@ -689,9 +701,8 @@ function setupAutoUpdate() {
       afterUpdateChange();
     }
   });
-  const check = () => autoUpdater.checkForUpdates().catch(() => {});
-  check();
-  setInterval(check, 4 * 60 * 60 * 1000);
+  checkForUpdatesSoon();
+  setInterval(checkForUpdatesSoon, 60 * 60 * 1000);
 }
 
 function afterUpdateChange() {

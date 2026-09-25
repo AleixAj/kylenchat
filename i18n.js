@@ -470,6 +470,9 @@
   // Novedades de cada versión, para el aviso que sale tras actualizar.
   const CHANGELOG = {
     es: {
+      '1.3.1': [
+        'Las versiones nuevas se detectan antes: la app las busca cada hora y al abrir los ajustes, aunque lleve días en la bandeja.',
+      ],
       '1.3.0': [
         'Varios chats a la vez: añade hasta 3 canales más, cada uno en su propia ventana (debajo del canal, en Añadir chat).',
         'Cada ventana de chat tiene un ojo para ocultarla y se recuerda al reiniciar: puedes dejar la app abierta solo para los avisos de directo.',
@@ -516,6 +519,9 @@
       ],
     },
     en: {
+      '1.3.1': [
+        'New versions are found sooner: the app checks every hour and when you open the settings, even if it has been in the tray for days.',
+      ],
       '1.3.0': [
         'Several chats at once: add up to 3 more channels, each in its own window (below the channel, in Add chat).',
         'Each chat window has an eye button to hide it, remembered after a restart: you can keep the app open just for live alerts.',

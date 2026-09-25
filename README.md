@@ -223,7 +223,7 @@ El instalador queda en `dist/`. El de Mac (`npm run dist:mac`) solo se puede cre
 
    Esto sube el instalador, la versión portable, `latest.yml` y el `.blockmap` a un borrador en [Releases](https://github.com/AleixAj/kylenchat/releases). Nadie lo ve todavía. Después lanza en GitHub la compilación para Mac, que añade `KylenChat-Mac.dmg`, `KylenChat-Mac.zip` y `latest-mac.yml` al mismo borrador en unos 10 minutos.
 3. Cuando quieras que esté disponible (y ya estén los archivos de Mac), abre el borrador en GitHub, escribe las novedades y pulsa **Publish release**.
-4. Desde ese momento, la gente puede descargarla. Las apps ya instaladas lo comprueban al arrancar y cada 4 horas (un archivo de 1 KB) y avisan en los ajustes; la descarga solo empieza cuando el usuario pulsa **Descargar**, y se instala al reiniciar o al cerrar la app.
+4. Desde ese momento, la gente puede descargarla. Las apps ya instaladas lo comprueban al arrancar, cada hora y al abrir los ajustes (un archivo de 1 KB) y avisan en los ajustes; la descarga solo empieza cuando el usuario pulsa **Descargar**, y se instala al reiniciar o al cerrar la app.
 
 > No borres `latest.yml` ni el `.blockmap` de la release: la actualización automática los necesita.
 

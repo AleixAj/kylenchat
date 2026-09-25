@@ -223,7 +223,7 @@ The installer ends up in `dist/`. The Mac one (`npm run dist:mac`) can only be b
 
    This uploads the installer, the portable version, `latest.yml` and the `.blockmap` to a draft in [Releases](https://github.com/AleixAj/kylenchat/releases). Nobody can see it yet. Then it starts the Mac build on GitHub, which adds `KylenChat-Mac.dmg`, `KylenChat-Mac.zip` and `latest-mac.yml` to the same draft in about 10 minutes.
 3. When you want it to be available (and the Mac files are there), open the draft on GitHub, write the release notes and click **Publish release**.
-4. From then on, people can download it. Installed apps check on startup and every 4 hours (a 1 KB file) and show a notice in settings; the download only starts when the user clicks **Download**, and it installs on restart or when the app closes.
+4. From then on, people can download it. Installed apps check on startup, every hour and when the settings open (a 1 KB file) and show a notice in settings; the download only starts when the user clicks **Download**, and it installs on restart or when the app closes.
 
 > Don't delete `latest.yml` or the `.blockmap` from the release: automatic updates need them.
 
