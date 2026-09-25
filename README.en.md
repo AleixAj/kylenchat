@@ -71,7 +71,7 @@
 - Names with a **7TV paint** (gradients) show their colors.
 
 **Make it yours**
-- **Game styles**: your chat with the look of **WoW**, **LoL**, **Valorant** or **Minecraft**: their font, colors, line format and details (buttons, tabs, input box). They can be customized.
+- **Game styles**: your chat with the look of **WoW**, **LoL**, **Valorant**, **Minecraft**, **CS2**, **Overwatch 2**, **Fortnite** or **Rust**: their font, colors, line format and details (buttons, tabs, input box). They can be customized.
 - **13 one-click styles**, each with its own font and colors: Default, Big text, Classic Twitch, High contrast, Terminal, Sakura 🌸, Neon ⚡, Runic ⚔️, Comic 💬, Glacier ❄️, Forest 🌿, Chalkboard ✏️ and Arcade 👾.
 - **My styles**: save your current look with any name and color you like, and get back to it with one click. The quick styles list can be hidden.
 - Full control over position, size, font (any font installed on your computer), colors, background, bar color, transparency and emote size.
@@ -147,10 +147,14 @@ In the **Games** tab you pick a style, with a preview of each one:
 - **LoL**: very dark blue box with a gold border, `[All] Name: text` and names in blue and red like the two teams.
 - **Valorant**: dark square-cornered box, DIN-style font, `(All) Name: text` and names in teal and red.
 - **Minecraft**: black strips per line, pixel font and `<Name> text`.
+- **CS2**: black box with a frame, `[ALL] Name @Twitch: text`, names in blue and yellow like the two sides, and a "Say to all" box with "SEND".
+- **Overwatch 2**: rounded navy box, an orange diamond before each line, `[Name]: text` in orange and a "[Match]: PRESS TAB TO CYCLE CHANNELS" box.
+- **Fortnite**: rounded gray panel, pill-shaped tabs, a round colored avatar with each person's initial and an input box with a white border.
+- **Rust**: no box, bold narrow font with a black outline, square avatar, `[Global] Name: text` and an olive green input bar.
 
-Below you can change the text color, size, background opacity, whether names use the game's colors or Twitch's, and the channel tag text. The buttons and boxes are decorative only: they can't be clicked and clicks still go through the chat.
+Below you can change the text color, size, background opacity, whether names use the game's colors or Twitch's, the channel tag text and whether the **game details** (buttons, tabs and input box) are shown. They're decorative only: they can't be clicked and clicks still go through the chat.
 
-> Inspired by World of Warcraft, League of Legends, Valorant and Minecraft. Not affiliated with Blizzard, Riot Games or Mojang: the fonts are free lookalikes and the details are drawn for the app. The WoW style uses Arial Narrow if you have it installed.
+> Inspired by World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite and Rust. Not affiliated with their makers (Blizzard, Riot Games, Mojang, Valve, Epic Games or Facepunch): the fonts are free lookalikes and the details are drawn for the app. The WoW style uses Arial Narrow if you have it installed.
 
 ### Shortcuts
 
@@ -247,7 +251,7 @@ The installer ends up in `dist/`. The Mac one (`npm run dist:mac`) can only be b
 
 [MIT](LICENSE) © Aleix Aj. You can use, modify and share the code as long as you keep the copyright notice.
 
-It includes these fonts, all under the [SIL Open Font License 1.1](assets/fonts/) (each with its own `OFL-*.txt` file): Space Grotesk, Inter, Atkinson Hyperlegible, Lilita One, Cascadia Code, Exo 2, Alegreya, Comic Neue, Quicksand, Nunito, Patrick Hand, Press Start 2P, Archivo Narrow, Marcellus, D-DIN and Monocraft.
+It includes these fonts, all under the [SIL Open Font License 1.1](assets/fonts/) (each with its own `OFL-*.txt` file): Space Grotesk, Inter, Atkinson Hyperlegible, Lilita One, Cascadia Code, Exo 2, Alegreya, Comic Neue, Quicksand, Nunito, Patrick Hand, Press Start 2P, Archivo Narrow, Marcellus, D-DIN, Monocraft, Rajdhani, Jost and Roboto Condensed.
 
 > Kylen Chat for Twitch is an independent project. It is not affiliated with, associated with or endorsed by Twitch Interactive, Inc. "Twitch" is a trademark of Twitch Interactive, Inc.
 

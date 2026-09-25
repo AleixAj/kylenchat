@@ -52,6 +52,7 @@ const DEFAULTS = {
   theme: '', // estilo de juego: '', 'wow', 'lol', 'valorant' o 'minecraft'
   themeGameColors: true, // nombres con los colores del juego (o los de Twitch)
   themeTag: '', // texto de la etiqueta del canal; vacío = el del juego
+  themeDecor: true, // detalles decorativos del juego (botones, pestañas, casilla de escribir)
   chatVisible: true, // la ventana del chat principal se ve (se puede ocultar y dejar solo los avisos)
   extraChats: [], // otros chats en ventanas aparte: { id, channel, visible, bounds }
   activeProfile: '',
@@ -63,7 +64,7 @@ const DEFAULTS = {
 const PROFILE_KEYS = [
   'fontSize', 'fontFamily', 'bold', 'textColor', 'userColors', 'bgColor', 'bgOpacity', 'barColor', 'outline', 'opacity',
   'maxMessages', 'fadeAfter', 'animatedEmotes', 'showBadges', 'timestamps', 'align', 'newestOnTop', 'idleHide',
-  'emoteScale', 'theme', 'themeGameColors', 'themeTag', 'bounds',
+  'emoteScale', 'theme', 'themeGameColors', 'themeTag', 'themeDecor', 'bounds',
 ];
 // Lo que no se exporta ni se importa: depende de cada PC.
 const LOCAL_KEYS = ['autoStart', 'onboarded', 'lastVersion', 'chatVisible', 'extraChats'];
@@ -103,7 +104,8 @@ const SCHEMA = {
   highlightMentions: isBool,
   keywords: isText(300),
   highlightFirst: isBool,
-  theme: (v) => ['', 'wow', 'lol', 'valorant', 'minecraft'].includes(v),
+  theme: (v) => ['', 'wow', 'lol', 'valorant', 'minecraft', 'cs2', 'overwatch', 'fortnite', 'rust'].includes(v),
+  themeDecor: isBool,
   themeGameColors: isBool,
   themeTag: isText(20),
   chatVisible: isBool,
@@ -161,7 +163,7 @@ function cleanProfiles(list) {
 
 // "Mis estilos": aspectos guardados por el usuario, con su nombre y el color de su botón.
 // Solo guardan el aspecto (como los estilos rápidos), no la posición ni el tamaño.
-const LOOK_KEYS = ['fontSize', 'fontFamily', 'bold', 'textColor', 'userColors', 'bgColor', 'bgOpacity', 'barColor', 'outline', 'opacity', 'emoteScale', 'theme', 'themeGameColors', 'themeTag'];
+const LOOK_KEYS = ['fontSize', 'fontFamily', 'bold', 'textColor', 'userColors', 'bgColor', 'bgOpacity', 'barColor', 'outline', 'opacity', 'emoteScale', 'theme', 'themeGameColors', 'themeTag', 'themeDecor'];
 const STYLES_MAX = 20;
 
 function cleanStyles(list) {

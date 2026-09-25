@@ -71,7 +71,7 @@
 - Los nombres con **pintura de 7TV** (degradados) se ven con sus colores.
 
 **A tu gusto**
-- **Estilos de juegos**: el chat con el aspecto del de **WoW**, **LoL**, **Valorant** o **Minecraft**: su letra, sus colores, su formato de línea y sus detalles (botones, pestañas, casilla de escribir). Se pueden personalizar.
+- **Estilos de juegos**: el chat con el aspecto del de **WoW**, **LoL**, **Valorant**, **Minecraft**, **CS2**, **Overwatch 2**, **Fortnite** o **Rust**: su letra, sus colores, su formato de línea y sus detalles (botones, pestañas, casilla de escribir). Se pueden personalizar.
 - **13 estilos rápidos** con un clic, cada uno con su propia fuente y colores: Por defecto, Texto grande, Clásico Twitch, Alto contraste, Terminal, Sakura 🌸, Neón ⚡, Rúnico ⚔️, Viñeta 💬, Glaciar ❄️, Bosque 🌿, Pizarra ✏️ y Arcade 👾.
 - **Mis estilos**: guarda el aspecto que tengas con el nombre y el color que quieras, y vuelve a él con un clic. La lista de estilos rápidos se puede ocultar.
 - Control total de posición, tamaño, fuente (cualquiera instalada en tu PC), colores, fondo, color de la barra, transparencia y tamaño de emotes.
@@ -147,10 +147,14 @@ En la pestaña **Juegos** eliges el estilo con una vista previa de cada uno:
 - **LoL**: recuadro azul muy oscuro con borde dorado, `[Todos] Nombre: texto` y nombres en azul y rojo como los dos equipos.
 - **Valorant**: recuadro oscuro de esquinas rectas, letra tipo DIN, `(Todos) Nombre: texto` y nombres en turquesa y rojo.
 - **Minecraft**: franjas negras por línea, letra pixelada y `<Nombre> texto`.
+- **CS2**: recuadro negro con marco, `[TODOS] Nombre @Twitch: texto`, nombres en azul y amarillo como los dos bandos, y casilla "Decir a todos" con "ENVIAR".
+- **Overwatch 2**: recuadro azul marino redondeado, rombo naranja delante de cada línea, `[Nombre]: texto` en naranja y casilla "[Partida]: PULSA TAB PARA CAMBIAR DE CANAL".
+- **Fortnite**: panel gris redondeado, pestañas en forma de píldora, avatar redondo de color con la inicial de cada persona y casilla con borde blanco.
+- **Rust**: sin recuadro, letra negrita estrecha con contorno negro, avatar cuadrado, `[Global] Nombre: texto` y barra verde oliva para escribir.
 
-Debajo puedes cambiar el color del texto, el tamaño, la opacidad del fondo, si los nombres usan los colores del juego o los de Twitch, y el texto de la etiqueta del canal. Los botones y casillas son solo decorativos: no se pueden pulsar y los clics siguen atravesando el chat.
+Debajo puedes cambiar el color del texto, el tamaño, la opacidad del fondo, si los nombres usan los colores del juego o los de Twitch, el texto de la etiqueta del canal y si se ven los **detalles del juego** (botones, pestañas y casilla de escribir). Son solo decorativos: no se pueden pulsar y los clics siguen atravesando el chat.
 
-> Inspirados en World of Warcraft, League of Legends, Valorant y Minecraft. No están afiliados a Blizzard, Riot Games ni Mojang: las fuentes son libres y parecidas a las originales, y los detalles están dibujados para la app. En WoW se usa Arial Narrow si la tienes instalada.
+> Inspirados en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite y Rust. No están afiliados a sus creadores (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): las fuentes son libres y parecidas a las originales, y los detalles están dibujados para la app. En WoW se usa Arial Narrow si la tienes instalada.
 
 ### Atajos
 
@@ -247,7 +251,7 @@ El instalador queda en `dist/`. El de Mac (`npm run dist:mac`) solo se puede cre
 
 [MIT](LICENSE) © Aleix Aj. Puedes usar, modificar y compartir el código siempre que mantengas el aviso de autoría.
 
-Incluye estas fuentes, todas con licencia [SIL Open Font License 1.1](assets/fonts/) (cada una con su archivo `OFL-*.txt`): Space Grotesk, Inter, Atkinson Hyperlegible, Lilita One, Cascadia Code, Exo 2, Alegreya, Comic Neue, Quicksand, Nunito, Patrick Hand, Press Start 2P, Archivo Narrow, Marcellus, D-DIN y Monocraft.
+Incluye estas fuentes, todas con licencia [SIL Open Font License 1.1](assets/fonts/) (cada una con su archivo `OFL-*.txt`): Space Grotesk, Inter, Atkinson Hyperlegible, Lilita One, Cascadia Code, Exo 2, Alegreya, Comic Neue, Quicksand, Nunito, Patrick Hand, Press Start 2P, Archivo Narrow, Marcellus, D-DIN, Monocraft, Rajdhani, Jost y Roboto Condensed.
 
 > Kylen Chat for Twitch es un proyecto independiente. No está afiliado, asociado ni respaldado por Twitch Interactive, Inc. "Twitch" es una marca registrada de Twitch Interactive, Inc.
 

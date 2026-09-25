@@ -86,10 +86,11 @@ function applySettings(s) {
   document.body.classList.toggle('newest-top', s.newestOnTop);
   for (const t of THEMES) document.body.classList.toggle(`theme-${t}`, s.theme === t);
   document.body.classList.toggle('themed', THEMES.includes(s.theme));
+  document.body.classList.toggle('no-decor', !s.themeDecor); // "Detalles del juego" apagado
   const decorKey = `${s.theme}|${s.themeTag}|${s.language}`;
   if (decorKey !== lastDecor) {
     lastDecor = decorKey;
-    GameThemes.buildDecor(document.getElementById('decor'), s.theme, THEMES.includes(s.theme) ? channelTag('user') : '');
+    GameThemes.buildDecor(document.getElementById('decor'), s.theme, THEMES.includes(s.theme) ? channelTag('user') : '', tr);
     showViewerCount();
   }
   resetIdle();
@@ -816,7 +817,10 @@ function fillMessage(el, msg) {
     time.textContent = new Date().toLocaleTimeString(settings.language, { hour: '2-digit', minute: '2-digit' });
     el.append(time);
   }
-  // Etiqueta del canal de los estilos de juegos: "[1. Twitch]", "[Todos]"...
+  // Avatar con la inicial (Fortnite, Rust)
+  const avatar = themed ? GameThemes.makeAvatar(settings.theme, name) : null;
+  if (avatar) el.prepend(avatar);
+  // Etiqueta del canal de los estilos de juegos: "[Usuario]", "[Todos]"...
   const tag = themed ? channelTag(role) : '';
   if (tag) {
     const chan = document.createElement('span');

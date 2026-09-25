@@ -19,5 +19,9 @@
 @font-face { font-family: "D-DIN"; src: url("assets/fonts/D-DIN.ttf") format("truetype"); font-weight: 400; font-display: swap; }
 @font-face { font-family: "D-DIN"; src: url("assets/fonts/D-DIN-Bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
 @font-face { font-family: "D-DIN Condensed"; src: url("assets/fonts/D-DINCondensed-Bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Rajdhani"; src: url("assets/fonts/Rajdhani-SemiBold.ttf") format("truetype"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Rajdhani"; src: url("assets/fonts/Rajdhani-Bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Jost"; src: url("assets/fonts/Jost.ttf") format("truetype"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Roboto Condensed"; src: url("assets/fonts/RobotoCondensed.ttf") format("truetype"); font-weight: 100 900; font-display: swap; }
 @font-face { font-family: "Monocraft"; src: url("assets/fonts/Monocraft.ttf") format("truetype"); font-weight: 400; font-display: swap; }
 @font-face { font-family: "Press Start 2P"; src: url("assets/fonts/PressStart2P.ttf") format("truetype"); font-weight: 400; font-display: swap; }

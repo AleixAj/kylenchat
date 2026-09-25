@@ -26,7 +26,31 @@
       names: ['#FFFFFF'], // en Minecraft los nombres van en blanco
       roles: { broadcaster: '#FFAA00', moderator: '#55FFFF' },
     },
+    cs2: {
+      look: { fontFamily: 'Rajdhani', fontSize: 16, bold: false, textColor: '#FFFFFF', bgColor: '#000000', bgOpacity: 55, outline: false, barColor: '#E8B84A', emoteScale: 1.4 },
+      names: ['#5EA8FF', '#EAC05A'], // antiterroristas y terroristas
+      roles: { broadcaster: '#E8B84A', moderator: '#B18CFF' },
+    },
+    overwatch: {
+      look: { fontFamily: 'Jost', fontSize: 15, bold: false, textColor: '#F4A052', bgColor: '#0B1130', bgOpacity: 82, outline: false, barColor: '#F99E1A', emoteScale: 1.4 },
+      names: ['#F4A052'], // en el chat de partida, el nombre va en el mismo naranja
+      roles: { broadcaster: '#FFD166', moderator: '#45A9FF' }, // los mods, en el azul del chat de equipo
+    },
+    fortnite: {
+      look: { fontFamily: 'Inter', fontSize: 15, bold: false, textColor: '#FFFFFF', bgColor: '#1E2230', bgOpacity: 78, outline: false, barColor: '#E8EAF0', emoteScale: 1.4 },
+      names: ['#FFFFFF'],
+      roles: { broadcaster: '#FFD84A', moderator: '#62D4FF' },
+    },
+    rust: {
+      look: { fontFamily: 'Roboto Condensed', fontSize: 16, bold: true, textColor: '#FFFFFF', bgColor: '#000000', bgOpacity: 0, outline: false, barColor: '#A9D16D', emoteScale: 1.4 },
+      names: ['#6CB4FF'], // chat global
+      roles: { broadcaster: '#AAFF55', moderator: '#FFC857' }, // el streamer, en el verde de los admins
+    },
   };
+
+  // Colores de los avatares con la inicial (Fortnite); en Rust van en negro como los de Steam sin foto.
+  const AVATAR_COLORS = ['#E8505B', '#F29E4C', '#EFD65F', '#58C08E', '#3FA7D6', '#7B68EE', '#D96AC6', '#4DD0C8'];
+  const AVATAR_THEMES = new Set(['fortnite', 'rust']);
 
   function hashIndex(text, n) {
     let h = 0;
@@ -62,7 +86,7 @@
 
   // Detalles decorativos de cada juego: botones de WoW, casillas de escribir de LoL, Valorant y
   // Minecraft, barra de desplazamiento de Valorant. No se pueden pulsar (la capa no recibe clics).
-  function buildDecor(el, theme, tag) {
+  function buildDecor(el, theme, tag, t) {
     el.replaceChildren();
     const add = (className, parent = el) => {
       const d = document.createElement('div');
@@ -92,8 +116,43 @@
       label(add('game-input val-input'), `${tag}:`);
     } else if (theme === 'minecraft') {
       add('game-input mc-input').textContent = '_';
+    } else if (theme === 'cs2') {
+      const input = add('game-input cs2-input');
+      label(input, t('cs2Say'));
+      const send = document.createElement('b');
+      send.className = 'send';
+      send.textContent = t('cs2Send');
+      input.append(send);
+    } else if (theme === 'overwatch') {
+      add('ow-scroll');
+      const input = add('game-input ow-input');
+      label(input, `◆ [${tag}]:`);
+      const hint = document.createElement('span');
+      hint.className = 'hint';
+      hint.textContent = t('owHint');
+      input.append(hint);
+    } else if (theme === 'fortnite') {
+      const input = add('game-input fn-input');
+      add('fn-field', input).textContent = t('fnHint');
+      add('fn-more', input).textContent = '•••';
+    } else if (theme === 'rust') {
+      const input = add('game-input rust-input');
+      label(input, `[${tag}]`);
+      add('rust-caret', input);
+      add('rust-person', input).innerHTML = ICONS.friends;
     }
   }
 
-  root.GameThemes = { THEMES: Object.keys(GAME_THEMES), GAME_THEMES, nameColor, roleOf, ROLE_TAG_THEMES, buildDecor };
+  // Avatar con la inicial de quien escribe (Fortnite: redondo y de color; Rust: cuadrado y negro).
+  function makeAvatar(theme, name) {
+    if (!AVATAR_THEMES.has(theme)) return null;
+    const a = document.createElement('span');
+    a.className = 'avatar';
+    const letters = Array.from(String(name).replace(/^[^\p{L}\p{N}]+/u, ''));
+    a.textContent = (letters[0] || '?').toUpperCase();
+    if (theme === 'fortnite') a.style.background = AVATAR_COLORS[hashIndex(String(name).toLowerCase(), AVATAR_COLORS.length)];
+    return a;
+  }
+
+  root.GameThemes = { THEMES: Object.keys(GAME_THEMES), GAME_THEMES, nameColor, roleOf, ROLE_TAG_THEMES, buildDecor, makeAvatar };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -71,7 +71,7 @@
 - Els noms amb **pintura de 7TV** (degradats) es veuen amb els seus colors.
 
 **Al teu gust**
-- **Estils de jocs**: el xat amb l'aspecte del de **WoW**, **LoL**, **Valorant** o **Minecraft**: la seva lletra, els seus colors, el format de línia i els detalls (botons, pestanyes, casella d'escriure). Es poden personalitzar.
+- **Estils de jocs**: el xat amb l'aspecte del de **WoW**, **LoL**, **Valorant**, **Minecraft**, **CS2**, **Overwatch 2**, **Fortnite** o **Rust**: la seva lletra, els seus colors, el format de línia i els detalls (botons, pestanyes, casella d'escriure). Es poden personalitzar.
 - **13 estils ràpids** amb un clic, cadascun amb la seva pròpia font i colors: Por defecto (per defecte), Texto grande (text gran), Clásico Twitch (Twitch clàssic), Alto contraste (alt contrast), Terminal, Sakura 🌸, Neón ⚡ (neó), Rúnico ⚔️ (rúnic), Viñeta 💬 (vinyeta), Glaciar ❄️ (glacera), Bosque 🌿 (bosc), Pizarra ✏️ (pissarra) i Arcade 👾. Els noms surten així a l'app en castellà (o en anglès, si el sistema és en anglès).
 - **Mis estilos** (Els meus estils): desa l'aspecte que tinguis amb el nom i el color que vulguis, i torna-hi amb un clic. La llista d'estils ràpids es pot amagar.
 - Control total de la posició, la mida, la font (qualsevol que tinguis instal·lada a l'ordinador), els colors, el fons, el color de la barra, la transparència i la mida dels emotes.
@@ -147,10 +147,14 @@ A la pestanya **Juegos** (Jocs) tries l'estil amb una previsualització de cadas
 - **LoL**: requadre blau molt fosc amb vora daurada, `[Todos] Nom: text` i noms en blau i vermell com els dos equips.
 - **Valorant**: requadre fosc de cantonades rectes, lletra tipus DIN, `(Todos) Nom: text` i noms en turquesa i vermell.
 - **Minecraft**: franges negres per línia, lletra pixelada i `<Nom> text`.
+- **CS2**: requadre negre amb marc, `[TODOS] Nom @Twitch: text`, noms en blau i groc com els dos bàndols, i casella "Decir a todos" amb "ENVIAR".
+- **Overwatch 2**: requadre blau marí arrodonit, rombe taronja davant de cada línia, `[Nom]: text` en taronja i casella "[Partida]: PULSA TAB PARA CAMBIAR DE CANAL".
+- **Fortnite**: panell gris arrodonit, pestanyes en forma de píndola, avatar rodó de color amb la inicial de cada persona i casella amb vora blanca.
+- **Rust**: sense requadre, lletra negreta estreta amb contorn negre, avatar quadrat, `[Global] Nom: text` i barra verd oliva per escriure.
 
-A sota pots canviar el color del text, la mida, l'opacitat del fons, si els noms fan servir els colors del joc o els de Twitch, i el text de l'etiqueta del canal. Els botons i les caselles són només decoratius: no es poden prémer i els clics continuen travessant el xat.
+A sota pots canviar el color del text, la mida, l'opacitat del fons, si els noms fan servir els colors del joc o els de Twitch, el text de l'etiqueta del canal i si es veuen els **detalls del joc** (botons, pestanyes i casella d'escriure). Són només decoratius: no es poden prémer i els clics continuen travessant el xat.
 
-> Inspirats en World of Warcraft, League of Legends, Valorant i Minecraft. No estan afiliats a Blizzard, Riot Games ni Mojang: les fonts són lliures i semblants a les originals, i els detalls estan dibuixats per a l'app. A WoW es fa servir Arial Narrow si la tens instal·lada.
+> Inspirats en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite i Rust. No estan afiliats als seus creadors (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): les fonts són lliures i semblants a les originals, i els detalls estan dibuixats per a l'app. A WoW es fa servir Arial Narrow si la tens instal·lada.
 
 ### Dreceres
 
@@ -247,7 +251,7 @@ L'instal·lador queda a `dist/`. El de Mac (`npm run dist:mac`) només es pot cr
 
 [MIT](LICENSE) © Aleix Aj. Pots utilitzar, modificar i compartir el codi sempre que mantinguis l'avís d'autoria.
 
-Inclou aquestes fonts, totes amb llicència [SIL Open Font License 1.1](assets/fonts/) (cadascuna amb el seu fitxer `OFL-*.txt`): Space Grotesk, Inter, Atkinson Hyperlegible, Lilita One, Cascadia Code, Exo 2, Alegreya, Comic Neue, Quicksand, Nunito, Patrick Hand, Press Start 2P, Archivo Narrow, Marcellus, D-DIN i Monocraft.
+Inclou aquestes fonts, totes amb llicència [SIL Open Font License 1.1](assets/fonts/) (cadascuna amb el seu fitxer `OFL-*.txt`): Space Grotesk, Inter, Atkinson Hyperlegible, Lilita One, Cascadia Code, Exo 2, Alegreya, Comic Neue, Quicksand, Nunito, Patrick Hand, Press Start 2P, Archivo Narrow, Marcellus, D-DIN, Monocraft, Rajdhani, Jost i Roboto Condensed.
 
 > Kylen Chat for Twitch és un projecte independent. No està afiliat ni associat a Twitch Interactive, Inc., ni compta amb el seu suport. "Twitch" és una marca registrada de Twitch Interactive, Inc.
 

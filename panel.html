@@ -82,7 +82,7 @@
   .game-preview .bar { position: absolute; top: 0; left: 0; right: 0; height: 20px !important; display: flex; align-items: center; gap: 6px; padding: 0 6px; box-sizing: border-box; font-size: 10px !important; }
   .game-preview .bar img { width: 12px; height: 12px; }
   .game-preview .bar-brand { display: flex; align-items: center; gap: 4px; height: 18px !important; }
-  .game-preview .frame { position: absolute; left: 0; right: 0; bottom: 0; top: 20px; display: flex; flex-direction: column; justify-content: flex-end; box-sizing: border-box; }
+  .game-preview .frame { position: absolute; left: 0; right: 0; bottom: 0; top: 20px; display: flex; flex-direction: column; justify-content: flex-end; box-sizing: border-box; overflow: hidden; }
   .game-preview .msg { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; align-self: stretch; }
   #gameOptions[hidden], #gameNone[hidden] { display: none; }
   .disclaimer { margin-top: 10px; opacity: .8; }
@@ -300,6 +300,7 @@
           <select id="gNames"><option value="game" data-i18n="gameNamesGame"></option><option value="twitch" data-i18n="gameNamesTwitch"></option></select>
         </div>
         <div class="row"><label for="gTag" data-i18n="gameTag"></label><input type="text" id="gTag" maxlength="20"></div>
+        <div class="row"><label for="gDecor" data-i18n="gameDecor"></label><input type="checkbox" id="gDecor"><span class="note" data-i18n="gameDecorNote"></span></div>
         <button class="wide" id="gameOff" data-i18n="gameOff"></button>
       </div>
     </section>

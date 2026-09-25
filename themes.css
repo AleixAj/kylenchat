@@ -12,6 +12,7 @@
 .themed .msg {
   border: 0; border-radius: 0; background: none; padding: 0 4px;
   line-height: 1.3;
+  flex-shrink: 0; /* con el chat lleno, las líneas no se encogen ni se montan */
 }
 .themed .msg.notice, .themed .msg.mention, .themed .msg.highlighted, .themed .msg.first,
 .themed .msg.bits, .themed .msg.notice.redeem-notice { background: none; }
@@ -31,6 +32,9 @@
 .themed .reply { font-size: .85em; }
 /* Las insignias de Twitch no existen en los juegos: en WoW el papel ya sale como canal */
 .themed .badge { display: none; }
+/* En los avisos con mensaje (suscripciones...) no va avatar: el aviso ya dice quién es */
+.themed .msg.notice .avatar { display: none; }
+.themed .msg.notice > div { padding-left: 0; }
 
 /* Capa de detalles decorativos de cada juego (botones, casillas de escribir, barra de desplazamiento) */
 :is(#decor, .decor) { position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: var(--opacity); transition: opacity .8s; }
@@ -236,3 +240,189 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
   font: 400 var(--fs) "Monocraft", monospace; color: #FFFFFF; text-shadow: .12em .12em 0 #3F3F3F;
 }
 .decor .mc-input { height: 16px; }
+
+/* =====================================================================
+   COUNTER-STRIKE 2
+   - Recuadro negro translúcido con un marco algo más claro alrededor.
+   - "[TODOS] Nombre @Twitch: texto" en letra negrita cuadrada; nombres en azul (CT) y amarillo (T),
+     la ubicación en verde, avisos del sistema en dorado.
+   - Casilla de escribir abajo con "Decir a todos" y "ENVIAR".
+   ===================================================================== */
+.theme-cs2 { --ff: "Rajdhani"; }
+.theme-cs2 :is(#chat, .frame) {
+  background: var(--bg); background-clip: padding-box;
+  border: 5px solid rgba(70, 70, 70, .35); border-bottom: 0;
+  padding: 4px 8px;
+}
+.theme-cs2 .msg {
+  font-family: "Rajdhani", "Segoe UI", sans-serif; font-weight: 700; letter-spacing: .01em;
+  color: var(--color); text-shadow: 0 1px 1px rgba(0, 0, 0, .8);
+}
+.theme-cs2 .chan { color: #FFFFFF; text-transform: uppercase; }
+.theme-cs2 .chan::before { content: "["; }
+.theme-cs2 .chan::after { content: "]"; }
+.theme-cs2 .name { font-weight: 700; }
+.theme-cs2 .name::after { content: "\00a0@Twitch"; color: #6BE36B; }
+.theme-cs2 .name.painted::after { -webkit-text-fill-color: #6BE36B; }
+.theme-cs2 .msg.mention { background: linear-gradient(90deg, rgba(232, 184, 74, .25), transparent 75%); }
+.theme-cs2 .msg.notice, .theme-cs2 .msg.system { color: #EAB94E; }
+.theme-cs2 .pill { color: #EAB94E; }
+.theme-cs2 :is(#bar, .bar) {
+  background: rgba(0, 0, 0, .6); border-radius: 0;
+  font: 700 12.5px "Rajdhani", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #E8B84A; text-shadow: none;
+}
+.theme-cs2 :is(#barViewers, #barChannel) { color: #D8D8D8; }
+.theme-cs2 #barViewers::before { border-radius: 0; box-shadow: none; }
+.theme-cs2 .cs2-input {
+  height: 26px; padding: 0 10px; justify-content: space-between;
+  background: rgba(0, 0, 0, .7); background-clip: padding-box;
+  border: 5px solid rgba(70, 70, 70, .35); border-top-width: 0;
+  font: 600 calc(var(--fs) * .92) "Rajdhani", sans-serif; color: rgba(255, 255, 255, .45);
+}
+.theme-cs2 .cs2-input .send { color: #CFCFCF; letter-spacing: .06em; }
+.decor .cs2-input { height: 20px; }
+
+/* =====================================================================
+   OVERWATCH 2
+   - Recuadro azul marino con esquinas redondeadas y barra de desplazamiento blanca redondeada.
+   - Cada línea empieza con un rombo naranja (chat de partida) y va en naranja: "[Nombre]: texto".
+   - Avisos del sistema en amarillo con un icono "i"; casilla abajo con barra naranja a la izquierda.
+   ===================================================================== */
+.theme-overwatch { --ff: "Jost"; }
+.theme-overwatch :is(#chat, .frame) { background: var(--bg); border-radius: 6px; padding: 5px 16px 5px 8px; gap: 3px; }
+.theme-overwatch .msg {
+  position: relative; padding-left: 1.3em;
+  font-family: "Jost", "Futura", "Segoe UI", sans-serif; font-weight: 500;
+  color: var(--color); text-shadow: 0 1px 1px rgba(0, 0, 0, .6);
+}
+.theme-overwatch .msg::before { content: "\25C6"; position: absolute; left: .15em; top: .05em; font-size: .75em; color: #F99E1A; }
+.theme-overwatch .msg.notice, .theme-overwatch .msg.system { color: #F2D24A; }
+.theme-overwatch :is(.msg.notice, .msg.system)::before {
+  content: "i"; top: .2em; width: 1.05em; height: 1.05em; border-radius: 50%; background: #F2D24A; color: #0B1130;
+  font: 700 .8em/1.05em "Jost", sans-serif; text-align: center;
+}
+.theme-overwatch .chan { display: none; } /* el canal va en la casilla de abajo, como en el juego */
+.theme-overwatch .name { font-weight: 500; }
+.theme-overwatch .name::before { content: "["; }
+.theme-overwatch .name::after { content: "]"; }
+.theme-overwatch .msg.mention { background: linear-gradient(90deg, rgba(249, 158, 26, .22), transparent 75%); }
+.theme-overwatch .pill { color: #F2D24A; }
+.theme-overwatch :is(#bar, .bar) {
+  background: rgba(11, 17, 48, .85); border-radius: 6px 6px 0 0;
+  font: italic 700 13px "D-DIN Condensed", "D-DIN", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #FFFFFF; text-shadow: none;
+}
+.theme-overwatch :is(#barViewers, #barChannel) { color: #F99E1A; font-style: normal; }
+.theme-overwatch .ow-scroll { position: absolute; right: 7px; bottom: 40px; height: 28%; width: 5px; border-radius: 3px; background: rgba(255, 255, 255, .9); }
+.decor .ow-scroll { bottom: 30px; right: 5px; width: 4px; }
+.theme-overwatch .ow-input {
+  height: 26px; padding: 0 10px; gap: 8px;
+  background: rgba(11, 17, 48, .88); border-left: 3px solid #F99E1A; border-radius: 0 6px 6px 0;
+  font: 500 calc(var(--fs) * .92) "Jost", sans-serif; color: #F99E1A;
+}
+.theme-overwatch .ow-input .hint { font: 700 calc(var(--fs) * .92) "D-DIN Condensed", sans-serif; letter-spacing: .04em; color: rgba(255, 255, 255, .45); }
+.theme-overwatch #chat { bottom: 32px; }
+.decor .ow-input { height: 20px; }
+
+/* =====================================================================
+   FORTNITE
+   - Panel gris oscuro con esquinas muy redondeadas; pestañas en forma de píldora arriba.
+   - Cada línea con un avatar redondo de color (con la inicial) y "Nombre: texto" en blanco.
+   - Casilla redondeada con borde blanco y botón de "más".
+   ===================================================================== */
+.theme-fortnite { --ff: "Inter"; }
+.theme-fortnite :is(#chat, .frame) { background: var(--bg); border-radius: 12px; padding: 8px 10px; gap: 5px; }
+.theme-fortnite .msg {
+  position: relative; padding-left: 1.75em;
+  font-family: "Inter", "Segoe UI", sans-serif; font-weight: 500;
+  color: var(--color); text-shadow: 0 1px 1px rgba(0, 0, 0, .5);
+}
+.theme-fortnite .avatar {
+  position: absolute; left: 0; top: .05em; width: 1.85em; height: 1.85em; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font: 800 .72em/1 "Inter", sans-serif; color: #fff; text-shadow: 0 1px 1px rgba(0, 0, 0, .4);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .6);
+}
+.theme-fortnite .name { font-weight: 700; }
+.theme-fortnite .chan { display: none; }
+.theme-fortnite .msg.notice, .theme-fortnite .msg.system { color: #B9C3D6; padding-left: 4px; font-weight: 500; }
+.theme-fortnite .msg.mention { background: linear-gradient(90deg, rgba(255, 216, 74, .22), transparent 75%); border-radius: 6px; }
+.theme-fortnite .pill { color: #FFD84A; }
+.theme-fortnite :is(#bar, .bar) {
+  display: flex; align-items: center; gap: 4px; padding: 0 2px;
+  background: none; border-radius: 0;
+  font: 600 12px "Inter", sans-serif; letter-spacing: 0; color: #FFFFFF; text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+}
+.theme-fortnite :is(#barBrand, .bar-brand), .theme-fortnite :is(#barChannel, .bar-tab) {
+  height: 19px; padding: 0 10px; border-radius: 999px; display: flex; align-items: center; gap: 4px; white-space: nowrap;
+}
+.theme-fortnite :is(#barBrand, .bar-brand) { background: #E8EAF0; color: #1B1D26; text-shadow: none; }
+.theme-fortnite :is(#barChannel, .bar-tab) { color: #FFFFFF; font-weight: 600; justify-self: auto; }
+.theme-fortnite #barViewers { margin-left: auto; }
+.theme-fortnite .fn-input { height: 26px; gap: 6px; padding: 0 2px; }
+.theme-fortnite .fn-field {
+  flex: 1; height: 100%; box-sizing: border-box; display: flex; align-items: center; padding: 0 10px;
+  background: rgba(30, 34, 48, .9); border: 2px solid rgba(255, 255, 255, .9); border-radius: 8px;
+  font: 500 calc(var(--fs) * .85) "Inter", sans-serif; color: rgba(255, 255, 255, .7);
+}
+.theme-fortnite .fn-more {
+  width: 26px; height: 100%; display: flex; align-items: center; justify-content: center;
+  background: rgba(30, 34, 48, .9); border-radius: 8px; color: #fff; font-size: 8px; letter-spacing: 1px;
+}
+.theme-fortnite #chat { bottom: 32px; }
+.decor .fn-input { height: 18px; }
+.decor .fn-more { width: 20px; }
+
+/* =====================================================================
+   RUST
+   - Sin recuadro: texto blanco en negrita estrecha con contorno negro marcado.
+   - Avatar cuadrado negro con la inicial y "[Global] Nombre: texto" con etiqueta y nombre en color.
+   - Barra verde oliva translúcida para escribir, con "[Global]" y el icono de persona.
+   ===================================================================== */
+.theme-rust { --ff: "Roboto Condensed"; }
+.theme-rust :is(#chat, .frame) { background: var(--bg); padding: 4px 6px; gap: 6px; }
+.theme-rust .msg {
+  position: relative; padding-left: 2.3em; min-height: 1.9em;
+  font-family: "Roboto Condensed", "Arial Narrow", sans-serif; font-weight: 700;
+  color: var(--color);
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 3px rgba(0, 0, 0, .6);
+}
+.theme-rust .avatar {
+  position: absolute; left: 0; top: 0; width: 1.9em; height: 1.9em;
+  display: flex; align-items: center; justify-content: center;
+  background: #000; color: #fff; font: 700 .95em/1 "Roboto Condensed", sans-serif; text-shadow: none;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .15);
+}
+.theme-rust .chan::before { content: "["; }
+.theme-rust .chan::after { content: "]"; }
+/* La etiqueta del canal va del mismo color que el nombre, como "[Team] Nombre" en el juego */
+.theme-rust .chan { color: #6CB4FF; }
+.theme-rust .msg.r-broadcaster .chan { color: #AAFF55; }
+.theme-rust .msg.r-moderator .chan { color: #FFC857; }
+.theme-rust .msg.notice { color: #FF4B4B; padding-left: 0; min-height: 0; }
+.theme-rust .msg.system { color: #DDDDDD; padding-left: 0; min-height: 0; }
+.theme-rust .pill { color: #A9D16D; }
+.theme-rust :is(#bar, .bar) {
+  background: rgba(0, 0, 0, .45); border-radius: 0;
+  font: 700 12.5px "Roboto Condensed", sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #A9D16D; text-shadow: 1px 1px 0 #000;
+}
+.theme-rust :is(#barViewers, #barChannel) { color: #FFFFFF; }
+.theme-rust #barViewers::before { border-radius: 0; box-shadow: none; }
+.theme-rust .rust-input {
+  height: 26px; padding: 0 10px; gap: 8px;
+  background: rgba(96, 124, 44, .88);
+  font: 700 calc(var(--fs) * .95) "Roboto Condensed", sans-serif; color: #CDEB8B;
+}
+.theme-rust .rust-caret { width: 2px; height: 60%; background: #9CC3E6; }
+.theme-rust .rust-person { margin-left: auto; color: #C6E58A; display: flex; }
+.theme-rust .rust-person svg { width: 14px; height: 14px; fill: currentColor; }
+.decor .rust-input { height: 20px; }
+
+/* Estilos con la casilla de escribir más separada */
+:is(.theme-cs2, .theme-rust) #chat { bottom: 26px; }
+.theme-cs2 .frame, .theme-overwatch .frame, .theme-fortnite .frame, .theme-rust .frame { bottom: 20px !important; }
+.theme-overwatch .frame, .theme-fortnite .frame { bottom: 24px !important; }
+
+/* ---------- "Detalles del juego" apagado: sin botones ni casillas, el chat usa todo el espacio ---------- */
+.no-decor #decor { display: none; }
+.no-decor.themed #chat { bottom: 0; }
+.theme-wow.no-decor #chat, .theme-wow.no-decor #bar { left: 0; }
