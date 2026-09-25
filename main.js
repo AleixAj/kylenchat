@@ -49,6 +49,9 @@ const DEFAULTS = {
   bounds: null,
   profiles: [],
   customStyles: [],
+  theme: '', // estilo de juego: '', 'wow', 'lol', 'valorant' o 'minecraft'
+  themeGameColors: true, // nombres con los colores del juego (o los de Twitch)
+  themeTag: '', // texto de la etiqueta del canal; vacío = el del juego
   chatVisible: true, // la ventana del chat principal se ve (se puede ocultar y dejar solo los avisos)
   extraChats: [], // otros chats en ventanas aparte: { id, channel, visible, bounds }
   activeProfile: '',
@@ -60,7 +63,7 @@ const DEFAULTS = {
 const PROFILE_KEYS = [
   'fontSize', 'fontFamily', 'bold', 'textColor', 'userColors', 'bgColor', 'bgOpacity', 'barColor', 'outline', 'opacity',
   'maxMessages', 'fadeAfter', 'animatedEmotes', 'showBadges', 'timestamps', 'align', 'newestOnTop', 'idleHide',
-  'emoteScale', 'bounds',
+  'emoteScale', 'theme', 'themeGameColors', 'themeTag', 'bounds',
 ];
 // Lo que no se exporta ni se importa: depende de cada PC.
 const LOCAL_KEYS = ['autoStart', 'onboarded', 'lastVersion', 'chatVisible', 'extraChats'];
@@ -100,6 +103,9 @@ const SCHEMA = {
   highlightMentions: isBool,
   keywords: isText(300),
   highlightFirst: isBool,
+  theme: (v) => ['', 'wow', 'lol', 'valorant', 'minecraft'].includes(v),
+  themeGameColors: isBool,
+  themeTag: isText(20),
   chatVisible: isBool,
   showRedemptions: isBool,
   showBadges: isBool,
@@ -155,7 +161,7 @@ function cleanProfiles(list) {
 
 // "Mis estilos": aspectos guardados por el usuario, con su nombre y el color de su botón.
 // Solo guardan el aspecto (como los estilos rápidos), no la posición ni el tamaño.
-const LOOK_KEYS = ['fontSize', 'fontFamily', 'bold', 'textColor', 'userColors', 'bgColor', 'bgOpacity', 'barColor', 'outline', 'opacity', 'emoteScale'];
+const LOOK_KEYS = ['fontSize', 'fontFamily', 'bold', 'textColor', 'userColors', 'bgColor', 'bgOpacity', 'barColor', 'outline', 'opacity', 'emoteScale', 'theme', 'themeGameColors', 'themeTag'];
 const STYLES_MAX = 20;
 
 function cleanStyles(list) {

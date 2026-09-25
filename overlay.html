@@ -5,6 +5,7 @@
 <title>Kylen Chat for Twitch · Chat</title>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://static-cdn.jtvnw.net https://cdn.7tv.app https://cdn.betterttv.net https://cdn.frankerfacez.com; connect-src wss://irc-ws.chat.twitch.tv:443 wss://hermes.twitch.tv wss://events.7tv.io https://7tv.io https://api.betterttv.net https://api.ivr.fi; style-src 'self' 'unsafe-inline'">
 <link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="themes.css">
 <style>
   :root {
     --fs: 16px;
@@ -116,10 +117,12 @@
 <body>
   <div id="bar"><span id="barBrand"><img src="assets/tray@2x.png" alt="">Kylen Chat</span><span id="barViewers"></span><span id="barChannel"></span></div>
   <div id="chat"></div>
+  <div id="decor"></div>
   <div id="hint"></div>
   <div id="toast"></div>
   <div id="grip"></div>
   <script src="i18n.js"></script>
+  <script src="themes.js"></script>
   <script src="overlay.js"></script>
 </body>
 </html>

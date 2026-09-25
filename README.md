@@ -71,6 +71,7 @@
 - Los nombres con **pintura de 7TV** (degradados) se ven con sus colores.
 
 **A tu gusto**
+- **Estilos de juegos**: el chat con el aspecto del de **WoW**, **LoL**, **Valorant** o **Minecraft**: su letra, sus colores, su formato de línea y sus detalles (botones, pestañas, casilla de escribir). Se pueden personalizar.
 - **13 estilos rápidos** con un clic, cada uno con su propia fuente y colores: Por defecto, Texto grande, Clásico Twitch, Alto contraste, Terminal, Sakura 🌸, Neón ⚡, Rúnico ⚔️, Viñeta 💬, Glaciar ❄️, Bosque 🌿, Pizarra ✏️ y Arcade 👾.
 - **Mis estilos**: guarda el aspecto que tengas con el nombre y el color que quieras, y vuelve a él con un clic. La lista de estilos rápidos se puede ocultar.
 - Control total de posición, tamaño, fuente (cualquiera instalada en tu PC), colores, fondo, color de la barra, transparencia y tamaño de emotes.
@@ -137,6 +138,19 @@ Cuando uno empieza directo te avisa con:
 - Un **sonido**, que puedes quitar o bajar de volumen.
 
 Al abrir la app solo te avisa de los directos que empezaron hace menos de 10 minutos, para no llenarte de avisos de golpe. Con **Probar aviso** ves y oyes cómo queda.
+
+### Estilos de juegos
+
+En la pestaña **Juegos** eliges el estilo con una vista previa de cada uno:
+
+- **WoW**: letra estrecha con sombra, pestañas arriba y columna de botones a la izquierda (el de amigos muestra tus espectadores). Cada línea sale como `[Usuario] [Nombre]: texto`, con el papel de quien escribe (Usuario, Sub, VIP, Mod, Streamer) como si fuera el canal y los nombres con colores de clase.
+- **LoL**: recuadro azul muy oscuro con borde dorado, `[Todos] Nombre: texto` y nombres en azul y rojo como los dos equipos.
+- **Valorant**: recuadro oscuro de esquinas rectas, letra tipo DIN, `(Todos) Nombre: texto` y nombres en turquesa y rojo.
+- **Minecraft**: franjas negras por línea, letra pixelada y `<Nombre> texto`.
+
+Debajo puedes cambiar el color del texto, el tamaño, la opacidad del fondo, si los nombres usan los colores del juego o los de Twitch, y el texto de la etiqueta del canal. Los botones y casillas son solo decorativos: no se pueden pulsar y los clics siguen atravesando el chat.
+
+> Inspirados en World of Warcraft, League of Legends, Valorant y Minecraft. No están afiliados a Blizzard, Riot Games ni Mojang: las fuentes son libres y parecidas a las originales, y los detalles están dibujados para la app. En WoW se usa Arial Narrow si la tienes instalada.
 
 ### Atajos
 
@@ -233,7 +247,7 @@ El instalador queda en `dist/`. El de Mac (`npm run dist:mac`) solo se puede cre
 
 [MIT](LICENSE) © Aleix Aj. Puedes usar, modificar y compartir el código siempre que mantengas el aviso de autoría.
 
-Incluye estas fuentes, todas con licencia [SIL Open Font License 1.1](assets/fonts/) (cada una con su archivo `OFL-*.txt`): Space Grotesk, Inter, Atkinson Hyperlegible, Lilita One, Cascadia Code, Exo 2, Alegreya, Comic Neue, Quicksand, Nunito, Patrick Hand y Press Start 2P.
+Incluye estas fuentes, todas con licencia [SIL Open Font License 1.1](assets/fonts/) (cada una con su archivo `OFL-*.txt`): Space Grotesk, Inter, Atkinson Hyperlegible, Lilita One, Cascadia Code, Exo 2, Alegreya, Comic Neue, Quicksand, Nunito, Patrick Hand, Press Start 2P, Archivo Narrow, Marcellus, D-DIN y Monocraft.
 
 > Kylen Chat for Twitch es un proyecto independiente. No está afiliado, asociado ni respaldado por Twitch Interactive, Inc. "Twitch" es una marca registrada de Twitch Interactive, Inc.
 

@@ -47,6 +47,7 @@ const FIELDS = {
 const LOOK_BASE = {
   fontSize: 15, fontFamily: 'Segoe UI', bold: false, textColor: '#ffffff', userColors: true,
   bgColor: '#000000', bgOpacity: 25, barColor: '#9146ff', outline: true, opacity: 100, emoteScale: 1.6,
+  theme: '', themeGameColors: true, themeTag: '', // sin estilo de juego
 };
 const PRESETS = {
   default: { ...LOOK_BASE },
@@ -149,6 +150,120 @@ function addChat() {
   if (error) return;
   api.addChat(channel);
   showChatAdd(false);
+}
+
+// ---------- Estilos de juegos ----------
+
+const GAME_ORDER = ['wow', 'lol', 'valorant', 'minecraft'];
+
+function hexToRgba(hex, alpha) {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+}
+
+// Líneas de ejemplo con la misma estructura que el chat de verdad, para que la vista previa sea real.
+function previewLine(theme, [name, role, text]) {
+  const el = document.createElement('div');
+  el.className = 'msg';
+  const byRole = GameThemes.ROLE_TAG_THEMES.has(theme);
+  const who = GameThemes.roleOf(new Set(role ? [role] : []));
+  if (byRole) el.classList.add(`ch-${who}`);
+  const tag = byRole ? tr(`role_${who}`) : tr(`themeTag_${theme}`);
+  if (tag) {
+    const chan = document.createElement('span');
+    chan.className = 'chan';
+    chan.textContent = tag;
+    el.append(chan);
+  }
+  const nameEl = document.createElement('span');
+  nameEl.className = 'name';
+  nameEl.textContent = name;
+  nameEl.style.color = GameThemes.nameColor(theme, name.toLowerCase(), new Set(role ? [role] : []));
+  const sep = document.createElement('span');
+  sep.className = 'sep';
+  sep.textContent = ': ';
+  const textEl = document.createElement('span');
+  textEl.className = 'text';
+  textEl.textContent = text;
+  el.append(nameEl, sep, textEl);
+  return el;
+}
+
+function renderGameCards() {
+  const grid = $('gameGrid');
+  if (!grid.children.length || grid.dataset.lang !== lang) {
+    grid.dataset.lang = lang;
+    grid.replaceChildren(...GAME_ORDER.map((theme) => {
+      const look = GameThemes.GAME_THEMES[theme].look;
+      const card = document.createElement('button');
+      card.className = 'game-card';
+      card.dataset.game = theme;
+      const preview = document.createElement('div');
+      preview.className = `game-preview themed theme-${theme}`;
+      preview.style.setProperty('--fs', '11px');
+      preview.style.setProperty('--color', look.textColor);
+      preview.style.setProperty('--bg', hexToRgba(look.bgColor, look.bgOpacity / 100));
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      const brand = document.createElement('span');
+      brand.className = 'bar-brand';
+      const logo = document.createElement('img');
+      logo.src = 'assets/tray@2x.png';
+      logo.alt = '';
+      brand.append(logo, 'Kylen Chat');
+      const tab = document.createElement('span');
+      tab.className = 'bar-tab';
+      tab.textContent = '#kylen';
+      bar.append(brand, tab);
+      const frame = document.createElement('div');
+      frame.className = 'frame';
+      const notice = document.createElement('div');
+      notice.className = 'msg notice';
+      const title = document.createElement('div');
+      title.className = 'notice-title';
+      title.textContent = tr('gamePreviewNotice');
+      notice.append(title);
+      frame.append(...tr('gamePreviewLines').split('|').map((line) => previewLine(theme, line.split('~'))), notice);
+      const decor = document.createElement('div');
+      decor.className = 'decor';
+      GameThemes.buildDecor(decor, theme, tr(`themeTag_${theme}`));
+      preview.append(bar, frame, decor);
+      const label = document.createElement('span');
+      label.className = 'game-name';
+      const text = document.createElement('span');
+      text.textContent = tr(`game_${theme}`);
+      const check = document.createElement('span');
+      check.className = 'game-check';
+      label.append(text, check);
+      card.append(preview, label);
+      card.addEventListener('click', () => api.setSettings({ ...LOOK_BASE, ...look, theme }));
+      return card;
+    }));
+  }
+  for (const card of grid.children) {
+    const active = settings && settings.theme === card.dataset.game;
+    card.classList.toggle('active', active);
+    card.setAttribute('aria-pressed', String(active));
+    card.querySelector('.game-check').textContent = active ? tr('gameActive') : '';
+  }
+  renderGameOptions();
+}
+
+// Opciones del estilo de juego activo: se guardan en los mismos ajustes que el resto del aspecto.
+function renderGameOptions() {
+  const theme = settings && settings.theme;
+  $('gameOptions').hidden = !theme;
+  $('gameNone').hidden = Boolean(theme);
+  if (!theme) return;
+  const set = (id, value) => { if (document.activeElement !== $(id)) $(id).value = String(value); };
+  set('gTextColor', settings.textColor);
+  set('gFontSize', settings.fontSize);
+  set('gBgOpacity', settings.bgOpacity);
+  set('gNames', settings.themeGameColors ? 'game' : 'twitch');
+  set('gTag', settings.themeTag);
+  $('gTag').placeholder = GameThemes.ROLE_TAG_THEMES.has(theme) ? tr('gameTagRoles') : tr(`themeTag_${theme}`) || tr('gameTagNone');
+  $('gFontSizeVal').textContent = `${settings.fontSize} px`;
+  $('gBgOpacityVal').textContent = `${settings.bgOpacity} %`;
 }
 
 // ---------- Mis estilos ----------
@@ -292,6 +407,7 @@ function fillFields(newSettings) {
   renderLiveList();
   renderCustomStyles();
   renderChats();
+  renderGameCards();
 }
 
 // Acepta "nombre", "#nombre", "@nombre" o el enlace completo de twitch.tv.
@@ -662,6 +778,12 @@ document.querySelectorAll('[data-lang]').forEach((b) => b.addEventListener('clic
 document.querySelectorAll('[data-pos]').forEach((b) => b.addEventListener('click', () => api.setPosition(b.dataset.pos)));
 document.querySelectorAll('[data-preset]').forEach((b) => b.addEventListener('click', () => api.setSettings(PRESETS[b.dataset.preset])));
 $('styleSave').addEventListener('click', saveCustomStyle);
+$('gTextColor').addEventListener('input', (e) => api.setSettings({ textColor: e.target.value }));
+$('gFontSize').addEventListener('input', (e) => { $('gFontSizeVal').textContent = `${e.target.value} px`; api.setSettings({ fontSize: Number(e.target.value) }); });
+$('gBgOpacity').addEventListener('input', (e) => { $('gBgOpacityVal').textContent = `${e.target.value} %`; api.setSettings({ bgOpacity: Number(e.target.value) }); });
+$('gNames').addEventListener('change', (e) => api.setSettings({ themeGameColors: e.target.value === 'game' }));
+$('gTag').addEventListener('input', (e) => api.setSettings({ themeTag: e.target.value.trim() }));
+$('gameOff').addEventListener('click', () => api.setSettings(PRESETS.default));
 $('chatAddBtn').addEventListener('click', addChat);
 $('chatAdd').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') addChat();

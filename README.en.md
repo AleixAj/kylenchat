@@ -71,6 +71,7 @@
 - Names with a **7TV paint** (gradients) show their colors.
 
 **Make it yours**
+- **Game styles**: your chat with the look of **WoW**, **LoL**, **Valorant** or **Minecraft**: their font, colors, line format and details (buttons, tabs, input box). They can be customized.
 - **13 one-click styles**, each with its own font and colors: Default, Big text, Classic Twitch, High contrast, Terminal, Sakura 🌸, Neon ⚡, Runic ⚔️, Comic 💬, Glacier ❄️, Forest 🌿, Chalkboard ✏️ and Arcade 👾.
 - **My styles**: save your current look with any name and color you like, and get back to it with one click. The quick styles list can be hidden.
 - Full control over position, size, font (any font installed on your computer), colors, background, bar color, transparency and emote size.
@@ -137,6 +138,19 @@ When one of them goes live, you get:
 - A **sound**, which you can mute or turn down.
 
 When the app starts, it only alerts you about streams that started less than 10 minutes ago, so you don't get a flood of alerts at once. **Test alert** lets you see and hear how it looks.
+
+### Game styles
+
+In the **Games** tab you pick a style, with a preview of each one:
+
+- **WoW**: narrow font with a shadow, tabs on top and a column of buttons on the left (the friends one shows your viewers). Each line reads `[User] [Name]: text`, with the writer's role (User, Sub, VIP, Mod, Streamer) acting as the channel and names in class colors.
+- **LoL**: very dark blue box with a gold border, `[All] Name: text` and names in blue and red like the two teams.
+- **Valorant**: dark square-cornered box, DIN-style font, `(All) Name: text` and names in teal and red.
+- **Minecraft**: black strips per line, pixel font and `<Name> text`.
+
+Below you can change the text color, size, background opacity, whether names use the game's colors or Twitch's, and the channel tag text. The buttons and boxes are decorative only: they can't be clicked and clicks still go through the chat.
+
+> Inspired by World of Warcraft, League of Legends, Valorant and Minecraft. Not affiliated with Blizzard, Riot Games or Mojang: the fonts are free lookalikes and the details are drawn for the app. The WoW style uses Arial Narrow if you have it installed.
 
 ### Shortcuts
 
@@ -233,7 +247,7 @@ The installer ends up in `dist/`. The Mac one (`npm run dist:mac`) can only be b
 
 [MIT](LICENSE) © Aleix Aj. You can use, modify and share the code as long as you keep the copyright notice.
 
-It includes these fonts, all under the [SIL Open Font License 1.1](assets/fonts/) (each with its own `OFL-*.txt` file): Space Grotesk, Inter, Atkinson Hyperlegible, Lilita One, Cascadia Code, Exo 2, Alegreya, Comic Neue, Quicksand, Nunito, Patrick Hand and Press Start 2P.
+It includes these fonts, all under the [SIL Open Font License 1.1](assets/fonts/) (each with its own `OFL-*.txt` file): Space Grotesk, Inter, Atkinson Hyperlegible, Lilita One, Cascadia Code, Exo 2, Alegreya, Comic Neue, Quicksand, Nunito, Patrick Hand, Press Start 2P, Archivo Narrow, Marcellus, D-DIN and Monocraft.
 
 > Kylen Chat for Twitch is an independent project. It is not affiliated with, associated with or endorsed by Twitch Interactive, Inc. "Twitch" is a trademark of Twitch Interactive, Inc.
 

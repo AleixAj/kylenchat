@@ -48,6 +48,21 @@ function myChannel(s) {
   return chat ? chat.channel : '';
 }
 
+// ---------- Estilos de juegos ----------
+// Cada estilo cambia el formato de la línea (etiqueta del canal, corchetes, colores...).
+// Los colores están en themes.js (compartido con el panel) y el aspecto en themes.css.
+const { THEMES } = GameThemes;
+
+let lastDecor = '';
+
+// Texto de la etiqueta del canal: el que haya puesto el usuario o el de cada juego.
+// En WoW es el papel de quien escribe: [Usuario], [Sub], [VIP], [Mod] o [Streamer].
+function channelTag(role) {
+  if (settings.themeTag) return settings.themeTag;
+  if (GameThemes.ROLE_TAG_THEMES.has(settings.theme)) return tr(`role_${role}`);
+  return tr(`themeTag_${settings.theme}`) || '';
+}
+
 // ---------- Aspecto ----------
 
 function applySettings(s) {
@@ -69,6 +84,14 @@ function applySettings(s) {
   document.documentElement.lang = s.language;
   document.body.classList.toggle('align-right', s.align === 'right');
   document.body.classList.toggle('newest-top', s.newestOnTop);
+  for (const t of THEMES) document.body.classList.toggle(`theme-${t}`, s.theme === t);
+  document.body.classList.toggle('themed', THEMES.includes(s.theme));
+  const decorKey = `${s.theme}|${s.themeTag}|${s.language}`;
+  if (decorKey !== lastDecor) {
+    lastDecor = decorKey;
+    GameThemes.buildDecor(document.getElementById('decor'), s.theme, THEMES.includes(s.theme) ? channelTag('user') : '');
+    showViewerCount();
+  }
   resetIdle();
   document.getElementById('hint').textContent = tr('editHint', { keys: i18n.shortcutLabel(s.shortcuts.edit) });
   if (s.showViewers !== viewersShown) startViewers();
@@ -365,6 +388,13 @@ async function updateViewers() {
   const stream = Array.isArray(data) && data[0] && data[0].stream;
   const count = stream && Number(stream.viewersCount);
   document.getElementById('barViewers').textContent = Number.isFinite(count) ? count.toLocaleString(settings.language) : '';
+  showViewerCount();
+}
+
+// En el estilo WoW, los espectadores van en el botón de amigos (como el número de amigos conectados).
+function showViewerCount() {
+  const count = document.querySelector('#decor .wow-count');
+  if (count) count.textContent = document.getElementById('barViewers').textContent;
 }
 
 // Twitch manda un PING cada ~5 min. Si pasa mucho sin recibir nada (p. ej. tras suspender
@@ -753,10 +783,17 @@ function fillMessage(el, msg) {
   el.dataset.user = user || '';
   if (msg.sourceId) el.dataset.sid = msg.sourceId;
 
+  const themed = THEMES.includes(settings.theme);
+  const roles = new Set((msg.badges || '').split(',').map((b) => b.split('/')[0]));
+  for (const role of ['broadcaster', 'moderator', 'vip', 'subscriber']) if (roles.has(role)) el.classList.add(`r-${role}`);
+  const role = GameThemes.roleOf(roles);
+  if (themed && !settings.themeTag && GameThemes.ROLE_TAG_THEMES.has(settings.theme)) el.classList.add(`ch-${role}`);
+
   const nameEl = document.createElement('span');
   nameEl.className = 'name';
   nameEl.textContent = name;
-  if (settings.userColors) nameEl.style.color = readable(color || colorFor(name));
+  if (themed && settings.themeGameColors) nameEl.style.color = GameThemes.nameColor(settings.theme, msg.user || name, roles);
+  else if (settings.userColors) nameEl.style.color = readable(color || colorFor(name));
   if (msg.userId) {
     nameEl.dataset.uid = msg.userId;
     applyPaint(nameEl);
@@ -779,6 +816,14 @@ function fillMessage(el, msg) {
     time.textContent = new Date().toLocaleTimeString(settings.language, { hour: '2-digit', minute: '2-digit' });
     el.append(time);
   }
+  // Etiqueta del canal de los estilos de juegos: "[1. Twitch]", "[Todos]"...
+  const tag = themed ? channelTag(role) : '';
+  if (tag) {
+    const chan = document.createElement('span');
+    chan.className = 'chan';
+    chan.textContent = tag;
+    el.append(chan);
+  }
   if (msg.first && settings.highlightFirst) el.append(pill('first', tr('firstMessage')));
   if (msg.bits) el.append(pill('bits', tr('bits', { n: msg.bits })));
   if (msg.highlighted) el.append(pill('highlighted', tr('highlightedMessage')));
@@ -788,7 +833,10 @@ function fillMessage(el, msg) {
   }
   if (msg.sourceRoom) el.append(channelIcon(msg.sourceRoom));
   if (settings.showBadges && msg.badges) el.append(...badgeIcons(msg.badges));
-  el.append(nameEl, action ? ' ' : ': ', textEl);
+  const sep = document.createElement('span');
+  sep.className = 'sep';
+  sep.textContent = action ? ' ' : ': ';
+  el.append(nameEl, sep, textEl);
 }
 
 // Sustituye los trozos de texto que Twitch marca como emotes por su imagen.
