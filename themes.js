@@ -5,7 +5,7 @@
   const GAME_THEMES = {
     wow: {
       // Aspecto al elegirlo (se puede cambiar después en el panel)
-      look: { fontFamily: 'Arial Narrow', fontSize: 15, bold: false, textColor: '#FFC0C0', bgColor: '#000000', bgOpacity: 30, outline: false, barColor: '#FFD100', emoteScale: 1.4 },
+      look: { fontFamily: 'Arial Narrow', fontSize: 15, bold: false, textColor: '#FFC0C0', bgColor: '#000000', bgOpacity: 15, outline: false, barColor: '#FFD100', emoteScale: 1.4 },
       // Colores de clase
       names: ['#C69B6D', '#F48CBA', '#AAD372', '#FFF468', '#FFFFFF', '#C41E3A', '#0070DD', '#3FC7EB', '#8788EE', '#00FF98', '#FF7C0A', '#A330C9', '#33937F'],
       // Streamer y moderadores con los colores de rareza: legendario y épico
@@ -91,7 +91,12 @@
     friends: '<svg viewBox="0 0 16 16"><circle cx="8" cy="4.8" r="3.2"/><path d="M1.8 15.2c0-3.6 2.8-6 6.2-6s6.2 2.4 6.2 6z"/></svg>',
     speaker: '<svg viewBox="0 0 16 16"><path d="M1.5 5.8h3l4.2-3.3v11L4.5 10.2h-3z"/><path d="M10.8 5.4a3.6 3.6 0 0 1 0 5.2M12.7 3.6a6.2 6.2 0 0 1 0 8.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
     bubble: '<svg viewBox="0 0 16 16"><path d="M1.5 3h13v8H7.2l-3.7 3v-3h-2z"/></svg>',
+    up: '<svg viewBox="0 0 16 16"><path d="M8 3.5l5.5 7h-11z"/></svg>',
+    down: '<svg viewBox="0 0 16 16"><path d="M8 12.5l5.5-7h-11z"/></svg>',
+    bottom: '<svg viewBox="0 0 16 16"><path d="M8 10.5l5.5-7h-11z"/><rect x="2.5" y="12" width="11" height="2"/></svg>',
   };
+  // En WoW cada papel es un canal con número, como "[1. General]" o "[2. Comercio]".
+  const WOW_CHANNEL_NUMBER = { user: 1, subscriber: 2, vip: 3, moderator: 4, broadcaster: 5 };
 
   // Detalles decorativos de cada juego: botones de WoW, casillas de escribir de LoL, Valorant y
   // Minecraft, barra de desplazamiento de Valorant. No se pueden pulsar (la capa no recibe clics).
@@ -118,6 +123,10 @@
       friends.append(count);
       add('wow-btn speaker', column).innerHTML = ICONS.speaker;
       add('wow-btn bubble', column).innerHTML = ICONS.bubble;
+      // Abajo, los de desplazarse: subir, bajar e ir al final
+      add('wow-btn scroll-up', column).innerHTML = ICONS.up;
+      add('wow-btn scroll-down', column).innerHTML = ICONS.down;
+      add('wow-btn scroll-end', column).innerHTML = ICONS.bottom;
     } else if (theme === 'lol') {
       label(add('game-input lol-input'), `[${tag}]`);
     } else if (theme === 'valorant') {
@@ -163,5 +172,5 @@
     return a;
   }
 
-  root.GameThemes = { THEMES: Object.keys(GAME_THEMES), GAME_THEMES, nameColor, roleOf, ROLE_TAG_THEMES, TIME_THEMES, TAG_LIKE_NAME_THEMES, RANK_THEMES, buildDecor, makeAvatar };
+  root.GameThemes = { THEMES: Object.keys(GAME_THEMES), GAME_THEMES, nameColor, roleOf, ROLE_TAG_THEMES, TIME_THEMES, TAG_LIKE_NAME_THEMES, RANK_THEMES, WOW_CHANNEL_NUMBER, buildDecor, makeAvatar };
 })(typeof window !== 'undefined' ? window : globalThis);

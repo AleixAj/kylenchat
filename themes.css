@@ -51,7 +51,8 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
    - "[Usuario] [Nombre]: texto": el papel de quien escribe hace de canal; el nombre con color de clase.
    - Pestañas con la parte de arriba redondeada: la activa marrón rojiza con borde cobrizo y texto
      dorado; la otra (el canal) apagada.
-   - Columna de botones a la izquierda: amigos (con los espectadores como número), altavoz y bocadillo.
+   - Columna de botones a la izquierda: amigos (con los espectadores como número), altavoz, bocadillo
+     y, abajo, los de desplazarse (subir, bajar e ir al final).
    ===================================================================== */
 .theme-wow { --ff: "Arial Narrow"; }
 .theme-wow :is(#chat, .frame) { background: var(--bg); padding: 3px 6px; left: 30px; }
@@ -61,7 +62,13 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
   color: var(--color);
   font-family: "Arial Narrow", "Archivo Narrow", sans-serif; font-stretch: condensed; font-weight: 400;
   text-shadow: 1px 1px 0 #000, 0 0 1px #000;
+  /* Cuando una línea no cabe, la continuación va con sangría, como en el juego */
+  padding-left: calc(4px + 1.1em); text-indent: -1.1em;
 }
+.theme-wow .msg * { text-indent: 0; } /* la sangría es solo de la línea, no de etiquetas ni emotes */
+/* La hora de WoW ("11:46") va sin corchetes y del color de la línea */
+.theme-wow .time { opacity: 1; color: inherit; margin-right: 5px; }
+.theme-wow .time::before, .theme-wow .time::after { content: none; }
 .theme-wow .chan::before { content: "["; }
 .theme-wow .chan::after { content: "]"; }
 .theme-wow .name { font-weight: 400; }
@@ -69,9 +76,10 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-wow .name::after { content: "]"; }
 /* Susurro: las menciones se leen en el rosa de los susurros */
 .theme-wow .msg.mention, .theme-wow .msg.mention .text { color: #FF80FF; }
-/* Mensajes del sistema en amarillo; canjes en el naranja de los avisos de banda */
+/* Mensajes del sistema en amarillo, como "Experiencia obtenida" */
 .theme-wow .msg.notice { color: #FFFF00; }
-.theme-wow .msg.notice.redeem-notice { color: #FF7F00; }
+.theme-wow .notice-title { font-weight: 400; } /* los avisos de WoW no van en negrita */
+.theme-wow .msg.notice.redeem-notice { color: #8080FF; } /* como "Tu reputación ha aumentado" */
 .theme-wow .msg.system { color: #FFFF00; opacity: .9; }
 .theme-wow .pill-first { color: #40FF40; }
 .theme-wow .pill-bits { color: #FF7F00; }
@@ -116,7 +124,18 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-wow .wow-btn.friends svg { width: 13px; height: 13px; }
 .theme-wow .wow-count { font: 700 9px "Arial Narrow", "Archivo Narrow", sans-serif; color: #fff; line-height: 1; text-shadow: 1px 1px 0 #000; }
 .theme-wow .wow-btn.speaker { top: 36px; }
-.theme-wow .wow-btn.bubble { bottom: 0; }
+.theme-wow .wow-btn.bubble { top: 66px; }
+.theme-wow .wow-btn.scroll-up { bottom: 56px; }
+.theme-wow .wow-btn.scroll-down { bottom: 28px; }
+.theme-wow .wow-btn.scroll-end { bottom: 0; }
+.theme-wow .wow-btn :is(svg) { overflow: visible; }
+/* En la vista previa del panel hay menos alto: solo el altavoz y los de desplazarse */
+.decor.theme-wow .wow-btn, .theme-wow .decor .wow-btn { transform: scale(.8); transform-origin: top left; }
+.theme-wow .decor .wow-btn.friends { display: none; }
+.theme-wow .decor .wow-btn.speaker { top: 2px; }
+.theme-wow .decor .wow-btn.bubble { top: 26px; }
+.theme-wow .decor .wow-btn.scroll-up, .theme-wow .decor .wow-btn.scroll-down { display: none; }
+.theme-wow .decor .wow-btn.scroll-end { bottom: -2px; }
 
 /* =====================================================================
    LEAGUE OF LEGENDS (en partida)

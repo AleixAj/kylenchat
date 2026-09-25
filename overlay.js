@@ -120,7 +120,7 @@ function setAvatarImage(el, url) {
 // En WoW es el papel de quien escribe: [Usuario], [Sub], [VIP], [Mod] o [Streamer].
 function channelTag(role) {
   if (settings.themeTag) return settings.themeTag;
-  if (GameThemes.ROLE_TAG_THEMES.has(settings.theme)) return tr(`role_${role}`);
+  if (GameThemes.ROLE_TAG_THEMES.has(settings.theme)) return `${GameThemes.WOW_CHANNEL_NUMBER[role]}. ${tr(`role_${role}`)}`;
   return tr(`themeTag_${settings.theme}`) || '';
 }
 

@@ -168,7 +168,7 @@ function previewLine(theme, [name, role, text]) {
   const byRole = GameThemes.ROLE_TAG_THEMES.has(theme);
   const who = GameThemes.roleOf(new Set(role ? [role] : []));
   if (byRole) el.classList.add(`ch-${who}`);
-  const tag = byRole ? tr(`role_${who}`) : tr(`themeTag_${theme}`);
+  const tag = byRole ? `${GameThemes.WOW_CHANNEL_NUMBER[who]}. ${tr(`role_${who}`)}` : tr(`themeTag_${theme}`);
   const color = GameThemes.nameColor(theme, name.toLowerCase(), new Set(role ? [role] : []));
   if (GameThemes.TIME_THEMES.has(theme)) {
     const time = document.createElement('span');
