@@ -147,7 +147,7 @@ In the **Games** tab you pick a style, with a preview of each one:
 - **LoL**: very dark blue box with a gold border, `[All] Name: text` and names in blue and red like the two teams.
 - **Valorant**: dark square-cornered box, DIN-style font, `(All) Name: text` and names in teal and red.
 - **Minecraft**: black strips per line, pixel font and `<Name> text`.
-- **CS2**: black box with a frame, `[ALL] Name @Twitch: text`, names in blue and yellow like the two sides, and a "Say to all" box with "SEND".
+- **CS2**: black box with a frame, `[ALL] Name @Sub: text` (the role goes where the game shows the location), names in blue and yellow like the two sides, and a "Say to all" box with "SEND".
 - **Overwatch 2**: rounded navy box, an orange diamond before each line, `[Name]: text` in orange and a "[Match]: PRESS TAB TO CYCLE CHANNELS" box.
 - **Fortnite**: rounded gray panel, pill-shaped tabs, each person's Twitch profile picture in a circle and an input box with a white border.
 - **Rust**: no box, bold narrow font with a black outline, square Twitch profile picture, `[Global] Name: text` and an olive green input bar.

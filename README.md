@@ -147,7 +147,7 @@ En la pestaña **Juegos** eliges el estilo con una vista previa de cada uno:
 - **LoL**: recuadro azul muy oscuro con borde dorado, `[Todos] Nombre: texto` y nombres en azul y rojo como los dos equipos.
 - **Valorant**: recuadro oscuro de esquinas rectas, letra tipo DIN, `(Todos) Nombre: texto` y nombres en turquesa y rojo.
 - **Minecraft**: franjas negras por línea, letra pixelada y `<Nombre> texto`.
-- **CS2**: recuadro negro con marco, `[TODOS] Nombre @Twitch: texto`, nombres en azul y amarillo como los dos bandos, y casilla "Decir a todos" con "ENVIAR".
+- **CS2**: recuadro negro con marco, `[TODOS] Nombre @Sub: texto` (el papel va donde el juego pone la ubicación), nombres en azul y amarillo como los dos bandos, y casilla "Decir a todos" con "ENVIAR".
 - **Overwatch 2**: recuadro azul marino redondeado, rombo naranja delante de cada línea, `[Nombre]: texto` en naranja y casilla "[Partida]: PULSA TAB PARA CAMBIAR DE CANAL".
 - **Fortnite**: panel gris redondeado, pestañas en forma de píldora, foto de perfil de Twitch de cada persona en redondo y casilla con borde blanco.
 - **Rust**: sin recuadro, letra negrita estrecha con contorno negro, foto de perfil de Twitch en cuadrado, `[Global] Nombre: texto` y barra verde oliva para escribir.

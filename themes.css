@@ -119,43 +119,43 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-wow .wow-btn.bubble { bottom: 0; }
 
 /* =====================================================================
-   LEAGUE OF LEGENDS (en partida, con el chat abierto)
-   - Recuadro azul muy oscuro con borde dorado fino y casilla de escribir abajo con "[Todos]".
-   - "[Todos] Nombre: texto", nombres en azul (aliados) y rojo (enemigos), texto crema.
+   LEAGUE OF LEGENDS (en partida)
+   - Fondo oscuro translúcido, sin bordes. Cada línea empieza con la hora ("08:23").
+   - "[Todos] Nombre (Sub): texto": etiqueta, nombre y papel (donde el juego pone el campeón) en
+     el color del equipo (azul aliados, rojo enemigos) y el mensaje en blanco crema.
+   - Avisos del juego en naranja. Casilla de escribir abajo con "[Todos]".
    ===================================================================== */
 .theme-lol { --ff: "Inter"; }
-.theme-lol :is(#chat, .frame) {
-  background: var(--bg);
-  border: 1px solid #785A28; border-bottom: 0;
-  padding: 4px 8px;
-}
+.theme-lol :is(#chat, .frame) { background: var(--bg); padding: 4px 8px; gap: 0; }
 .theme-lol .msg {
-  font-family: "Inter", "Segoe UI", sans-serif; font-weight: 500; letter-spacing: .005em;
-  color: var(--color); text-shadow: 0 1px 1px rgba(0, 0, 0, .9);
+  font-family: "Inter", "Segoe UI", sans-serif; font-weight: 500; letter-spacing: .005em; line-height: 1.35;
+  color: var(--color); text-shadow: 0 1px 1px rgba(0, 0, 0, .95), 0 0 2px rgba(0, 0, 0, .8);
 }
-.theme-lol .chan { color: #F0E6D2; }
+/* La hora de LoL va sin corchetes */
+.theme-lol .time { opacity: 1; color: var(--color); margin-right: 6px; }
+.theme-lol .time::before, .theme-lol .time::after { content: none; }
 .theme-lol .chan::before { content: "["; }
 .theme-lol .chan::after { content: "]"; }
-.theme-lol .name { font-weight: 600; }
-.theme-lol .msg.mention { box-shadow: inset 2px 0 0 #C8AA6E; background: linear-gradient(90deg, rgba(200, 170, 110, .22), transparent 70%); }
-.theme-lol .msg.notice { color: #C8AA6E; }
-.theme-lol .msg.notice .notice-title { font-weight: 600; }
-.theme-lol .msg.system { color: #A09B8C; }
-.theme-lol .pill { color: #C8AA6E; }
-.theme-lol .pill-bits { color: #CDBE91; }
+.theme-lol .name { font-weight: 500; }
+/* Donde el juego pone el campeón va el papel de quien escribe: (Usuario), (Sub), (VIP), (Mod)... */
+.theme-lol .name::after { content: "\00a0(" attr(data-role) ")"; }
+.theme-lol .msg.mention { background: linear-gradient(90deg, rgba(235, 160, 59, .22), transparent 75%); }
+.theme-lol .msg.notice, .theme-lol .msg.system { color: #EBA03B; }
+.theme-lol .msg.notice .notice-title { font-weight: 500; }
+.theme-lol .pill { color: #EBA03B; }
+.theme-lol .pill-bits { color: #E8584A; }
 .theme-lol :is(#bar, .bar) {
-  background: linear-gradient(180deg, rgba(1, 10, 19, .95), rgba(1, 10, 19, .85));
-  border: 1px solid #785A28; border-bottom-color: #463714; border-radius: 0;
+  background: rgba(11, 15, 20, .75); border-radius: 0;
   font: 400 11.5px "Marcellus", serif; letter-spacing: .12em; text-transform: uppercase; color: #C8AA6E; text-shadow: none;
 }
 .theme-lol :is(#barViewers, #barChannel) { color: #A09B8C; font-weight: 400; letter-spacing: .06em; }
 .theme-lol :is(#bar, .bar) img { filter: sepia(1) saturate(1.5) hue-rotate(5deg) brightness(.9); }
 .theme-lol .lol-input {
   height: 26px; padding: 0 8px;
-  background: rgba(1, 10, 19, .9); border: 1px solid #785A28; box-shadow: inset 0 0 0 1px rgba(200, 170, 110, .12);
+  background: rgba(11, 15, 20, .85); box-shadow: inset 0 0 0 1px rgba(160, 155, 140, .25);
   font: 500 calc(var(--fs) * .9) "Inter", sans-serif; color: rgba(240, 230, 210, .45);
 }
-.theme-lol .lol-input .input-tag { color: #C8AA6E; }
+.theme-lol .lol-input .input-tag { color: #5AAFF0; }
 .decor .lol-input { height: 20px; }
 
 /* =====================================================================
@@ -174,6 +174,8 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-valorant .chan::before { content: "("; }
 .theme-valorant .chan::after { content: ")"; }
 .theme-valorant .name { font-weight: 700; }
+/* Donde el juego pone el agente va el papel de quien escribe: "Nombre (Sub)" */
+.theme-valorant .name::after { content: "\00a0(" attr(data-role) ")"; }
 .theme-valorant .msg.mention { background: linear-gradient(90deg, rgba(255, 70, 85, .28), transparent 75%); }
 /* Los avisos del sistema de Valorant ("(Broadcast)", "(System)") van en amarillo */
 .theme-valorant .msg.notice { color: #EEDC6B; }
@@ -244,8 +246,8 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 /* =====================================================================
    COUNTER-STRIKE 2
    - Recuadro negro translúcido con un marco algo más claro alrededor.
-   - "[TODOS] Nombre @Twitch: texto" en letra negrita cuadrada; nombres en azul (CT) y amarillo (T),
-     la ubicación en verde, avisos del sistema en dorado.
+   - "[TODOS] Nombre @Sub: texto" en letra negrita cuadrada; nombres en azul (CT) y amarillo (T),
+     el papel en verde donde el juego pone la ubicación, avisos del sistema en dorado.
    - Casilla de escribir abajo con "Decir a todos" y "ENVIAR".
    ===================================================================== */
 .theme-cs2 { --ff: "Rajdhani"; }
@@ -262,7 +264,8 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-cs2 .chan::before { content: "["; }
 .theme-cs2 .chan::after { content: "]"; }
 .theme-cs2 .name { font-weight: 700; }
-.theme-cs2 .name::after { content: "\00a0@Twitch"; color: #6BE36B; }
+/* Donde el juego pone la ubicación (en verde) va el papel de quien escribe: "Nombre @Mod" */
+.theme-cs2 .name::after { content: "\00a0@" attr(data-role); color: #6BE36B; }
 .theme-cs2 .name.painted::after { -webkit-text-fill-color: #6BE36B; }
 .theme-cs2 .msg.mention { background: linear-gradient(90deg, rgba(232, 184, 74, .25), transparent 75%); }
 .theme-cs2 .msg.notice, .theme-cs2 .msg.system { color: #EAB94E; }
@@ -424,3 +427,12 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 /* Foto de perfil de Twitch en el avatar (Fortnite, Rust): cuando llega, sustituye a la inicial */
 .themed .avatar { background-size: cover; background-position: center; }
 .themed .avatar.has-img { color: transparent; text-shadow: none; }
+
+/* Rango delante del nombre: "[VIP] <Nombre>" en Minecraft (como en los servidores) y "[Mod] Nombre"
+   como etiqueta de clan en Rust */
+.themed .rank { margin-right: 4px; }
+.themed .rank::before { content: "["; }
+.themed .rank::after { content: "]"; }
+.theme-minecraft .rank { color: #FFAA00; text-shadow: .12em .12em 0 #2A2A00; }
+.theme-minecraft .msg.r-moderator .rank { color: #55FFFF; text-shadow: .12em .12em 0 #153F3F; }
+.theme-minecraft .msg.r-broadcaster .rank { color: #FF5555; text-shadow: .12em .12em 0 #3F1515; }

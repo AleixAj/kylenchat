@@ -562,6 +562,7 @@
     es: {
       '1.4.0': [
         'Estilos de juegos (pestaña Juegos): el chat con el aspecto del de WoW, LoL, Valorant, Minecraft, CS2, Overwatch 2, Fortnite o Rust, con su letra, sus colores, su formato y sus detalles. Se pueden personalizar y los detalles se pueden ocultar.',
+        'El tipo de usuario (Sub, VIP, Mod…) sale en cada estilo donde el juego tiene un hueco parecido, y la ventana de ajustes es algo más grande.',
       ],
       '1.3.2': [
         'Zona del canal más compacta: el ojo para ocultar la ventana va junto a Conectar, y "+ Añadir otro chat" abre la casilla solo cuando la necesitas.',
@@ -617,6 +618,7 @@
     en: {
       '1.4.0': [
         'Game styles (Games tab): your chat with the look of WoW, LoL, Valorant, Minecraft, CS2, Overwatch 2, Fortnite or Rust, with their font, colors, format and details. They can be customized and the details can be hidden.',
+        'The user type (Sub, VIP, Mod…) shows in each style wherever the game has a similar spot, and the settings window is a bit bigger.',
       ],
       '1.3.2': [
         'More compact channel area: the eye to hide the window sits next to Connect, and "+ Add another chat" opens the field only when you need it.',

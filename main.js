@@ -573,9 +573,10 @@ function createPanel() {
     checkForUpdatesSoon();
     return;
   }
+  const { workArea } = screen.getPrimaryDisplay();
   panel = new BrowserWindow({
-    width: 460,
-    height: 860,
+    width: 520,
+    height: Math.min(940, workArea.height - 20),
     title: tr('panelTitle'),
     icon: APP_ICON,
     autoHideMenuBar: true,

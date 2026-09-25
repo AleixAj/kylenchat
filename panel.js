@@ -169,22 +169,38 @@ function previewLine(theme, [name, role, text]) {
   const who = GameThemes.roleOf(new Set(role ? [role] : []));
   if (byRole) el.classList.add(`ch-${who}`);
   const tag = byRole ? tr(`role_${who}`) : tr(`themeTag_${theme}`);
+  const color = GameThemes.nameColor(theme, name.toLowerCase(), new Set(role ? [role] : []));
+  if (GameThemes.TIME_THEMES.has(theme)) {
+    const time = document.createElement('span');
+    time.className = 'time';
+    time.textContent = `08:${String(21 + name.length).padStart(2, '0')}`;
+    el.append(time);
+  }
   if (tag) {
     const chan = document.createElement('span');
     chan.className = 'chan';
     chan.textContent = tag;
+    if (GameThemes.TAG_LIKE_NAME_THEMES.has(theme)) chan.style.color = color;
     el.append(chan);
   }
   const nameEl = document.createElement('span');
   nameEl.className = 'name';
   nameEl.textContent = name;
-  nameEl.style.color = GameThemes.nameColor(theme, name.toLowerCase(), new Set(role ? [role] : []));
+  nameEl.style.color = color;
+  nameEl.dataset.role = tr(`role_${who}`);
   const sep = document.createElement('span');
   sep.className = 'sep';
   sep.textContent = ': ';
   const textEl = document.createElement('span');
   textEl.className = 'text';
   textEl.textContent = text;
+  if (who !== 'user' && GameThemes.RANK_THEMES.has(theme)) {
+    const rank = document.createElement('span');
+    rank.className = 'rank';
+    rank.textContent = tr(`role_${who}`);
+    if (theme === 'rust') rank.style.color = color;
+    el.append(rank);
+  }
   el.append(nameEl, sep, textEl);
   const avatar = GameThemes.makeAvatar(theme, name);
   if (avatar) el.prepend(avatar);

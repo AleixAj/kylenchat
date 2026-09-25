@@ -12,9 +12,9 @@
       roles: { broadcaster: '#FF8000', moderator: '#A335EE' },
     },
     lol: {
-      look: { fontFamily: 'Inter', fontSize: 14, bold: false, textColor: '#F0E6D2', bgColor: '#010A13', bgOpacity: 72, outline: false, barColor: '#C8AA6E', emoteScale: 1.4 },
-      names: ['#4FA3FF', '#E84057'], // aliados y enemigos
-      roles: { broadcaster: '#C8AA6E', moderator: '#0AC8B9' },
+      look: { fontFamily: 'Inter', fontSize: 14, bold: false, textColor: '#F0E6D2', bgColor: '#0B0F14', bgOpacity: 55, outline: false, barColor: '#C8AA6E', emoteScale: 1.4 },
+      names: ['#5AAFF0', '#E8584A'], // aliados y enemigos
+      roles: { broadcaster: '#EBA03B', moderator: '#5AAFF0' },
     },
     valorant: {
       look: { fontFamily: 'D-DIN', fontSize: 15, bold: false, textColor: '#ECE8E1', bgColor: '#0F1923', bgOpacity: 65, outline: false, barColor: '#FF4655', emoteScale: 1.4 },
@@ -76,6 +76,15 @@
   // Estilos en los que la etiqueta del canal es el papel de quien escribe (como los canales de
   // WoW: [Hermandad], [Grupo]...). La línea mantiene su color; solo el nombre va coloreado.
   const ROLE_TAG_THEMES = new Set(['wow']);
+
+  // Estilos en los que cada línea empieza con la hora (como el reloj de partida de LoL).
+  const TIME_THEMES = new Set(['lol']);
+  // Estilos en los que la etiqueta del canal va del mismo color que el nombre ("[Team] Nombre").
+  const TAG_LIKE_NAME_THEMES = new Set(['lol', 'rust']);
+  // Estilos que ponen el papel como rango delante del nombre ("[VIP] <Nombre>" en Minecraft,
+  // "[Mod] Nombre" como etiqueta de clan en Rust). Solo si tiene papel: sin "[Usuario]" en cada línea.
+  const RANK_THEMES = new Set(['minecraft', 'rust']);
+  // (LoL y Valorant lo ponen donde va el campeón o agente, y CS2 donde va la ubicación: eso va en themes.css)
 
   // Iconos de los botones decorativos de WoW, dibujados para la app (no son los del juego).
   const ICONS = {
@@ -154,5 +163,5 @@
     return a;
   }
 
-  root.GameThemes = { THEMES: Object.keys(GAME_THEMES), GAME_THEMES, nameColor, roleOf, ROLE_TAG_THEMES, buildDecor, makeAvatar };
+  root.GameThemes = { THEMES: Object.keys(GAME_THEMES), GAME_THEMES, nameColor, roleOf, ROLE_TAG_THEMES, TIME_THEMES, TAG_LIKE_NAME_THEMES, RANK_THEMES, buildDecor, makeAvatar };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -147,7 +147,7 @@ A la pestanya **Juegos** (Jocs) tries l'estil amb una previsualització de cadas
 - **LoL**: requadre blau molt fosc amb vora daurada, `[Todos] Nom: text` i noms en blau i vermell com els dos equips.
 - **Valorant**: requadre fosc de cantonades rectes, lletra tipus DIN, `(Todos) Nom: text` i noms en turquesa i vermell.
 - **Minecraft**: franges negres per línia, lletra pixelada i `<Nom> text`.
-- **CS2**: requadre negre amb marc, `[TODOS] Nom @Twitch: text`, noms en blau i groc com els dos bàndols, i casella "Decir a todos" amb "ENVIAR".
+- **CS2**: requadre negre amb marc, `[TODOS] Nom @Sub: text` (el paper va on el joc posa la ubicació), noms en blau i groc com els dos bàndols, i casella "Decir a todos" amb "ENVIAR".
 - **Overwatch 2**: requadre blau marí arrodonit, rombe taronja davant de cada línia, `[Nom]: text` en taronja i casella "[Partida]: PULSA TAB PARA CAMBIAR DE CANAL".
 - **Fortnite**: panell gris arrodonit, pestanyes en forma de píndola, foto de perfil de Twitch de cada persona en rodó i casella amb vora blanca.
 - **Rust**: sense requadre, lletra negreta estreta amb contorn negre, foto de perfil de Twitch en quadrat, `[Global] Nom: text` i barra verd oliva per escriure.

@@ -854,6 +854,7 @@ function fillMessage(el, msg) {
   const nameEl = document.createElement('span');
   nameEl.className = 'name';
   nameEl.textContent = name;
+  nameEl.dataset.role = tr(`role_${GameThemes.roleOf(roles)}`); // LoL lo pone como campeón: "Nombre (Sub)"
   if (themed && settings.themeGameColors) nameEl.style.color = GameThemes.nameColor(settings.theme, msg.user || name, roles);
   else if (settings.userColors) nameEl.style.color = readable(color || colorFor(name));
   if (msg.userId) {
@@ -872,10 +873,11 @@ function fillMessage(el, msg) {
     reply.textContent = `↪ ${tr('replyingTo', { name: msg.reply.name })}: ${msg.reply.body}`;
     el.append(reply);
   }
-  if (settings.timestamps) {
+  if (settings.timestamps || (themed && GameThemes.TIME_THEMES.has(settings.theme))) {
     const time = document.createElement('span');
     time.className = 'time';
-    time.textContent = new Date().toLocaleTimeString(settings.language, { hour: '2-digit', minute: '2-digit' });
+    // En los estilos de juegos, reloj de 24 h como en las partidas (08:23, no 8:23 AM)
+    time.textContent = new Date().toLocaleTimeString(settings.language, { hour: '2-digit', minute: '2-digit', hour12: themed ? false : undefined });
     el.append(time);
   }
   // Avatar con la inicial (Fortnite, Rust)
@@ -890,6 +892,7 @@ function fillMessage(el, msg) {
     const chan = document.createElement('span');
     chan.className = 'chan';
     chan.textContent = tag;
+    if (GameThemes.TAG_LIKE_NAME_THEMES.has(settings.theme) && nameEl.style.color) chan.style.color = nameEl.style.color;
     el.append(chan);
   }
   if (msg.first && settings.highlightFirst) el.append(pill('first', tr('firstMessage')));
@@ -901,6 +904,14 @@ function fillMessage(el, msg) {
   }
   if (msg.sourceRoom) el.append(channelIcon(msg.sourceRoom));
   if (settings.showBadges && msg.badges) el.append(...badgeIcons(msg.badges));
+  // Rango delante del nombre (Minecraft, Rust), solo para Sub, VIP, Mod y Streamer
+  if (themed && role !== 'user' && GameThemes.RANK_THEMES.has(settings.theme)) {
+    const rank = document.createElement('span');
+    rank.className = 'rank';
+    rank.textContent = tr(`role_${role}`);
+    if (settings.theme === 'rust' && nameEl.style.color) rank.style.color = nameEl.style.color;
+    el.append(rank);
+  }
   const sep = document.createElement('span');
   sep.className = 'sep';
   sep.textContent = action ? ' ' : ': ';
