@@ -203,7 +203,11 @@ function previewLine(theme, [name, role, text]) {
   }
   el.append(nameEl, sep, textEl);
   const avatar = GameThemes.makeAvatar(theme, name);
-  if (avatar) el.prepend(avatar);
+  if (avatar) {
+    avatar.style.backgroundImage = `url("${GameThemes.samplePicture(name)}")`;
+    avatar.classList.add('has-img');
+    el.prepend(avatar);
+  }
   return el;
 }
 

@@ -197,6 +197,17 @@
   }
 
   // Avatar con la inicial de quien escribe (Fortnite: redondo y de color; Rust: cuadrado y negro).
+  // Fotos por defecto de Twitch (siluetas de colores) para los usuarios inventados del modo prueba
+  // y de la vista previa: siempre la misma para cada nombre.
+  const SAMPLE_PICTURES = [
+    '215b7342-def9-11e9-9a66-784f43822e80', 'ce57700a-def9-11e9-842d-784f43822e80', 'ebe4cd89-b4f4-4cd9-adac-2f30151b4209',
+    '75305d54-c7cc-40d1-bb9c-91fbe85943c7', '294c98b5-e34d-42cd-a8f0-140b72fba9b0', '998f01ae-def8-11e9-b95c-784f43822e80',
+  ].map((id) => `https://static-cdn.jtvnw.net/user-default-pictures-uv/${id}-profile_image-70x70.png`);
+
+  function samplePicture(name) {
+    return SAMPLE_PICTURES[hashIndex(String(name).toLowerCase(), SAMPLE_PICTURES.length)];
+  }
+
   function makeAvatar(theme, name) {
     if (!AVATAR_THEMES.has(theme)) return null;
     const a = document.createElement('span');
@@ -207,5 +218,5 @@
     return a;
   }
 
-  root.GameThemes = { THEMES: Object.keys(GAME_THEMES), GAME_THEMES, nameColor, roleOf, ROLE_TAG_THEMES, TIME_THEMES, TAG_LIKE_NAME_THEMES, RANK_THEMES, WOW_CHANNEL_NUMBER, buildDecor, makeAvatar, makeBadge };
+  root.GameThemes = { THEMES: Object.keys(GAME_THEMES), GAME_THEMES, nameColor, roleOf, ROLE_TAG_THEMES, TIME_THEMES, TAG_LIKE_NAME_THEMES, RANK_THEMES, WOW_CHANNEL_NUMBER, buildDecor, makeAvatar, makeBadge, samplePicture };
 })(typeof window !== 'undefined' ? window : globalThis);

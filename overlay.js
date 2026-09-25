@@ -885,7 +885,8 @@ function fillMessage(el, msg) {
   const avatar = themed ? GameThemes.makeAvatar(settings.theme, name) : null;
   if (avatar) {
     el.prepend(avatar);
-    wantAvatar(msg.userId, avatar);
+    if (msg.userId && msg.userId !== 'demo-paint') wantAvatar(msg.userId, avatar);
+    else if (testMode) setAvatarImage(avatar, GameThemes.samplePicture(name)); // usuarios inventados: foto por defecto de Twitch
   }
   // Etiqueta del canal de los estilos de juegos: "[Usuario]", "[Todos]"...
   const tag = themed ? channelTag(role) : '';
