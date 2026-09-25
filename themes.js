@@ -150,7 +150,7 @@
     a.className = 'avatar';
     const letters = Array.from(String(name).replace(/^[^\p{L}\p{N}]+/u, ''));
     a.textContent = (letters[0] || '?').toUpperCase();
-    if (theme === 'fortnite') a.style.background = AVATAR_COLORS[hashIndex(String(name).toLowerCase(), AVATAR_COLORS.length)];
+    if (theme === 'fortnite') a.style.backgroundColor = AVATAR_COLORS[hashIndex(String(name).toLowerCase(), AVATAR_COLORS.length)];
     return a;
   }
 

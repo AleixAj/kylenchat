@@ -149,8 +149,8 @@ A la pestanya **Juegos** (Jocs) tries l'estil amb una previsualització de cadas
 - **Minecraft**: franges negres per línia, lletra pixelada i `<Nom> text`.
 - **CS2**: requadre negre amb marc, `[TODOS] Nom @Twitch: text`, noms en blau i groc com els dos bàndols, i casella "Decir a todos" amb "ENVIAR".
 - **Overwatch 2**: requadre blau marí arrodonit, rombe taronja davant de cada línia, `[Nom]: text` en taronja i casella "[Partida]: PULSA TAB PARA CAMBIAR DE CANAL".
-- **Fortnite**: panell gris arrodonit, pestanyes en forma de píndola, avatar rodó de color amb la inicial de cada persona i casella amb vora blanca.
-- **Rust**: sense requadre, lletra negreta estreta amb contorn negre, avatar quadrat, `[Global] Nom: text` i barra verd oliva per escriure.
+- **Fortnite**: panell gris arrodonit, pestanyes en forma de píndola, foto de perfil de Twitch de cada persona en rodó i casella amb vora blanca.
+- **Rust**: sense requadre, lletra negreta estreta amb contorn negre, foto de perfil de Twitch en quadrat, `[Global] Nom: text` i barra verd oliva per escriure.
 
 A sota pots canviar el color del text, la mida, l'opacitat del fons, si els noms fan servir els colors del joc o els de Twitch, el text de l'etiqueta del canal i si es veuen els **detalls del joc** (botons, pestanyes i casella d'escriure). Són només decoratius: no es poden prémer i els clics continuen travessant el xat.
 

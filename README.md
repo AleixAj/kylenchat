@@ -149,8 +149,8 @@ En la pestaña **Juegos** eliges el estilo con una vista previa de cada uno:
 - **Minecraft**: franjas negras por línea, letra pixelada y `<Nombre> texto`.
 - **CS2**: recuadro negro con marco, `[TODOS] Nombre @Twitch: texto`, nombres en azul y amarillo como los dos bandos, y casilla "Decir a todos" con "ENVIAR".
 - **Overwatch 2**: recuadro azul marino redondeado, rombo naranja delante de cada línea, `[Nombre]: texto` en naranja y casilla "[Partida]: PULSA TAB PARA CAMBIAR DE CANAL".
-- **Fortnite**: panel gris redondeado, pestañas en forma de píldora, avatar redondo de color con la inicial de cada persona y casilla con borde blanco.
-- **Rust**: sin recuadro, letra negrita estrecha con contorno negro, avatar cuadrado, `[Global] Nombre: texto` y barra verde oliva para escribir.
+- **Fortnite**: panel gris redondeado, pestañas en forma de píldora, foto de perfil de Twitch de cada persona en redondo y casilla con borde blanco.
+- **Rust**: sin recuadro, letra negrita estrecha con contorno negro, foto de perfil de Twitch en cuadrado, `[Global] Nombre: texto` y barra verde oliva para escribir.
 
 Debajo puedes cambiar el color del texto, el tamaño, la opacidad del fondo, si los nombres usan los colores del juego o los de Twitch, el texto de la etiqueta del canal y si se ven los **detalles del juego** (botones, pestañas y casilla de escribir). Son solo decorativos: no se pueden pulsar y los clics siguen atravesando el chat.
 

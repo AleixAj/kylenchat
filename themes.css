@@ -426,3 +426,7 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .no-decor #decor { display: none; }
 .no-decor.themed #chat { bottom: 0; }
 .theme-wow.no-decor #chat, .theme-wow.no-decor #bar { left: 0; }
+
+/* Foto de perfil de Twitch en el avatar (Fortnite, Rust): cuando llega, sustituye a la inicial */
+.themed .avatar { background-size: cover; background-position: center; }
+.themed .avatar.has-img { color: transparent; text-shadow: none; }

@@ -149,8 +149,8 @@ In the **Games** tab you pick a style, with a preview of each one:
 - **Minecraft**: black strips per line, pixel font and `<Name> text`.
 - **CS2**: black box with a frame, `[ALL] Name @Twitch: text`, names in blue and yellow like the two sides, and a "Say to all" box with "SEND".
 - **Overwatch 2**: rounded navy box, an orange diamond before each line, `[Name]: text` in orange and a "[Match]: PRESS TAB TO CYCLE CHANNELS" box.
-- **Fortnite**: rounded gray panel, pill-shaped tabs, a round colored avatar with each person's initial and an input box with a white border.
-- **Rust**: no box, bold narrow font with a black outline, square avatar, `[Global] Name: text` and an olive green input bar.
+- **Fortnite**: rounded gray panel, pill-shaped tabs, each person's Twitch profile picture in a circle and an input box with a white border.
+- **Rust**: no box, bold narrow font with a black outline, square Twitch profile picture, `[Global] Name: text` and an olive green input bar.
 
 Below you can change the text color, size, background opacity, whether names use the game's colors or Twitch's, the channel tag text and whether the **game details** (buttons, tabs and input box) are shown. They're decorative only: they can't be clicked and clicks still go through the chat.
 

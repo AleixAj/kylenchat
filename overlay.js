@@ -55,6 +55,67 @@ const { THEMES } = GameThemes;
 
 let lastDecor = '';
 
+// ---------- Fotos de perfil (estilos con avatar: Fortnite, Rust) ----------
+// Mientras llega la foto se ve la inicial. Las fotos que faltan se piden juntas a Twitch
+// (hasta 100 por consulta, la misma que usa su web) y se recuerdan: cada persona, una sola vez.
+const AVATAR_QUERY = 'query($ids:[ID!]){users(ids:$ids){id profileImageURL(width:70)}}';
+const avatarCache = new Map(); // id de usuario -> dirección de la foto ('' si no tiene o no se pudo)
+const avatarWaiting = new Map(); // id de usuario -> avatares que esperan su foto
+let avatarTimer = null;
+
+function wantAvatar(userId, el) {
+  if (!/^\d{1,20}$/.test(userId || '')) return;
+  const url = avatarCache.get(userId);
+  if (url !== undefined) {
+    if (url) setAvatarImage(el, url);
+    return;
+  }
+  if (!avatarWaiting.has(userId)) avatarWaiting.set(userId, []);
+  avatarWaiting.get(userId).push(el);
+  if (!avatarTimer) avatarTimer = setTimeout(fetchAvatars, 300); // junta los de varios mensajes
+}
+
+async function fetchAvatars() {
+  avatarTimer = null;
+  const ids = [...avatarWaiting.keys()].slice(0, 100);
+  if (!ids.length) return;
+  let users = null;
+  try {
+    const res = await fetch('https://gql.twitch.tv/gql', {
+      method: 'POST',
+      headers: { 'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: AVATAR_QUERY, variables: { ids } }),
+    });
+    const body = await res.json();
+    users = body && body.data && body.data.users;
+  } catch { /* sin conexión: se queda la inicial y se reintenta con los siguientes mensajes */ }
+  if (Array.isArray(users)) {
+    if (avatarCache.size > 3000) avatarCache.clear(); // tope de memoria en directos muy largos
+    for (const id of ids) avatarCache.set(id, '');
+    for (const u of users) {
+      const url = u && u.profileImageURL;
+      if (typeof url === 'string' && /^https:\/\/static-cdn\.jtvnw\.net\/[\w\-./]+$/.test(url)) avatarCache.set(String(u.id), url);
+    }
+  }
+  for (const id of ids) {
+    const els = avatarWaiting.get(id) || [];
+    avatarWaiting.delete(id);
+    const url = avatarCache.get(id);
+    if (url) for (const el of els) setAvatarImage(el, url);
+  }
+  if (avatarWaiting.size) avatarTimer = setTimeout(fetchAvatars, 300);
+}
+
+// La foto se pone cuando ya ha cargado, para no ver un hueco en blanco.
+function setAvatarImage(el, url) {
+  const img = new Image();
+  img.onload = () => {
+    el.style.backgroundImage = `url("${url}")`;
+    el.classList.add('has-img');
+  };
+  img.src = url;
+}
+
 // Texto de la etiqueta del canal: el que haya puesto el usuario o el de cada juego.
 // En WoW es el papel de quien escribe: [Usuario], [Sub], [VIP], [Mod] o [Streamer].
 function channelTag(role) {
@@ -819,7 +880,10 @@ function fillMessage(el, msg) {
   }
   // Avatar con la inicial (Fortnite, Rust)
   const avatar = themed ? GameThemes.makeAvatar(settings.theme, name) : null;
-  if (avatar) el.prepend(avatar);
+  if (avatar) {
+    el.prepend(avatar);
+    wantAvatar(msg.userId, avatar);
+  }
   // Etiqueta del canal de los estilos de juegos: "[Usuario]", "[Todos]"...
   const tag = themed ? channelTag(role) : '';
   if (tag) {
