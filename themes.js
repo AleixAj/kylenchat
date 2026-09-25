@@ -18,7 +18,7 @@
     },
     valorant: {
       look: { fontFamily: 'D-DIN', fontSize: 15, bold: false, textColor: '#ECE8E1', bgColor: '#0F1923', bgOpacity: 65, outline: false, barColor: '#FF4655', emoteScale: 1.4 },
-      names: ['#5AD4C4', '#FF4655'], // aliados y enemigos
+      names: ['#5CD6CE', '#FF5A67'], // aliados y enemigos
       roles: { broadcaster: '#F2C94C', moderator: '#B9A0FF' },
     },
     minecraft: {
@@ -52,6 +52,41 @@
   const AVATAR_COLORS = ['#E8505B', '#F29E4C', '#EFD65F', '#58C08E', '#3FA7D6', '#7B68EE', '#D96AC6', '#4DD0C8'];
   const AVATAR_THEMES = new Set(['fortnite', 'rust']);
 
+  // Insignias de las tarjetas del panel: el logo de cada juego (assets/games) sobre su color.
+  // Los logos son marcas de sus dueños; los SVG vienen de Simple Icons (CC0) y de Wikimedia Commons.
+  // WoW no tiene un logo libre fiable, así que lleva una "W" con su dorado.
+  const BADGES = {
+    wow: { text: 'W', font: '400 17px "Marcellus", serif', color: '#FFD100', bg: 'linear-gradient(160deg, #5c2412, #1e0d06)', border: '#A0582A' },
+    lol: { img: 'leagueoflegends', bg: 'linear-gradient(160deg, #0a1a2a, #010a13)', border: '#785A28' },
+    valorant: { img: 'valorant', bg: '#FF4655', border: '#FF4655' },
+    minecraft: { img: 'minecraft', bg: '#1E1E1E', border: '#3C8527' },
+    cs2: { img: 'counterstrike', bg: '#0C0F12', border: '#3a3a3a' },
+    overwatch: { img: 'overwatch', bg: '#FFFFFF', border: '#FFFFFF' },
+    fortnite: { img: 'fortnite', bg: 'linear-gradient(135deg, #7B3FF2, #29A8FF)', border: '#7B3FF2' },
+    rust: { img: 'rust', bg: '#1C1C1C', border: '#CD412B', wide: true },
+  };
+
+  function makeBadge(theme) {
+    const b = BADGES[theme];
+    const el = document.createElement('span');
+    el.className = 'game-badge';
+    if (!b) return el;
+    if (b.wide) el.classList.add('wide');
+    el.style.background = b.bg;
+    el.style.borderColor = b.border;
+    if (b.img) {
+      const img = document.createElement('img');
+      img.src = `assets/games/${b.img}.svg`;
+      img.alt = '';
+      el.append(img);
+    } else {
+      el.textContent = b.text;
+      el.style.font = b.font;
+      el.style.color = b.color;
+    }
+    return el;
+  }
+
   function hashIndex(text, n) {
     let h = 0;
     for (const ch of String(text)) h = (h * 31 + ch.codePointAt(0)) >>> 0;
@@ -80,7 +115,7 @@
   // Estilos en los que cada línea empieza con la hora (como el reloj de partida de LoL).
   const TIME_THEMES = new Set(['lol']);
   // Estilos en los que la etiqueta del canal va del mismo color que el nombre ("[Team] Nombre").
-  const TAG_LIKE_NAME_THEMES = new Set(['lol', 'rust']);
+  const TAG_LIKE_NAME_THEMES = new Set(['lol', 'rust', 'valorant']);
   // Estilos que ponen el papel como rango delante del nombre ("[VIP] <Nombre>" en Minecraft,
   // "[Mod] Nombre" como etiqueta de clan en Rust). Solo si tiene papel: sin "[Usuario]" en cada línea.
   const RANK_THEMES = new Set(['minecraft', 'rust']);
@@ -172,5 +207,5 @@
     return a;
   }
 
-  root.GameThemes = { THEMES: Object.keys(GAME_THEMES), GAME_THEMES, nameColor, roleOf, ROLE_TAG_THEMES, TIME_THEMES, TAG_LIKE_NAME_THEMES, RANK_THEMES, WOW_CHANNEL_NUMBER, buildDecor, makeAvatar };
+  root.GameThemes = { THEMES: Object.keys(GAME_THEMES), GAME_THEMES, nameColor, roleOf, ROLE_TAG_THEMES, TIME_THEMES, TAG_LIKE_NAME_THEMES, RANK_THEMES, WOW_CHANNEL_NUMBER, buildDecor, makeAvatar, makeBadge };
 })(typeof window !== 'undefined' ? window : globalThis);

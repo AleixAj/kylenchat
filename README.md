@@ -154,7 +154,7 @@ En la pestaña **Juegos** eliges el estilo con una vista previa de cada uno:
 
 Debajo puedes cambiar el color del texto, el tamaño, la opacidad del fondo, si los nombres usan los colores del juego o los de Twitch, el texto de la etiqueta del canal y si se ven los **detalles del juego** (botones, pestañas y casilla de escribir). Son solo decorativos: no se pueden pulsar y los clics siguen atravesando el chat.
 
-> Inspirados en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite y Rust. No están afiliados a sus creadores (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): las fuentes son libres y parecidas a las originales, y los detalles están dibujados para la app. En WoW se usa Arial Narrow si la tienes instalada.
+> Inspirados en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite y Rust. No están afiliados a sus creadores (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): las fuentes son libres y parecidas a las originales, y los detalles están dibujados para la app. Los logos de las tarjetas son marcas de sus dueños (los SVG vienen de [Simple Icons](https://simpleicons.org/) y de Wikimedia Commons). En WoW se usa Arial Narrow si la tienes instalada.
 
 ### Atajos
 

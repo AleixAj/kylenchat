@@ -143,6 +143,7 @@ function applySettings(s) {
   root.setProperty('--bar-clear', hexToRgba(s.barColor, 0));
   root.setProperty('--emote', String(s.emoteScale));
   document.documentElement.lang = s.language;
+  root.setProperty('--val-broadcast', JSON.stringify(`(${tr('valBroadcast')}) `)); // Valorant: "(Transmisión) aviso"
   document.body.classList.toggle('align-right', s.align === 'right');
   document.body.classList.toggle('newest-top', s.newestOnTop);
   for (const t of THEMES) document.body.classList.toggle(`theme-${t}`, s.theme === t);

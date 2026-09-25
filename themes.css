@@ -189,15 +189,17 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
   font-family: "D-DIN", "DIN Next", "Segoe UI", sans-serif; font-weight: 400; letter-spacing: .01em;
   color: var(--color); text-shadow: 0 1px 2px rgba(0, 0, 0, .7);
 }
-.theme-valorant .chan { color: var(--color); opacity: .85; }
+.theme-valorant .chan { color: var(--color); } /* se pinta del color del nombre: "(Equipo) Nombre:" */
 .theme-valorant .chan::before { content: "("; }
 .theme-valorant .chan::after { content: ")"; }
-.theme-valorant .name { font-weight: 700; }
+.theme-valorant .name { font-weight: 400; }
 /* Donde el juego pone el agente va el papel de quien escribe: "Nombre (Sub)" */
 .theme-valorant .name::after { content: "\00a0(" attr(data-role) ")"; }
 .theme-valorant .msg.mention { background: linear-gradient(90deg, rgba(255, 70, 85, .28), transparent 75%); }
-/* Los avisos del sistema de Valorant ("(Broadcast)", "(System)") van en amarillo */
-.theme-valorant .msg.notice { color: #EEDC6B; }
+/* Los avisos del juego van en amarillo claro con "(Transmisión)" delante */
+.theme-valorant .msg.notice { color: #EDE3A3; }
+.theme-valorant .msg.notice .notice-title { font-weight: 400; }
+.theme-valorant .msg.notice .notice-title::before { content: var(--val-broadcast, "(Broadcast) "); }
 .theme-valorant .msg.system { color: #EEDC6B; opacity: .85; }
 .theme-valorant .pill { color: #EEDC6B; }
 .theme-valorant :is(#bar, .bar) {

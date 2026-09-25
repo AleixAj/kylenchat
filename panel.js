@@ -219,6 +219,7 @@ function renderGameCards() {
       const preview = document.createElement('div');
       preview.className = `game-preview themed theme-${theme}`;
       preview.style.setProperty('--fs', '11px');
+      preview.style.setProperty('--val-broadcast', JSON.stringify(`(${tr('valBroadcast')}) `));
       preview.style.setProperty('--color', look.textColor);
       preview.style.setProperty('--bg', hexToRgba(look.bgColor, look.bgOpacity / 100));
       const bar = document.createElement('div');
@@ -248,11 +249,14 @@ function renderGameCards() {
       preview.append(bar, frame, decor);
       const label = document.createElement('span');
       label.className = 'game-name';
+      const heading = document.createElement('span');
+      heading.className = 'game-title';
       const text = document.createElement('span');
       text.textContent = tr(`game_${theme}`);
+      heading.append(GameThemes.makeBadge(theme), text);
       const check = document.createElement('span');
       check.className = 'game-check';
-      label.append(text, check);
+      label.append(heading, check);
       card.append(preview, label);
       card.addEventListener('click', () => api.setSettings({ ...LOOK_BASE, ...look, theme }));
       return card;

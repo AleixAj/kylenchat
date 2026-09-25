@@ -73,7 +73,17 @@
   .game-card:hover { border-color: #53535f; background: #0e0e10; }
   .game-card.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
   .game-card .game-name { font-weight: 700; font-size: 13px; padding: 0 2px; display: flex; justify-content: space-between; align-items: center; }
-  .game-card .game-check { color: var(--accent-2); font-size: 12px; font-weight: 600; }
+  .game-card .game-check { color: var(--accent-2); font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .game-card .game-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .game-card .game-title > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .game-badge {
+    width: 26px; height: 26px; flex-shrink: 0; box-sizing: border-box; border-radius: 6px; border: 1px solid;
+    display: inline-flex; align-items: center; justify-content: center; letter-spacing: -.02em; line-height: 1;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .45); box-shadow: 0 1px 3px rgba(0, 0, 0, .5);
+  }
+  .game-badge img { width: 70%; height: 70%; object-fit: contain; }
+  .game-badge.wide { width: 62px; }
+  .game-badge.wide img { width: 88%; height: 88%; }
   .game-preview {
     position: relative; height: 104px; overflow: hidden; border-radius: 4px; pointer-events: none;
     background: linear-gradient(135deg, #2b3a2e, #1d2a3a 55%, #3a2a24); /* un "fondo de partida" para ver la transparencia */

@@ -154,7 +154,7 @@ A la pestanya **Juegos** (Jocs) tries l'estil amb una previsualització de cadas
 
 A sota pots canviar el color del text, la mida, l'opacitat del fons, si els noms fan servir els colors del joc o els de Twitch, el text de l'etiqueta del canal i si es veuen els **detalls del joc** (botons, pestanyes i casella d'escriure). Són només decoratius: no es poden prémer i els clics continuen travessant el xat.
 
-> Inspirats en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite i Rust. No estan afiliats als seus creadors (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): les fonts són lliures i semblants a les originals, i els detalls estan dibuixats per a l'app. A WoW es fa servir Arial Narrow si la tens instal·lada.
+> Inspirats en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite i Rust. No estan afiliats als seus creadors (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): les fonts són lliures i semblants a les originals, i els detalls estan dibuixats per a l'app. Els logos de les targetes són marques dels seus propietaris (els SVG vénen de [Simple Icons](https://simpleicons.org/) i de Wikimedia Commons). A WoW es fa servir Arial Narrow si la tens instal·lada.
 
 ### Dreceres
 
