@@ -45,10 +45,10 @@
 ## Així es veu
 
 <p align="center">
-  <img src="assets/readme/demo.png" alt="Kylen Chat damunt d'una partida de League of Legends, amb mencions, subs, bits i raids destacats" width="520">
+  <img src="assets/readme/styles/kylen.webp" alt="Kylen Chat en mode de prova, amb mencions, subs, bits, bescanvis i raids destacats" width="400">
 </p>
 <p align="center">
-  <sub>El xat damunt d'una partida, alineat a la dreta, en mode de prova.</sub>
+  <sub>El meu estil: Segoe UI a 20 px, text blanc amb contorn i fons negre suau, en mode de prova. Els estils de jocs són <a href="#estils-de-jocs">més avall</a>.</sub>
 </p>
 
 ---
@@ -72,7 +72,7 @@
 
 **Al teu gust**
 - **Estils de jocs**: el xat amb l'aspecte del de **WoW**, **LoL**, **Valorant**, **Minecraft**, **CS2**, **Overwatch 2**, **Fortnite** o **Rust**: la seva lletra, els seus colors, el format de línia i els detalls (botons, pestanyes). Els noms porten el color de Twitch de cada usuari. Es poden personalitzar.
-- **13 estils ràpids** amb un clic, cadascun amb la seva pròpia font i colors: Por defecto (per defecte), Texto grande (text gran), Clásico Twitch (Twitch clàssic), Alto contraste (alt contrast), Terminal, Sakura 🌸, Neón ⚡ (neó), Rúnico ⚔️ (rúnic), Viñeta 💬 (vinyeta), Glaciar ❄️ (glacera), Bosque 🌿 (bosc), Pizarra ✏️ (pissarra) i Arcade 👾. Els noms surten així a l'app en castellà (o en anglès, si el sistema és en anglès).
+- **17 estils ràpids** amb un clic, cadascun amb la seva pròpia font i colors: Por defecto (per defecte), Texto grande (text gran), Clásico Twitch (Twitch clàssic), Alto contraste (alt contrast), Terminal, Sakura 🌸, Neón ⚡ (neó), Rúnico ⚔️ (rúnic), Viñeta 💬 (vinyeta), Glaciar ❄️ (glacera), Bosque 🌿 (bosc), Pizarra ✏️ (pissarra), Arcade 👾, Sin fondo (sense fons), Medianoche 🌙 (mitjanit), Atardecer 🌅 (posta de sol) i Lava 🔥. Els noms surten així a l'app en castellà (o en anglès, si el sistema és en anglès).
 - **Mis estilos** (Els meus estils): desa l'aspecte que tinguis amb el nom i el color que vulguis, i torna-hi amb un clic. La llista d'estils ràpids es pot amagar.
 - Control total de la posició, la mida, la font (qualsevol que tinguis instal·lada a l'ordinador), els colors, el fons, el color de la barra, la transparència i la mida dels emotes.
 - Missatges **alineats a la dreta** i **els nous a dalt**, si ho prefereixes.
@@ -150,9 +150,14 @@ A la pestanya **Juegos** (Jocs) tries l'estil amb una previsualització de cadas
 - **CS2**: requadre negre amb marc, `[TODOS] Nom @Sub: text` (el paper va on el joc posa la ubicació).
 - **Overwatch 2**: requadre blau marí arrodonit, rombe taronja davant de cada línia i `Partida [Nom]: text` en taronja.
 - **Fortnite**: panell gris arrodonit, pestanyes en forma de píndola, i foto de perfil de Twitch de cada persona en rodó.
-- **Rust**: sense requadre, lletra negreta estreta amb contorn negre, foto de perfil de Twitch en quadrat, i `[Global] Nom: text`.
+- **Rust**: sense requadre, lletra negreta estreta amb contorn negre, foto de perfil de Twitch en quadrat i `[Global] Nom: text`.
 
 A sota pots canviar el color del text, la mida, l'opacitat del fons, el text de l'etiqueta del canal i si es veuen els **detalls del joc** (botons i pestanyes). Són només decoratius: no es poden prémer i els clics continuen travessant el xat.
+
+<table align="center">
+  <tr><td align="center"><img src="assets/readme/styles/wow.webp" width="190" alt="Estil WoW"><br><sub>WoW</sub></td><td align="center"><img src="assets/readme/styles/lol.webp" width="190" alt="Estil LoL"><br><sub>LoL</sub></td><td align="center"><img src="assets/readme/styles/valorant.webp" width="190" alt="Estil Valorant"><br><sub>Valorant</sub></td><td align="center"><img src="assets/readme/styles/minecraft.webp" width="190" alt="Estil Minecraft"><br><sub>Minecraft</sub></td></tr>
+  <tr><td align="center"><img src="assets/readme/styles/cs2.webp" width="190" alt="Estil CS2"><br><sub>CS2</sub></td><td align="center"><img src="assets/readme/styles/overwatch.webp" width="190" alt="Estil Overwatch 2"><br><sub>Overwatch 2</sub></td><td align="center"><img src="assets/readme/styles/fortnite.webp" width="190" alt="Estil Fortnite"><br><sub>Fortnite</sub></td><td align="center"><img src="assets/readme/styles/rust.webp" width="190" alt="Estil Rust"><br><sub>Rust</sub></td></tr>
+</table>
 
 > Inspirats en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite i Rust. No estan afiliats als seus creadors (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): les fonts són lliures i semblants a les originals, i els detalls estan dibuixats per a l'app. Els logos de les targetes són marques dels seus propietaris (els SVG vénen de [Simple Icons](https://simpleicons.org/) i de Wikimedia Commons). A WoW es fa servir Arial Narrow si la tens instal·lada.
 

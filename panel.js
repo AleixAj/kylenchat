@@ -63,6 +63,10 @@ const PRESETS = {
   chalk: { ...LOOK_BASE, fontFamily: 'Patrick Hand', fontSize: 21, bold: false, textColor: '#f4f4f4', bgColor: '#1f3326', bgOpacity: 80, outline: false, barColor: '#9ccc9c' },
   arcade: { ...LOOK_BASE, fontFamily: 'Press Start 2P', fontSize: 12, bold: false, textColor: '#ffffff', bgColor: '#1a0b3d', bgOpacity: 70, emoteScale: 2.2, barColor: '#ff2e97' },
   sakura: { ...LOOK_BASE, fontFamily: 'Space Grotesk', fontSize: 15, bold: true, textColor: '#ffffff', bgColor: '#ff8fc8', bgOpacity: 10, outline: true, barColor: '#ff5fae' },
+  minimal: { ...LOOK_BASE, fontFamily: 'Inter', fontSize: 16, bold: true, textColor: '#ffffff', bgOpacity: 0, outline: true, barColor: '#ffffff' },
+  midnight: { ...LOOK_BASE, fontFamily: 'Jost', fontSize: 17, bold: false, textColor: '#dfe5ff', bgColor: '#0d1033', bgOpacity: 60, outline: false, barColor: '#8c9bff' },
+  sunset: { ...LOOK_BASE, fontFamily: 'Quicksand', fontSize: 17, bold: true, textColor: '#fff1e0', bgColor: '#4a1238', bgOpacity: 50, barColor: '#ff8a4c' },
+  lava: { ...LOOK_BASE, fontFamily: 'Rajdhani', fontSize: 18, bold: true, textColor: '#ffe3d1', bgColor: '#2a0802', bgOpacity: 65, barColor: '#ff4d1a' },
 };
 
 // Cada botón de estilo se ve con su propia fuente y colores, como una muestra.

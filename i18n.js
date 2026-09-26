@@ -171,6 +171,10 @@
       presetForest: 'Bosque 🌿',
       presetChalk: 'Pizarra ✏️',
       presetArcade: 'Arcade 👾',
+      presetMinimal: 'Sin fondo',
+      presetMidnight: 'Medianoche 🌙',
+      presetSunset: 'Atardecer 🌅',
+      presetLava: 'Lava 🔥',
       align: 'Alineación',
       alignLeft: 'Izquierda',
       alignRight: 'Derecha',
@@ -443,6 +447,10 @@
       presetForest: 'Forest 🌿',
       presetChalk: 'Chalkboard ✏️',
       presetArcade: 'Arcade 👾',
+      presetMinimal: 'No background',
+      presetMidnight: 'Midnight 🌙',
+      presetSunset: 'Sunset 🌅',
+      presetLava: 'Lava 🔥',
       align: 'Alignment',
       alignLeft: 'Left',
       alignRight: 'Right',
@@ -548,6 +556,10 @@
   // Novedades de cada versión, para el aviso que sale tras actualizar.
   const CHANGELOG = {
     es: {
+      '1.4.2': [
+        '4 estilos rápidos nuevos: Sin fondo, Medianoche 🌙, Atardecer 🌅 y Lava 🔥.',
+        'Estilos de juegos: más margen abajo y a la derecha, para que el texto no quede pegado al borde.',
+      ],
       '1.4.1': [
         'Estilos de juegos: los nombres llevan siempre el color de Twitch de cada usuario, el fondo es más transparente y ya no sale la barra de escribir de abajo.',
       ],
@@ -607,6 +619,10 @@
       ],
     },
     en: {
+      '1.4.2': [
+        '4 new quick styles: No background, Midnight 🌙, Sunset 🌅 and Lava 🔥.',
+        'Game styles: more space at the bottom and right, so text no longer sits against the edge.',
+      ],
       '1.4.1': [
         'Game styles: names always use each user\'s Twitch color, the background is more transparent and the input bar at the bottom is gone.',
       ],

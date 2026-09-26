@@ -51,7 +51,7 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
      y, abajo, los de desplazarse (subir, bajar e ir al final).
    ===================================================================== */
 .theme-wow { --ff: "Arial Narrow"; }
-.theme-wow :is(#chat, .frame) { background: var(--bg); padding: 3px 6px; left: 30px; }
+.theme-wow :is(#chat, .frame) { background: var(--bg); padding: 3px 12px 10px 6px; left: 30px; }
 .theme-wow #chat { left: 30px; }
 /* El color del texto se elige en el panel (por defecto, el rosa del canal General) */
 .theme-wow .msg {
@@ -141,7 +141,7 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
    - Avisos del juego en naranja.
    ===================================================================== */
 .theme-lol { --ff: "Inter"; }
-.theme-lol :is(#chat, .frame) { background: var(--bg); padding: 4px 8px; gap: 0; }
+.theme-lol :is(#chat, .frame) { background: var(--bg); padding: 4px 12px 10px 8px; gap: 0; }
 .theme-lol .msg {
   font-family: "Inter", "Segoe UI", sans-serif; font-weight: 500; letter-spacing: .005em; line-height: 1.35;
   color: var(--color); text-shadow: 0 1px 1px rgba(0, 0, 0, .95), 0 0 2px rgba(0, 0, 0, .8);
@@ -172,7 +172,7 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
    - "(All) Nombre: texto" en letra tipo DIN; nombres en turquesa (aliados) y rojo (enemigos).
    ===================================================================== */
 .theme-valorant { --ff: "D-DIN"; }
-.theme-valorant :is(#chat, .frame) { background: var(--bg); padding: 4px 14px 4px 8px; }
+.theme-valorant :is(#chat, .frame) { background: var(--bg); padding: 4px 16px 10px 8px; }
 .theme-valorant .msg {
   font-family: "D-DIN", "DIN Next", "Segoe UI", sans-serif; font-weight: 400; letter-spacing: .01em;
   color: var(--color); text-shadow: 0 1px 2px rgba(0, 0, 0, .7);
@@ -207,9 +207,9 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
    - Barra de escribir negra de lado a lado con el cursor "_".
    ===================================================================== */
 .theme-minecraft { --ff: "Monocraft"; }
-.theme-minecraft :is(#chat, .frame) { gap: 0; padding: 0 4px; }
+.theme-minecraft :is(#chat, .frame) { gap: 0; padding: 0 6px 8px 4px; }
 .theme-minecraft .msg {
-  align-self: stretch; background: var(--bg); padding: 1px 4px;
+  align-self: stretch; background: var(--bg); padding: 1px 8px 1px 4px;
   font-family: "Monocraft", monospace; font-weight: 400; letter-spacing: -.02em;
   color: var(--color); text-shadow: .12em .12em 0 #3F3F3F;
   line-height: 1.35;
@@ -250,7 +250,7 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-cs2 :is(#chat, .frame) {
   background: var(--bg); background-clip: padding-box;
   border: 5px solid rgba(70, 70, 70, .35);
-  padding: 4px 8px;
+  padding: 4px 12px 10px 8px;
 }
 .theme-cs2 .msg {
   font-family: "Rajdhani", "Segoe UI", sans-serif; font-weight: 700; letter-spacing: .01em;
@@ -280,7 +280,7 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
    - Avisos del sistema en amarillo con un icono "i".
    ===================================================================== */
 .theme-overwatch { --ff: "Jost"; }
-.theme-overwatch :is(#chat, .frame) { background: var(--bg); border-radius: 6px; padding: 5px 16px 5px 8px; gap: 3px; }
+.theme-overwatch :is(#chat, .frame) { background: var(--bg); border-radius: 6px; padding: 5px 18px 10px 8px; gap: 3px; }
 .theme-overwatch .msg {
   position: relative; padding-left: 1.3em;
   font-family: "Jost", "Futura", "Segoe UI", sans-serif; font-weight: 500;
@@ -311,7 +311,7 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
    - Cada línea con un avatar redondo de color (con la inicial) y "Nombre: texto" en blanco.
    ===================================================================== */
 .theme-fortnite { --ff: "Inter"; }
-.theme-fortnite :is(#chat, .frame) { background: var(--bg); border-radius: 12px; padding: 8px 10px; gap: 5px; }
+.theme-fortnite :is(#chat, .frame) { background: var(--bg); border-radius: 12px; padding: 8px 12px 12px 10px; gap: 5px; }
 .theme-fortnite .msg {
   position: relative; padding-left: 1.75em;
   font-family: "Inter", "Segoe UI", sans-serif; font-weight: 500;
@@ -341,7 +341,7 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
    - Barra verde oliva translúcida para escribir, con "[Global]" y el icono de persona.
    ===================================================================== */
 .theme-rust { --ff: "Roboto Condensed"; }
-.theme-rust :is(#chat, .frame) { background: var(--bg); padding: 4px 6px; gap: 6px; }
+.theme-rust :is(#chat, .frame) { background: var(--bg); padding: 4px 12px 10px 6px; gap: 6px; }
 .theme-rust .msg {
   position: relative; padding-left: 2.3em; min-height: 1.9em;
   font-family: "Roboto Condensed", "Arial Narrow", sans-serif; font-weight: 700;

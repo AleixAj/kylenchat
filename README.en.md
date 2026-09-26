@@ -45,10 +45,10 @@
 ## What it looks like
 
 <p align="center">
-  <img src="assets/readme/demo.png" alt="Kylen Chat on top of a League of Legends match, with highlighted mentions, subs, bits and raids" width="520">
+  <img src="assets/readme/styles/kylen.webp" alt="Kylen Chat in preview mode, with highlighted mentions, subs, bits, redemptions and raids" width="400">
 </p>
 <p align="center">
-  <sub>The chat on top of a match, right-aligned, in preview mode.</sub>
+  <sub>My style: Segoe UI at 20 px, white outlined text and a soft black background, in preview mode. The game styles are <a href="#game-styles">further down</a>.</sub>
 </p>
 
 ---
@@ -72,7 +72,7 @@
 
 **Make it yours**
 - **Game styles**: your chat with the look of **WoW**, **LoL**, **Valorant**, **Minecraft**, **CS2**, **Overwatch 2**, **Fortnite** or **Rust**: their font, colors, line format and details (buttons, tabs). Names use each user's Twitch color. They can be customized.
-- **13 one-click styles**, each with its own font and colors: Default, Big text, Classic Twitch, High contrast, Terminal, Sakura 🌸, Neon ⚡, Runic ⚔️, Comic 💬, Glacier ❄️, Forest 🌿, Chalkboard ✏️ and Arcade 👾.
+- **17 one-click styles**, each with its own font and colors: Default, Big text, Classic Twitch, High contrast, Terminal, Sakura 🌸, Neon ⚡, Runic ⚔️, Comic 💬, Glacier ❄️, Forest 🌿, Chalkboard ✏️, Arcade 👾, No background, Midnight 🌙, Sunset 🌅 and Lava 🔥.
 - **My styles**: save your current look with any name and color you like, and get back to it with one click. The quick styles list can be hidden.
 - Full control over position, size, font (any font installed on your computer), colors, background, bar color, transparency and emote size.
 - **Right-aligned** messages and **newest on top**, if you prefer.
@@ -153,6 +153,11 @@ In the **Games** tab you pick a style, with a preview of each one:
 - **Rust**: no box, bold narrow font with a black outline, square Twitch profile picture and `[Global] Name: text`.
 
 Below you can change the text color, size, background opacity, the channel tag text and whether the **game details** (buttons and tabs) are shown. They're decorative only: they can't be clicked and clicks still go through the chat.
+
+<table align="center">
+  <tr><td align="center"><img src="assets/readme/styles/wow.webp" width="190" alt="Style WoW"><br><sub>WoW</sub></td><td align="center"><img src="assets/readme/styles/lol.webp" width="190" alt="Style LoL"><br><sub>LoL</sub></td><td align="center"><img src="assets/readme/styles/valorant.webp" width="190" alt="Style Valorant"><br><sub>Valorant</sub></td><td align="center"><img src="assets/readme/styles/minecraft.webp" width="190" alt="Style Minecraft"><br><sub>Minecraft</sub></td></tr>
+  <tr><td align="center"><img src="assets/readme/styles/cs2.webp" width="190" alt="Style CS2"><br><sub>CS2</sub></td><td align="center"><img src="assets/readme/styles/overwatch.webp" width="190" alt="Style Overwatch 2"><br><sub>Overwatch 2</sub></td><td align="center"><img src="assets/readme/styles/fortnite.webp" width="190" alt="Style Fortnite"><br><sub>Fortnite</sub></td><td align="center"><img src="assets/readme/styles/rust.webp" width="190" alt="Style Rust"><br><sub>Rust</sub></td></tr>
+</table>
 
 > Inspired by World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite and Rust. Not affiliated with their makers (Blizzard, Riot Games, Mojang, Valve, Epic Games or Facepunch): the fonts are free lookalikes and the details are drawn for the app. The logos on the cards are trademarks of their owners (the SVGs come from [Simple Icons](https://simpleicons.org/) and Wikimedia Commons). The WoW style uses Arial Narrow if you have it installed.
 

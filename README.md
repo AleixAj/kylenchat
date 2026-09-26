@@ -45,10 +45,10 @@
 ## Así se ve
 
 <p align="center">
-  <img src="assets/readme/demo.png" alt="Kylen Chat encima de una partida de League of Legends, con menciones, subs, bits y raids destacados" width="520">
+  <img src="assets/readme/styles/kylen.webp" alt="Kylen Chat en modo prueba, con menciones, subs, bits, canjes y raids destacados" width="400">
 </p>
 <p align="center">
-  <sub>El chat encima de una partida, alineado a la derecha, en modo prueba.</sub>
+  <sub>Mi estilo: Segoe UI a 20 px, texto blanco con contorno y fondo negro suave, en modo prueba. Los estilos de juegos están <a href="#estilos-de-juegos">más abajo</a>.</sub>
 </p>
 
 ---
@@ -72,7 +72,7 @@
 
 **A tu gusto**
 - **Estilos de juegos**: el chat con el aspecto del de **WoW**, **LoL**, **Valorant**, **Minecraft**, **CS2**, **Overwatch 2**, **Fortnite** o **Rust**: su letra, sus colores, su formato de línea y sus detalles (botones, pestañas). Los nombres llevan el color de Twitch de cada usuario. Se pueden personalizar.
-- **13 estilos rápidos** con un clic, cada uno con su propia fuente y colores: Por defecto, Texto grande, Clásico Twitch, Alto contraste, Terminal, Sakura 🌸, Neón ⚡, Rúnico ⚔️, Viñeta 💬, Glaciar ❄️, Bosque 🌿, Pizarra ✏️ y Arcade 👾.
+- **17 estilos rápidos** con un clic, cada uno con su propia fuente y colores: Por defecto, Texto grande, Clásico Twitch, Alto contraste, Terminal, Sakura 🌸, Neón ⚡, Rúnico ⚔️, Viñeta 💬, Glaciar ❄️, Bosque 🌿, Pizarra ✏️, Arcade 👾, Sin fondo, Medianoche 🌙, Atardecer 🌅 y Lava 🔥.
 - **Mis estilos**: guarda el aspecto que tengas con el nombre y el color que quieras, y vuelve a él con un clic. La lista de estilos rápidos se puede ocultar.
 - Control total de posición, tamaño, fuente (cualquiera instalada en tu PC), colores, fondo, color de la barra, transparencia y tamaño de emotes.
 - Mensajes **alineados a la derecha** y **nuevos arriba**, si lo prefieres.
@@ -150,9 +150,14 @@ En la pestaña **Juegos** eliges el estilo con una vista previa de cada uno:
 - **CS2**: recuadro negro con marco, `[TODOS] Nombre @Sub: texto` (el papel va donde el juego pone la ubicación).
 - **Overwatch 2**: recuadro azul marino redondeado, rombo naranja delante de cada línea y `Partida [Nombre]: texto` en naranja.
 - **Fortnite**: panel gris redondeado, pestañas en forma de píldora, y foto de perfil de Twitch de cada persona en redondo.
-- **Rust**: sin recuadro, letra negrita estrecha con contorno negro, foto de perfil de Twitch en cuadrado, y `[Global] Nombre: texto`.
+- **Rust**: sin recuadro, letra negrita estrecha con contorno negro, foto de perfil de Twitch en cuadrado y `[Global] Nombre: texto`.
 
 Debajo puedes cambiar el color del texto, el tamaño, la opacidad del fondo, el texto de la etiqueta del canal y si se ven los **detalles del juego** (botones y pestañas). Son solo decorativos: no se pueden pulsar y los clics siguen atravesando el chat.
+
+<table align="center">
+  <tr><td align="center"><img src="assets/readme/styles/wow.webp" width="190" alt="Estilo WoW"><br><sub>WoW</sub></td><td align="center"><img src="assets/readme/styles/lol.webp" width="190" alt="Estilo LoL"><br><sub>LoL</sub></td><td align="center"><img src="assets/readme/styles/valorant.webp" width="190" alt="Estilo Valorant"><br><sub>Valorant</sub></td><td align="center"><img src="assets/readme/styles/minecraft.webp" width="190" alt="Estilo Minecraft"><br><sub>Minecraft</sub></td></tr>
+  <tr><td align="center"><img src="assets/readme/styles/cs2.webp" width="190" alt="Estilo CS2"><br><sub>CS2</sub></td><td align="center"><img src="assets/readme/styles/overwatch.webp" width="190" alt="Estilo Overwatch 2"><br><sub>Overwatch 2</sub></td><td align="center"><img src="assets/readme/styles/fortnite.webp" width="190" alt="Estilo Fortnite"><br><sub>Fortnite</sub></td><td align="center"><img src="assets/readme/styles/rust.webp" width="190" alt="Estilo Rust"><br><sub>Rust</sub></td></tr>
+</table>
 
 > Inspirados en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite y Rust. No están afiliados a sus creadores (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): las fuentes son libres y parecidas a las originales, y los detalles están dibujados para la app. Los logos de las tarjetas son marcas de sus dueños (los SVG vienen de [Simple Icons](https://simpleicons.org/) y de Wikimedia Commons). En WoW se usa Arial Narrow si la tienes instalada.
 
