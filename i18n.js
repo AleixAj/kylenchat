@@ -712,7 +712,7 @@
       ['TopMain_99', '#FA8E4B', '\x01ACTION se va a por un café mientras reaparece\x01'],
       ['SoporteFeliz', '#1A1A7A', 'peepoHappy RainTime', { reply: { name: 'Faker', body: '¡Qué jugada!' } }],
       ['Pentakill', '#FF7070', 'PENTAAAAA PogChamp', { bits: 500 }],
-      ['LaNoviaDelADC', '#F670DD', 'esa build no la entiendo pero si funciona... LUL', { redeem: true, rewardTitle: 'Pregunta al streamer' }],
+      ['CuriosoDelMeta', '#00BBF9', 'esa build no la entiendo pero si funciona... LUL', { redeem: true, rewardTitle: 'Pregunta al streamer' }],
       { redeem: { name: 'Pepita_22', title: 'Hidrátate', cost: 500, color: '#00C7AC' } },
       { notice: 'Kylen se ha suscrito con Prime. ¡Lleva 12 meses suscrito!', msg: ['Kylen', '#A970FF', 'PepePls PepePls PepePls'] },
       ['AnalistaDeSofá', '#00F5D4', 'Un mensaje largo de ejemplo para ver cómo se parten las líneas cuando alguien escribe mucho en el chat FeelsGoodMan', { highlighted: true }],
