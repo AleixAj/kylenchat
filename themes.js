@@ -131,9 +131,6 @@
       const column = add('wow-buttons');
       const friends = add('wow-btn friends', column);
       friends.innerHTML = ICONS.friends; // iconos fijos de la app
-      const count = document.createElement('b');
-      count.className = 'wow-count';
-      friends.append(count);
       add('wow-btn speaker', column).innerHTML = ICONS.speaker;
       add('wow-btn bubble', column).innerHTML = ICONS.bubble;
       // Abajo, los de desplazarse: subir, bajar e ir al final

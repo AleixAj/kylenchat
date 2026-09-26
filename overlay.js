@@ -148,7 +148,6 @@ function applySettings(s) {
   if (decorKey !== lastDecor) {
     lastDecor = decorKey;
     GameThemes.buildDecor(document.getElementById('decor'), s.theme, THEMES.includes(s.theme) ? channelTag('user') : '', tr);
-    showViewerCount();
   }
   resetIdle();
   document.getElementById('hint').textContent = tr('editHint', { keys: i18n.shortcutLabel(s.shortcuts.edit) });
@@ -433,6 +432,7 @@ let viewersShown = null;
 function startViewers() {
   clearInterval(viewersTimer);
   viewersShown = Boolean(settings && settings.showViewers);
+  if (testMode) return; // el modo prueba pone sus propios espectadores de ejemplo
   document.getElementById('barViewers').textContent = '';
   if (!viewersShown || !joined) return;
   updateViewers();
@@ -446,13 +446,6 @@ async function updateViewers() {
   const stream = Array.isArray(data) && data[0] && data[0].stream;
   const count = stream && Number(stream.viewersCount);
   document.getElementById('barViewers').textContent = Number.isFinite(count) ? count.toLocaleString(settings.language) : '';
-  showViewerCount();
-}
-
-// En el estilo WoW, los espectadores van en el botón de amigos (como el número de amigos conectados).
-function showViewerCount() {
-  const count = document.querySelector('#decor .wow-count');
-  if (count) count.textContent = document.getElementById('barViewers').textContent;
 }
 
 // Twitch manda un PING cada ~5 min. Si pasa mucho sin recibir nada (p. ej. tras suspender
@@ -1127,6 +1120,14 @@ function setTestMode(on) {
   testMode = on;
   clearInterval(testTimer);
   clearChat();
+  // En modo prueba la barra lleva un canal y unos espectadores de ejemplo, para ver cómo queda.
+  document.getElementById('barChannel').textContent = on ? '#kylen' : (joined ? `#${joined}` : '');
+  if (on) {
+    clearInterval(viewersTimer);
+    document.getElementById('barViewers').textContent = (1234).toLocaleString(settings.language);
+  } else {
+    startViewers();
+  }
   if (on) {
     const first = Math.min(settings.maxMessages, samples().length);
     for (let i = 0; i < first; i++) testMessage();

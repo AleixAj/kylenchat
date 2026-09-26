@@ -26,6 +26,8 @@
 .themed .pill::before { content: "["; }
 .themed .pill::after { content: "]"; }
 .themed .chan { margin-right: 4px; }
+/* La etiqueta del canal ("Todos", "Global"...) solo va en WoW, donde es el tipo de usuario: en el resto molesta */
+:is(.theme-lol, .theme-valorant, .theme-minecraft, .theme-cs2, .theme-overwatch, .theme-fortnite, .theme-rust) .chan { display: none; }
 .themed .time { opacity: .75; font-size: 1em; }
 .themed .time::before { content: "["; }
 .themed .time::after { content: "]"; }
@@ -103,7 +105,8 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
   justify-self: auto; overflow: hidden; text-overflow: ellipsis;
 }
 .theme-wow #barChannel:empty { display: none; }
-.theme-wow #barViewers { display: none; } /* los espectadores van en el botón de amigos */
+/* Espectadores a la derecha de las pestañas, como en el estilo normal */
+.theme-wow #barViewers { order: 2; margin-left: auto; align-self: center; padding-right: 6px; color: #FFFFFF; font: 400 12px "Arial Narrow", "Archivo Narrow", sans-serif; }
 .theme-wow :is(#bar, .bar) img { width: 14px; height: 14px; }
 /* Columna de botones de la izquierda */
 .theme-wow .wow-buttons { position: absolute; left: 2px; top: 0; bottom: 2px; width: 24px; }
@@ -117,9 +120,6 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 }
 .theme-wow .wow-btn svg { width: 15px; height: 15px; fill: currentColor; filter: drop-shadow(0 1px 0 #000); }
 .theme-wow .wow-btn.friends { top: 0; }
-/* Los espectadores, en una etiqueta pequeña en la esquina del botón de amigos */
-.theme-wow .wow-count { position: absolute; right: -3px; bottom: -4px; padding: 0 2px; border-radius: 3px; background: #000; font: 700 9px/11px "Arial Narrow", "Archivo Narrow", sans-serif; color: #fff; }
-.theme-wow .wow-count:empty { display: none; }
 .theme-wow .wow-btn.speaker { top: 28px; }
 .theme-wow .wow-btn.bubble { top: 56px; }
 .theme-wow .wow-btn.scroll-up { bottom: 56px; }

@@ -556,6 +556,10 @@
   // Novedades de cada versión, para el aviso que sale tras actualizar.
   const CHANGELOG = {
     es: {
+      '1.4.4': [
+        'Estilos de juegos: fuera la etiqueta del canal ("Todos", "Global", "Partida"...) delante de cada línea; solo se queda en WoW, donde es el tipo de usuario.',
+        'WoW: los espectadores van en la barra de arriba, como en el resto de estilos. En modo prueba la barra muestra un canal y espectadores de ejemplo.',
+      ],
       '1.4.3': [
         'WoW: el botón de amigos de arriba es cuadrado como los demás, y el número de espectadores va en una etiqueta en su esquina.',
       ],
@@ -622,6 +626,10 @@
       ],
     },
     en: {
+      '1.4.4': [
+        'Game styles: no more channel tag ("All", "Global", "Match"...) before each line; it stays only in WoW, where it shows the user type.',
+        'WoW: viewers now sit in the top bar, like every other style. In preview mode the bar shows a sample channel and viewer count.',
+      ],
       '1.4.3': [
         'WoW: the friends button at the top is square like the others, and the viewer count sits in a small tag in its corner.',
       ],

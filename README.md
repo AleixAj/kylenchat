@@ -55,22 +55,22 @@
 
 En la pestaña **Juegos** eliges el estilo con una vista previa de cada uno:
 
-- **WoW**: letra estrecha con sombra, pestañas arriba y columna de botones a la izquierda (el de amigos muestra tus espectadores). Cada línea sale como `[Usuario] [Nombre]: texto`, con el papel de quien escribe (Usuario, Sub, VIP, Mod, Streamer) como si fuera el canal.
-- **LoL**: recuadro azul muy oscuro con borde dorado, `[Todos] Nombre (Sub): texto`.
-- **Valorant**: recuadro oscuro de esquinas rectas, letra tipo DIN, `(Todos) Nombre (Sub): texto`.
+- **World of Warcraft**: letra estrecha con sombra, pestañas arriba y columna de botones a la izquierda. Cada línea sale como `[Usuario] [Nombre]: texto`, con el papel de quien escribe (Usuario, Sub, VIP, Mod, Streamer) como si fuera el canal.
+- **League of Legends**: recuadro azul muy oscuro con borde dorado, `Nombre (Sub): texto`.
+- **Valorant**: recuadro oscuro de esquinas rectas, letra tipo DIN, `Nombre (Sub): texto`.
 - **Minecraft**: franjas negras por línea, letra pixelada y `<Nombre> texto`.
-- **CS2**: recuadro negro con marco, `[TODOS] Nombre @Sub: texto` (el papel va donde el juego pone la ubicación).
-- **Overwatch 2**: recuadro azul marino redondeado, rombo naranja delante de cada línea y `Partida [Nombre]: texto` en naranja.
+- **Counter-Strike 2**: recuadro negro con marco, `Nombre @Sub: texto` (el papel va donde el juego pone la ubicación).
+- **Overwatch 2**: recuadro azul marino redondeado, rombo naranja delante de cada línea y `[Nombre]: texto` en naranja.
 - **Fortnite**: panel gris redondeado, pestañas en forma de píldora, y foto de perfil de Twitch de cada persona en redondo.
-- **Rust**: sin recuadro, letra negrita estrecha con contorno negro, foto de perfil de Twitch en cuadrado y `[Global] Nombre: texto`.
+- **Rust**: sin recuadro, letra negrita estrecha con contorno negro, foto de perfil de Twitch en cuadrado y `Nombre: texto`.
 
-Debajo puedes cambiar el color del texto, el tamaño, la opacidad del fondo, el texto de la etiqueta del canal y si se ven los **detalles del juego** (botones y pestañas). Son solo decorativos: no se pueden pulsar y los clics siguen atravesando el chat.
+Debajo puedes cambiar el color del texto, el tamaño, la opacidad del fondo, el texto de la etiqueta del canal (en WoW) y si se ven los **detalles del juego** (botones y pestañas). Son solo decorativos: no se pueden pulsar y los clics siguen atravesando el chat.
 
 <table align="center">
-  <tr><td align="center" width="50%"><img src="assets/readme/games/wow.png" height="30" alt=""> <b>WoW</b><br><img src="assets/readme/styles/wow.webp" width="400" alt="Estilo WoW"></td><td align="center" width="50%"><img src="assets/readme/games/lol.png" height="30" alt=""> <b>LoL</b><br><img src="assets/readme/styles/lol.webp" width="400" alt="Estilo LoL"></td></tr>
-  <tr><td align="center" width="50%"><img src="assets/readme/games/valorant.png" height="30" alt=""> <b>Valorant</b><br><img src="assets/readme/styles/valorant.webp" width="400" alt="Estilo Valorant"></td><td align="center" width="50%"><img src="assets/readme/games/minecraft.png" height="30" alt=""> <b>Minecraft</b><br><img src="assets/readme/styles/minecraft.webp" width="400" alt="Estilo Minecraft"></td></tr>
-  <tr><td align="center" width="50%"><img src="assets/readme/games/cs2.png" height="30" alt=""> <b>CS2</b><br><img src="assets/readme/styles/cs2.webp" width="400" alt="Estilo CS2"></td><td align="center" width="50%"><img src="assets/readme/games/overwatch.png" height="30" alt=""> <b>Overwatch 2</b><br><img src="assets/readme/styles/overwatch.webp" width="400" alt="Estilo Overwatch 2"></td></tr>
-  <tr><td align="center" width="50%"><img src="assets/readme/games/fortnite.png" height="30" alt=""> <b>Fortnite</b><br><img src="assets/readme/styles/fortnite.webp" width="400" alt="Estilo Fortnite"></td><td align="center" width="50%"><img src="assets/readme/games/rust.png" height="30" alt=""> <b>Rust</b><br><img src="assets/readme/styles/rust.webp" width="400" alt="Estilo Rust"></td></tr>
+  <tr><td align="center" width="50%"><img src="assets/readme/games/wow.png" height="30" align="absmiddle" alt="">&nbsp; <b>World of Warcraft</b><br><img src="assets/readme/styles/wow.webp" width="400" alt="Estilo World of Warcraft"></td><td align="center" width="50%"><img src="assets/readme/games/lol.png" height="30" align="absmiddle" alt="">&nbsp; <b>League of Legends</b><br><img src="assets/readme/styles/lol.webp" width="400" alt="Estilo League of Legends"></td></tr>
+  <tr><td align="center" width="50%"><img src="assets/readme/games/valorant.png" height="30" align="absmiddle" alt="">&nbsp; <b>Valorant</b><br><img src="assets/readme/styles/valorant.webp" width="400" alt="Estilo Valorant"></td><td align="center" width="50%"><img src="assets/readme/games/minecraft.png" height="30" align="absmiddle" alt="">&nbsp; <b>Minecraft</b><br><img src="assets/readme/styles/minecraft.webp" width="400" alt="Estilo Minecraft"></td></tr>
+  <tr><td align="center" width="50%"><img src="assets/readme/games/cs2.png" height="30" align="absmiddle" alt="">&nbsp; <b>Counter-Strike 2</b><br><img src="assets/readme/styles/cs2.webp" width="400" alt="Estilo Counter-Strike 2"></td><td align="center" width="50%"><img src="assets/readme/games/overwatch.png" height="30" align="absmiddle" alt="">&nbsp; <b>Overwatch 2</b><br><img src="assets/readme/styles/overwatch.webp" width="400" alt="Estilo Overwatch 2"></td></tr>
+  <tr><td align="center" width="50%"><img src="assets/readme/games/fortnite.png" height="30" align="absmiddle" alt="">&nbsp; <b>Fortnite</b><br><img src="assets/readme/styles/fortnite.webp" width="400" alt="Estilo Fortnite"></td><td align="center" width="50%"><img src="assets/readme/games/rust.png" height="30" align="absmiddle" alt="">&nbsp; <b>Rust</b><br><img src="assets/readme/styles/rust.webp" width="400" alt="Estilo Rust"></td></tr>
 </table>
 
 > Inspirados en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite y Rust. No están afiliados a sus creadores (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): las fuentes son libres y parecidas a las originales, y los detalles están dibujados para la app. Los logos de las tarjetas son marcas de sus dueños (los SVG vienen de [Simple Icons](https://simpleicons.org/) y de Wikimedia Commons). En WoW se usa Arial Narrow si la tienes instalada.

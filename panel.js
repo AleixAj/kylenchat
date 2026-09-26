@@ -294,6 +294,8 @@ function renderGameOptions() {
   set('gBgOpacity', settings.bgOpacity);
   set('gTag', settings.themeTag);
   $('gDecor').checked = settings.themeDecor !== false;
+  // La etiqueta del canal solo se ve en WoW
+  $('gTag').closest('.row').style.display = GameThemes.ROLE_TAG_THEMES.has(theme) ? '' : 'none';
   $('gTag').placeholder = GameThemes.ROLE_TAG_THEMES.has(theme) ? tr('gameTagRoles') : tr(`themeTag_${theme}`) || tr('gameTagNone');
   $('gFontSizeVal').textContent = `${settings.fontSize} px`;
   $('gBgOpacityVal').textContent = `${settings.bgOpacity} %`;
