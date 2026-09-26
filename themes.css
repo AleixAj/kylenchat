@@ -1,7 +1,7 @@
 /* Estilos de juegos: el chat de Twitch con el aspecto del chat de cada juego.
    Inspirados en World of Warcraft, League of Legends, Valorant y Minecraft; no están afiliados a
    Blizzard, Riot Games ni Mojang. Las fuentes son libres (OFL) y parecidas a las de cada juego, y los
-   detalles (botones, pestañas, casillas de escribir) están dibujados con CSS y SVG propios: son
+   detalles (botones, pestañas) están dibujados con CSS y SVG propios: son
    decorativos, no se pueden pulsar y los clics siguen atravesando el chat.
 
    Se aplican con la clase theme-<juego> en <body> (chat) o en la vista previa del panel. En el chat,
@@ -36,14 +36,10 @@
 .themed .msg.notice .avatar { display: none; }
 .themed .msg.notice > div { padding-left: 0; }
 
-/* Capa de detalles decorativos de cada juego (botones, casillas de escribir, barra de desplazamiento) */
+/* Capa de detalles decorativos de cada juego (botones, barra de desplazamiento) */
 :is(#decor, .decor) { position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: var(--opacity); transition: opacity .8s; }
 body.idle #decor { opacity: calc(var(--opacity) * .25); }
 :is(#decor, .decor):empty { display: none; }
-.game-input { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 6px; box-sizing: border-box; white-space: nowrap; overflow: hidden; }
-/* Los estilos con casilla de escribir abajo dejan su hueco */
-:is(.theme-lol, .theme-valorant, .theme-minecraft) #chat { bottom: 26px; }
-:is(.theme-lol, .theme-valorant, .theme-minecraft) .frame { bottom: 20px !important; }
 
 /* =====================================================================
    WORLD OF WARCRAFT (interfaz actual)
@@ -142,7 +138,7 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
    - Fondo oscuro translúcido, sin bordes. Cada línea empieza con la hora ("08:23").
    - "[Todos] Nombre (Sub): texto": etiqueta, nombre y papel (donde el juego pone el campeón) en
      el color del equipo (azul aliados, rojo enemigos) y el mensaje en blanco crema.
-   - Avisos del juego en naranja. Casilla de escribir abajo con "[Todos]".
+   - Avisos del juego en naranja.
    ===================================================================== */
 .theme-lol { --ff: "Inter"; }
 .theme-lol :is(#chat, .frame) { background: var(--bg); padding: 4px 8px; gap: 0; }
@@ -164,24 +160,16 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-lol .pill { color: #EBA03B; }
 .theme-lol .pill-bits { color: #E8584A; }
 .theme-lol :is(#bar, .bar) {
-  background: rgba(11, 15, 20, .75); border-radius: 0;
+  background: rgba(11, 15, 20, .55); border-radius: 0;
   font: 400 11.5px "Marcellus", serif; letter-spacing: .12em; text-transform: uppercase; color: #C8AA6E; text-shadow: none;
 }
 .theme-lol :is(#barViewers, #barChannel) { color: #A09B8C; font-weight: 400; letter-spacing: .06em; }
 .theme-lol :is(#bar, .bar) img { filter: sepia(1) saturate(1.5) hue-rotate(5deg) brightness(.9); }
-.theme-lol .lol-input {
-  height: 26px; padding: 0 8px;
-  background: rgba(11, 15, 20, .85); box-shadow: inset 0 0 0 1px rgba(160, 155, 140, .25);
-  font: 500 calc(var(--fs) * .9) "Inter", sans-serif; color: rgba(240, 230, 210, .45);
-}
-.theme-lol .lol-input .input-tag { color: #5AAFF0; }
-.decor .lol-input { height: 20px; }
 
 /* =====================================================================
    VALORANT (chat abierto)
    - Recuadro gris azulado oscuro con esquinas rectas y barra de desplazamiento blanca y fina.
    - "(All) Nombre: texto" en letra tipo DIN; nombres en turquesa (aliados) y rojo (enemigos).
-   - Casilla de escribir abajo con la etiqueta del canal ("Todos:").
    ===================================================================== */
 .theme-valorant { --ff: "D-DIN"; }
 .theme-valorant :is(#chat, .frame) { background: var(--bg); padding: 4px 14px 4px 8px; }
@@ -203,20 +191,14 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-valorant .msg.system { color: #EEDC6B; opacity: .85; }
 .theme-valorant .pill { color: #EEDC6B; }
 .theme-valorant :is(#bar, .bar) {
-  background: linear-gradient(90deg, rgba(15, 25, 35, .92), rgba(15, 25, 35, .55));
+  background: linear-gradient(90deg, rgba(15, 25, 35, .35), rgba(15, 25, 35, .15));
   border-radius: 0;
   font: 700 12.5px "D-DIN Condensed", "D-DIN", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #ECE8E1; text-shadow: none;
 }
 .theme-valorant :is(#barViewers, #barChannel) { color: #ECE8E1; opacity: .75; }
 .theme-valorant #barViewers::before { border-radius: 0; background: #FF4655; box-shadow: none; }
-.theme-valorant .val-scroll { position: absolute; right: 5px; bottom: 34px; height: 38%; width: 3px; background: rgba(255, 255, 255, .85); }
-.decor .val-scroll { bottom: 26px; }
-.theme-valorant .val-input {
-  height: 26px; padding: 0 8px; background: rgba(15, 25, 35, .85);
-  font: 400 calc(var(--fs) * .95) "D-DIN", sans-serif; color: #ECE8E1;
-}
-.theme-valorant .val-input .input-tag { opacity: .85; }
-.decor .val-input { height: 20px; }
+.theme-valorant .val-scroll { position: absolute; right: 5px; bottom: 8px; height: 38%; width: 3px; background: rgba(255, 255, 255, .85); }
+.decor .val-scroll { bottom: 6px; }
 
 /* =====================================================================
    MINECRAFT
@@ -252,29 +234,22 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-minecraft .chan::before { content: "["; }
 .theme-minecraft .chan::after { content: "]"; }
 .theme-minecraft :is(#bar, .bar) {
-  background: rgba(0, 0, 0, .55); border-radius: 0;
+  background: rgba(0, 0, 0, .4); border-radius: 0;
   font: 400 11px "Monocraft", monospace; letter-spacing: 0; color: #FFFF55; text-shadow: .12em .12em 0 #3F3F15;
 }
 .theme-minecraft :is(#barViewers, #barChannel) { color: #FFFFFF; font-weight: 400; text-shadow: .12em .12em 0 #3F3F3F; }
 .theme-minecraft #barViewers::before { border-radius: 0; box-shadow: none; }
-.theme-minecraft .mc-input {
-  left: 2px; right: 2px; bottom: 2px; height: 22px; padding: 0 4px;
-  background: rgba(0, 0, 0, .5);
-  font: 400 var(--fs) "Monocraft", monospace; color: #FFFFFF; text-shadow: .12em .12em 0 #3F3F3F;
-}
-.decor .mc-input { height: 16px; }
 
 /* =====================================================================
    COUNTER-STRIKE 2
    - Recuadro negro translúcido con un marco algo más claro alrededor.
    - "[TODOS] Nombre @Sub: texto" en letra negrita cuadrada; nombres en azul (CT) y amarillo (T),
      el papel en verde donde el juego pone la ubicación, avisos del sistema en dorado.
-   - Casilla de escribir abajo con "Decir a todos" y "ENVIAR".
    ===================================================================== */
 .theme-cs2 { --ff: "Rajdhani"; }
 .theme-cs2 :is(#chat, .frame) {
   background: var(--bg); background-clip: padding-box;
-  border: 5px solid rgba(70, 70, 70, .35); border-bottom: 0;
+  border: 5px solid rgba(70, 70, 70, .35);
   padding: 4px 8px;
 }
 .theme-cs2 .msg {
@@ -292,25 +267,17 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-cs2 .msg.notice, .theme-cs2 .msg.system { color: #EAB94E; }
 .theme-cs2 .pill { color: #EAB94E; }
 .theme-cs2 :is(#bar, .bar) {
-  background: rgba(0, 0, 0, .6); border-radius: 0;
+  background: rgba(0, 0, 0, .2); border-radius: 0;
   font: 700 12.5px "Rajdhani", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #E8B84A; text-shadow: none;
 }
 .theme-cs2 :is(#barViewers, #barChannel) { color: #D8D8D8; }
 .theme-cs2 #barViewers::before { border-radius: 0; box-shadow: none; }
-.theme-cs2 .cs2-input {
-  height: 26px; padding: 0 10px; justify-content: space-between;
-  background: rgba(0, 0, 0, .7); background-clip: padding-box;
-  border: 5px solid rgba(70, 70, 70, .35); border-top-width: 0;
-  font: 600 calc(var(--fs) * .92) "Rajdhani", sans-serif; color: rgba(255, 255, 255, .45);
-}
-.theme-cs2 .cs2-input .send { color: #CFCFCF; letter-spacing: .06em; }
-.decor .cs2-input { height: 20px; }
 
 /* =====================================================================
    OVERWATCH 2
    - Recuadro azul marino con esquinas redondeadas y barra de desplazamiento blanca redondeada.
    - Cada línea empieza con un rombo naranja (chat de partida) y va en naranja: "[Nombre]: texto".
-   - Avisos del sistema en amarillo con un icono "i"; casilla abajo con barra naranja a la izquierda.
+   - Avisos del sistema en amarillo con un icono "i".
    ===================================================================== */
 .theme-overwatch { --ff: "Jost"; }
 .theme-overwatch :is(#chat, .frame) { background: var(--bg); border-radius: 6px; padding: 5px 16px 5px 8px; gap: 3px; }
@@ -325,33 +292,23 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
   content: "i"; top: .2em; width: 1.05em; height: 1.05em; border-radius: 50%; background: #F2D24A; color: #0B1130;
   font: 700 .8em/1.05em "Jost", sans-serif; text-align: center;
 }
-.theme-overwatch .chan { display: none; } /* el canal va en la casilla de abajo, como en el juego */
 .theme-overwatch .name { font-weight: 500; }
 .theme-overwatch .name::before { content: "["; }
 .theme-overwatch .name::after { content: "]"; }
 .theme-overwatch .msg.mention { background: linear-gradient(90deg, rgba(249, 158, 26, .22), transparent 75%); }
 .theme-overwatch .pill { color: #F2D24A; }
 .theme-overwatch :is(#bar, .bar) {
-  background: rgba(11, 17, 48, .85); border-radius: 6px 6px 0 0;
+  background: rgba(11, 17, 48, .3); border-radius: 6px 6px 0 0;
   font: italic 700 13px "D-DIN Condensed", "D-DIN", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #FFFFFF; text-shadow: none;
 }
 .theme-overwatch :is(#barViewers, #barChannel) { color: #F99E1A; font-style: normal; }
-.theme-overwatch .ow-scroll { position: absolute; right: 7px; bottom: 40px; height: 28%; width: 5px; border-radius: 3px; background: rgba(255, 255, 255, .9); }
-.decor .ow-scroll { bottom: 30px; right: 5px; width: 4px; }
-.theme-overwatch .ow-input {
-  height: 26px; padding: 0 10px; gap: 8px;
-  background: rgba(11, 17, 48, .88); border-left: 3px solid #F99E1A; border-radius: 0 6px 6px 0;
-  font: 500 calc(var(--fs) * .92) "Jost", sans-serif; color: #F99E1A;
-}
-.theme-overwatch .ow-input .hint { font: 700 calc(var(--fs) * .92) "D-DIN Condensed", sans-serif; letter-spacing: .04em; color: rgba(255, 255, 255, .45); }
-.theme-overwatch #chat { bottom: 32px; }
-.decor .ow-input { height: 20px; }
+.theme-overwatch .ow-scroll { position: absolute; right: 7px; bottom: 10px; height: 28%; width: 5px; border-radius: 3px; background: rgba(255, 255, 255, .9); }
+.decor .ow-scroll { bottom: 8px; right: 5px; width: 4px; }
 
 /* =====================================================================
    FORTNITE
    - Panel gris oscuro con esquinas muy redondeadas; pestañas en forma de píldora arriba.
    - Cada línea con un avatar redondo de color (con la inicial) y "Nombre: texto" en blanco.
-   - Casilla redondeada con borde blanco y botón de "más".
    ===================================================================== */
 .theme-fortnite { --ff: "Inter"; }
 .theme-fortnite :is(#chat, .frame) { background: var(--bg); border-radius: 12px; padding: 8px 10px; gap: 5px; }
@@ -372,23 +329,10 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-fortnite .msg.mention { background: linear-gradient(90deg, rgba(255, 216, 74, .22), transparent 75%); border-radius: 6px; }
 .theme-fortnite .pill { color: #FFD84A; }
 .theme-fortnite :is(#bar, .bar) {
-  background: rgba(30, 34, 48, .85); border-radius: 10px 10px 0 0;
+  background: rgba(30, 34, 48, .3); border-radius: 10px 10px 0 0;
   font: 600 12px "Inter", sans-serif; letter-spacing: 0; color: #FFFFFF; text-shadow: none;
 }
 .theme-fortnite :is(#barViewers, #barChannel) { color: rgba(255, 255, 255, .75); }
-.theme-fortnite .fn-input { height: 26px; gap: 6px; padding: 0 2px; }
-.theme-fortnite .fn-field {
-  flex: 1; height: 100%; box-sizing: border-box; display: flex; align-items: center; padding: 0 10px;
-  background: rgba(30, 34, 48, .9); border: 2px solid rgba(255, 255, 255, .9); border-radius: 8px;
-  font: 500 calc(var(--fs) * .85) "Inter", sans-serif; color: rgba(255, 255, 255, .7);
-}
-.theme-fortnite .fn-more {
-  width: 26px; height: 100%; display: flex; align-items: center; justify-content: center;
-  background: rgba(30, 34, 48, .9); border-radius: 8px; color: #fff; font-size: 8px; letter-spacing: 1px;
-}
-.theme-fortnite #chat { bottom: 32px; }
-.decor .fn-input { height: 18px; }
-.decor .fn-more { width: 20px; }
 
 /* =====================================================================
    RUST
@@ -420,27 +364,14 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-rust .msg.system { color: #DDDDDD; padding-left: 0; min-height: 0; }
 .theme-rust .pill { color: #A9D16D; }
 .theme-rust :is(#bar, .bar) {
-  background: rgba(0, 0, 0, .45); border-radius: 0;
+  background: rgba(0, 0, 0, .35); border-radius: 0;
   font: 700 12.5px "Roboto Condensed", sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #A9D16D; text-shadow: 1px 1px 0 #000;
 }
 .theme-rust :is(#barViewers, #barChannel) { color: #FFFFFF; }
 .theme-rust #barViewers::before { border-radius: 0; box-shadow: none; }
-.theme-rust .rust-input {
-  height: 26px; padding: 0 10px; gap: 8px;
-  background: rgba(96, 124, 44, .88);
-  font: 700 calc(var(--fs) * .95) "Roboto Condensed", sans-serif; color: #CDEB8B;
-}
-.theme-rust .rust-caret { width: 2px; height: 60%; background: #9CC3E6; }
-.theme-rust .rust-person { margin-left: auto; color: #C6E58A; display: flex; }
-.theme-rust .rust-person svg { width: 14px; height: 14px; fill: currentColor; }
-.decor .rust-input { height: 20px; }
 
-/* Estilos con la casilla de escribir más separada */
-:is(.theme-cs2, .theme-rust) #chat { bottom: 26px; }
-.theme-cs2 .frame, .theme-overwatch .frame, .theme-fortnite .frame, .theme-rust .frame { bottom: 20px !important; }
-.theme-overwatch .frame, .theme-fortnite .frame { bottom: 24px !important; }
 
-/* ---------- "Detalles del juego" apagado: sin botones ni casillas, el chat usa todo el espacio ---------- */
+/* ---------- "Detalles del juego" apagado: sin botones, el chat usa todo el espacio ---------- */
 .no-decor #decor { display: none; }
 .no-decor.themed #chat { bottom: 0; }
 .theme-wow.no-decor #chat, .theme-wow.no-decor #bar { left: 0; }

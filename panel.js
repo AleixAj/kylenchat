@@ -47,7 +47,7 @@ const FIELDS = {
 const LOOK_BASE = {
   fontSize: 15, fontFamily: 'Segoe UI', bold: false, textColor: '#ffffff', userColors: true,
   bgColor: '#000000', bgOpacity: 25, barColor: '#9146ff', outline: true, opacity: 100, emoteScale: 1.6,
-  theme: '', themeGameColors: true, themeTag: '', themeDecor: true, // sin estilo de juego
+  theme: '', themeTag: '', themeDecor: true, // sin estilo de juego
 };
 const PRESETS = {
   default: { ...LOOK_BASE },
@@ -162,6 +162,9 @@ function hexToRgba(hex, alpha) {
 }
 
 // Líneas de ejemplo con la misma estructura que el chat de verdad, para que la vista previa sea real.
+// Colores de Twitch de los usuarios de ejemplo.
+const PREVIEW_COLORS = { kylen: '#FF3B3B', kurkya: '#1FE0C4', anita: '#FF69B4' };
+
 function previewLine(theme, [name, role, text]) {
   const el = document.createElement('div');
   el.className = 'msg';
@@ -169,7 +172,7 @@ function previewLine(theme, [name, role, text]) {
   const who = GameThemes.roleOf(new Set(role ? [role] : []));
   if (byRole) el.classList.add(`ch-${who}`);
   const tag = byRole ? `${GameThemes.WOW_CHANNEL_NUMBER[who]}. ${tr(`role_${who}`)}` : tr(`themeTag_${theme}`);
-  const color = GameThemes.nameColor(theme, name.toLowerCase(), new Set(role ? [role] : []));
+  const color = PREVIEW_COLORS[name.toLowerCase()] || GameThemes.colorFor(name.toLowerCase());
   if (GameThemes.TIME_THEMES.has(theme)) {
     const time = document.createElement('span');
     time.className = 'time';
@@ -285,7 +288,6 @@ function renderGameOptions() {
   set('gTextColor', settings.textColor);
   set('gFontSize', settings.fontSize);
   set('gBgOpacity', settings.bgOpacity);
-  set('gNames', settings.themeGameColors ? 'game' : 'twitch');
   set('gTag', settings.themeTag);
   $('gDecor').checked = settings.themeDecor !== false;
   $('gTag').placeholder = GameThemes.ROLE_TAG_THEMES.has(theme) ? tr('gameTagRoles') : tr(`themeTag_${theme}`) || tr('gameTagNone');
@@ -808,7 +810,6 @@ $('styleSave').addEventListener('click', saveCustomStyle);
 $('gTextColor').addEventListener('input', (e) => api.setSettings({ textColor: e.target.value }));
 $('gFontSize').addEventListener('input', (e) => { $('gFontSizeVal').textContent = `${e.target.value} px`; api.setSettings({ fontSize: Number(e.target.value) }); });
 $('gBgOpacity').addEventListener('input', (e) => { $('gBgOpacityVal').textContent = `${e.target.value} %`; api.setSettings({ bgOpacity: Number(e.target.value) }); });
-$('gNames').addEventListener('change', (e) => api.setSettings({ themeGameColors: e.target.value === 'game' }));
 $('gTag').addEventListener('input', (e) => api.setSettings({ themeTag: e.target.value.trim() }));
 $('gDecor').addEventListener('change', (e) => api.setSettings({ themeDecor: e.target.checked }));
 $('gameOff').addEventListener('click', () => api.setSettings(PRESETS.default));

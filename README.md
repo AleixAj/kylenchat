@@ -71,7 +71,7 @@
 - Los nombres con **pintura de 7TV** (degradados) se ven con sus colores.
 
 **A tu gusto**
-- **Estilos de juegos**: el chat con el aspecto del de **WoW**, **LoL**, **Valorant**, **Minecraft**, **CS2**, **Overwatch 2**, **Fortnite** o **Rust**: su letra, sus colores, su formato de línea y sus detalles (botones, pestañas, casilla de escribir). Se pueden personalizar.
+- **Estilos de juegos**: el chat con el aspecto del de **WoW**, **LoL**, **Valorant**, **Minecraft**, **CS2**, **Overwatch 2**, **Fortnite** o **Rust**: su letra, sus colores, su formato de línea y sus detalles (botones, pestañas). Los nombres llevan el color de Twitch de cada usuario. Se pueden personalizar.
 - **13 estilos rápidos** con un clic, cada uno con su propia fuente y colores: Por defecto, Texto grande, Clásico Twitch, Alto contraste, Terminal, Sakura 🌸, Neón ⚡, Rúnico ⚔️, Viñeta 💬, Glaciar ❄️, Bosque 🌿, Pizarra ✏️ y Arcade 👾.
 - **Mis estilos**: guarda el aspecto que tengas con el nombre y el color que quieras, y vuelve a él con un clic. La lista de estilos rápidos se puede ocultar.
 - Control total de posición, tamaño, fuente (cualquiera instalada en tu PC), colores, fondo, color de la barra, transparencia y tamaño de emotes.
@@ -143,16 +143,16 @@ Al abrir la app solo te avisa de los directos que empezaron hace menos de 10 min
 
 En la pestaña **Juegos** eliges el estilo con una vista previa de cada uno:
 
-- **WoW**: letra estrecha con sombra, pestañas arriba y columna de botones a la izquierda (el de amigos muestra tus espectadores). Cada línea sale como `[Usuario] [Nombre]: texto`, con el papel de quien escribe (Usuario, Sub, VIP, Mod, Streamer) como si fuera el canal y los nombres con colores de clase.
-- **LoL**: recuadro azul muy oscuro con borde dorado, `[Todos] Nombre: texto` y nombres en azul y rojo como los dos equipos.
-- **Valorant**: recuadro oscuro de esquinas rectas, letra tipo DIN, `(Todos) Nombre: texto` y nombres en turquesa y rojo.
+- **WoW**: letra estrecha con sombra, pestañas arriba y columna de botones a la izquierda (el de amigos muestra tus espectadores). Cada línea sale como `[Usuario] [Nombre]: texto`, con el papel de quien escribe (Usuario, Sub, VIP, Mod, Streamer) como si fuera el canal.
+- **LoL**: recuadro azul muy oscuro con borde dorado, `[Todos] Nombre (Sub): texto`.
+- **Valorant**: recuadro oscuro de esquinas rectas, letra tipo DIN, `(Todos) Nombre (Sub): texto`.
 - **Minecraft**: franjas negras por línea, letra pixelada y `<Nombre> texto`.
-- **CS2**: recuadro negro con marco, `[TODOS] Nombre @Sub: texto` (el papel va donde el juego pone la ubicación), nombres en azul y amarillo como los dos bandos, y casilla "Decir a todos" con "ENVIAR".
-- **Overwatch 2**: recuadro azul marino redondeado, rombo naranja delante de cada línea, `[Nombre]: texto` en naranja y casilla "[Partida]: PULSA TAB PARA CAMBIAR DE CANAL".
-- **Fortnite**: panel gris redondeado, pestañas en forma de píldora, foto de perfil de Twitch de cada persona en redondo y casilla con borde blanco.
-- **Rust**: sin recuadro, letra negrita estrecha con contorno negro, foto de perfil de Twitch en cuadrado, `[Global] Nombre: texto` y barra verde oliva para escribir.
+- **CS2**: recuadro negro con marco, `[TODOS] Nombre @Sub: texto` (el papel va donde el juego pone la ubicación).
+- **Overwatch 2**: recuadro azul marino redondeado, rombo naranja delante de cada línea y `Partida [Nombre]: texto` en naranja.
+- **Fortnite**: panel gris redondeado, pestañas en forma de píldora, y foto de perfil de Twitch de cada persona en redondo.
+- **Rust**: sin recuadro, letra negrita estrecha con contorno negro, foto de perfil de Twitch en cuadrado, y `[Global] Nombre: texto`.
 
-Debajo puedes cambiar el color del texto, el tamaño, la opacidad del fondo, si los nombres usan los colores del juego o los de Twitch, el texto de la etiqueta del canal y si se ven los **detalles del juego** (botones, pestañas y casilla de escribir). Son solo decorativos: no se pueden pulsar y los clics siguen atravesando el chat.
+Debajo puedes cambiar el color del texto, el tamaño, la opacidad del fondo, el texto de la etiqueta del canal y si se ven los **detalles del juego** (botones y pestañas). Son solo decorativos: no se pueden pulsar y los clics siguen atravesando el chat.
 
 > Inspirados en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite y Rust. No están afiliados a sus creadores (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): las fuentes son libres y parecidas a las originales, y los detalles están dibujados para la app. Los logos de las tarjetas son marcas de sus dueños (los SVG vienen de [Simple Icons](https://simpleicons.org/) y de Wikimedia Commons). En WoW se usa Arial Narrow si la tienes instalada.
 

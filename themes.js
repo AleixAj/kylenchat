@@ -5,46 +5,30 @@
   const GAME_THEMES = {
     wow: {
       // Aspecto al elegirlo (se puede cambiar después en el panel)
-      look: { fontFamily: 'Arial Narrow', fontSize: 15, bold: false, textColor: '#FFC0C0', bgColor: '#000000', bgOpacity: 15, outline: false, barColor: '#FFD100', emoteScale: 1.4 },
+      look: { fontFamily: 'Arial Narrow', fontSize: 15, bold: false, textColor: '#FFC0C0', bgColor: '#000000', bgOpacity: 10, outline: false, barColor: '#FFD100', emoteScale: 1.4 },
       // Colores de clase
-      names: ['#C69B6D', '#F48CBA', '#AAD372', '#FFF468', '#FFFFFF', '#C41E3A', '#0070DD', '#3FC7EB', '#8788EE', '#00FF98', '#FF7C0A', '#A330C9', '#33937F'],
       // Streamer y moderadores con los colores de rareza: legendario y épico
-      roles: { broadcaster: '#FF8000', moderator: '#A335EE' },
     },
     lol: {
-      look: { fontFamily: 'Inter', fontSize: 14, bold: false, textColor: '#F0E6D2', bgColor: '#0B0F14', bgOpacity: 55, outline: false, barColor: '#C8AA6E', emoteScale: 1.4 },
-      names: ['#5AAFF0', '#E8584A'], // aliados y enemigos
-      roles: { broadcaster: '#EBA03B', moderator: '#5AAFF0' },
+      look: { fontFamily: 'Inter', fontSize: 14, bold: false, textColor: '#F0E6D2', bgColor: '#0B0F14', bgOpacity: 35, outline: false, barColor: '#C8AA6E', emoteScale: 1.4 },
     },
     valorant: {
-      look: { fontFamily: 'D-DIN', fontSize: 15, bold: false, textColor: '#ECE8E1', bgColor: '#0F1923', bgOpacity: 65, outline: false, barColor: '#FF4655', emoteScale: 1.4 },
-      names: ['#5CD6CE', '#FF5A67'], // aliados y enemigos
-      roles: { broadcaster: '#F2C94C', moderator: '#B9A0FF' },
+      look: { fontFamily: 'D-DIN', fontSize: 15, bold: false, textColor: '#ECE8E1', bgColor: '#0F1923', bgOpacity: 10, outline: false, barColor: '#FF4655', emoteScale: 1.4 },
     },
     minecraft: {
-      look: { fontFamily: 'Monocraft', fontSize: 14, bold: false, textColor: '#FFFFFF', bgColor: '#000000', bgOpacity: 50, outline: false, barColor: '#FFFF55', emoteScale: 1.3 },
-      names: ['#FFFFFF'], // en Minecraft los nombres van en blanco
-      roles: { broadcaster: '#FFAA00', moderator: '#55FFFF' },
+      look: { fontFamily: 'Monocraft', fontSize: 14, bold: false, textColor: '#FFFFFF', bgColor: '#000000', bgOpacity: 35, outline: false, barColor: '#FFFF55', emoteScale: 1.3 },
     },
     cs2: {
-      look: { fontFamily: 'Rajdhani', fontSize: 16, bold: false, textColor: '#FFFFFF', bgColor: '#000000', bgOpacity: 55, outline: false, barColor: '#E8B84A', emoteScale: 1.4 },
-      names: ['#5EA8FF', '#EAC05A'], // antiterroristas y terroristas
-      roles: { broadcaster: '#E8B84A', moderator: '#B18CFF' },
+      look: { fontFamily: 'Rajdhani', fontSize: 16, bold: false, textColor: '#FFFFFF', bgColor: '#000000', bgOpacity: 10, outline: false, barColor: '#E8B84A', emoteScale: 1.4 },
     },
     overwatch: {
-      look: { fontFamily: 'Jost', fontSize: 15, bold: false, textColor: '#F4A052', bgColor: '#0B1130', bgOpacity: 82, outline: false, barColor: '#F99E1A', emoteScale: 1.4 },
-      names: ['#F4A052'], // en el chat de partida, el nombre va en el mismo naranja
-      roles: { broadcaster: '#FFD166', moderator: '#45A9FF' }, // los mods, en el azul del chat de equipo
+      look: { fontFamily: 'Jost', fontSize: 15, bold: false, textColor: '#F4A052', bgColor: '#0B1130', bgOpacity: 10, outline: false, barColor: '#F99E1A', emoteScale: 1.4 },
     },
     fortnite: {
-      look: { fontFamily: 'Inter', fontSize: 15, bold: false, textColor: '#FFFFFF', bgColor: '#1E2230', bgOpacity: 78, outline: false, barColor: '#E8EAF0', emoteScale: 1.4 },
-      names: ['#FFFFFF'],
-      roles: { broadcaster: '#FFD84A', moderator: '#62D4FF' },
+      look: { fontFamily: 'Inter', fontSize: 15, bold: false, textColor: '#FFFFFF', bgColor: '#1E2230', bgOpacity: 10, outline: false, barColor: '#E8EAF0', emoteScale: 1.4 },
     },
     rust: {
       look: { fontFamily: 'Roboto Condensed', fontSize: 16, bold: true, textColor: '#FFFFFF', bgColor: '#000000', bgOpacity: 0, outline: false, barColor: '#A9D16D', emoteScale: 1.4 },
-      names: ['#6CB4FF'], // chat global
-      roles: { broadcaster: '#AAFF55', moderator: '#FFC857' }, // el streamer, en el verde de los admins
     },
   };
 
@@ -93,13 +77,13 @@
     return h % n;
   }
 
-  // Color del nombre en un estilo de juego: el del papel (streamer, mod) o uno fijo por usuario.
-  function nameColor(theme, user, roles) {
-    const t = GAME_THEMES[theme];
-    if (!t) return '';
-    if (roles.has('broadcaster')) return t.roles.broadcaster;
-    if (roles.has('moderator')) return t.roles.moderator;
-    return t.names[hashIndex(user, t.names.length)];
+  // Los nombres van siempre con el color de Twitch de cada usuario. Para quien no ha elegido
+  // ninguno (y para los usuarios de ejemplo), uno fijo de esta lista según el nombre.
+  const TWITCH_COLORS = ['#FF4A80', '#FF7070', '#FA8E4B', '#FEE440', '#5FFF77', '#00F5D4', '#00BBF9', '#4371FB', '#9B5DE5', '#F670DD'];
+  function colorFor(name) {
+    let h = 0;
+    for (const c of String(name)) h = (h * 31 + c.charCodeAt(0)) | 0;
+    return TWITCH_COLORS[Math.abs(h) % TWITCH_COLORS.length];
   }
 
   // El papel más alto de quien escribe, según sus insignias de Twitch.
@@ -133,8 +117,8 @@
   // En WoW cada papel es un canal con número, como "[1. General]" o "[2. Comercio]".
   const WOW_CHANNEL_NUMBER = { user: 1, subscriber: 2, vip: 3, moderator: 4, broadcaster: 5 };
 
-  // Detalles decorativos de cada juego: botones de WoW, casillas de escribir de LoL, Valorant y
-  // Minecraft, barra de desplazamiento de Valorant. No se pueden pulsar (la capa no recibe clics).
+  // Detalles decorativos de cada juego: botones de WoW y barras de desplazamiento de Valorant
+  // y Overwatch. No se pueden pulsar (la capa no recibe clics).
   function buildDecor(el, theme, tag, t) {
     el.replaceChildren();
     const add = (className, parent = el) => {
@@ -142,12 +126,6 @@
       d.className = className;
       parent.append(d);
       return d;
-    };
-    const label = (parent, text) => {
-      const s = document.createElement('span');
-      s.className = 'input-tag';
-      s.textContent = text;
-      parent.append(s);
     };
     if (theme === 'wow') {
       const column = add('wow-buttons');
@@ -162,37 +140,10 @@
       add('wow-btn scroll-up', column).innerHTML = ICONS.up;
       add('wow-btn scroll-down', column).innerHTML = ICONS.down;
       add('wow-btn scroll-end', column).innerHTML = ICONS.bottom;
-    } else if (theme === 'lol') {
-      label(add('game-input lol-input'), `[${tag}]`);
     } else if (theme === 'valorant') {
       add('val-scroll');
-      label(add('game-input val-input'), `${tag}:`);
-    } else if (theme === 'minecraft') {
-      add('game-input mc-input').textContent = '_';
-    } else if (theme === 'cs2') {
-      const input = add('game-input cs2-input');
-      label(input, t('cs2Say'));
-      const send = document.createElement('b');
-      send.className = 'send';
-      send.textContent = t('cs2Send');
-      input.append(send);
     } else if (theme === 'overwatch') {
       add('ow-scroll');
-      const input = add('game-input ow-input');
-      label(input, `◆ [${tag}]:`);
-      const hint = document.createElement('span');
-      hint.className = 'hint';
-      hint.textContent = t('owHint');
-      input.append(hint);
-    } else if (theme === 'fortnite') {
-      const input = add('game-input fn-input');
-      add('fn-field', input).textContent = t('fnHint');
-      add('fn-more', input).textContent = '•••';
-    } else if (theme === 'rust') {
-      const input = add('game-input rust-input');
-      label(input, `[${tag}]`);
-      add('rust-caret', input);
-      add('rust-person', input).innerHTML = ICONS.friends;
     }
   }
 
@@ -218,5 +169,5 @@
     return a;
   }
 
-  root.GameThemes = { THEMES: Object.keys(GAME_THEMES), GAME_THEMES, nameColor, roleOf, ROLE_TAG_THEMES, TIME_THEMES, TAG_LIKE_NAME_THEMES, RANK_THEMES, WOW_CHANNEL_NUMBER, buildDecor, makeAvatar, makeBadge, samplePicture };
+  root.GameThemes = { THEMES: Object.keys(GAME_THEMES), GAME_THEMES, colorFor, roleOf, ROLE_TAG_THEMES, TIME_THEMES, TAG_LIKE_NAME_THEMES, RANK_THEMES, WOW_CHANNEL_NUMBER, buildDecor, makeAvatar, makeBadge, samplePicture };
 })(typeof window !== 'undefined' ? window : globalThis);

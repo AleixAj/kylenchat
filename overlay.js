@@ -6,13 +6,8 @@ const tr = (key, vars) => i18n.t(settings ? settings.language : 'es', key, vars)
 
 // ---------- Colores ----------
 
-// Colores para usuarios que no han elegido ninguno en Twitch.
-const FALLBACK_COLORS = ['#FF4A80', '#FF7070', '#FA8E4B', '#FEE440', '#5FFF77', '#00F5D4', '#00BBF9', '#4371FB', '#9B5DE5', '#F670DD'];
-function colorFor(name) {
-  let h = 0;
-  for (const c of name) h = (h * 31 + c.charCodeAt(0)) | 0;
-  return FALLBACK_COLORS[Math.abs(h) % FALLBACK_COLORS.length];
-}
+// Color para usuarios que no han elegido ninguno en Twitch.
+const colorFor = GameThemes.colorFor;
 
 // Muchos eligen colores muy oscuros (azul marino, negro...) que no se leen sobre el juego:
 // se aclaran mezclándolos con blanco hasta que tengan suficiente brillo.
@@ -856,8 +851,8 @@ function fillMessage(el, msg) {
   nameEl.className = 'name';
   nameEl.textContent = name;
   nameEl.dataset.role = tr(`role_${GameThemes.roleOf(roles)}`); // LoL lo pone como campeón: "Nombre (Sub)"
-  if (themed && settings.themeGameColors) nameEl.style.color = GameThemes.nameColor(settings.theme, msg.user || name, roles);
-  else if (settings.userColors) nameEl.style.color = readable(color || colorFor(name));
+  // En los estilos de juegos el nombre lleva siempre su color de Twitch, como en el chat de Twitch.
+  if (themed || settings.userColors) nameEl.style.color = readable(color || colorFor(name));
   if (msg.userId) {
     nameEl.dataset.uid = msg.userId;
     applyPaint(nameEl);
