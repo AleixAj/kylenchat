@@ -116,11 +116,12 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
   color: #FFD100;
 }
 .theme-wow .wow-btn svg { width: 15px; height: 15px; fill: currentColor; filter: drop-shadow(0 1px 0 #000); }
-.theme-wow .wow-btn.friends { top: 0; flex-direction: column; justify-content: flex-start; padding-top: 2px; height: 30px; }
-.theme-wow .wow-btn.friends svg { width: 13px; height: 13px; }
-.theme-wow .wow-count { font: 700 9px "Arial Narrow", "Archivo Narrow", sans-serif; color: #fff; line-height: 1; text-shadow: 1px 1px 0 #000; }
-.theme-wow .wow-btn.speaker { top: 36px; }
-.theme-wow .wow-btn.bubble { top: 66px; }
+.theme-wow .wow-btn.friends { top: 0; }
+/* Los espectadores, en una etiqueta pequeña en la esquina del botón de amigos */
+.theme-wow .wow-count { position: absolute; right: -3px; bottom: -4px; padding: 0 2px; border-radius: 3px; background: #000; font: 700 9px/11px "Arial Narrow", "Archivo Narrow", sans-serif; color: #fff; }
+.theme-wow .wow-count:empty { display: none; }
+.theme-wow .wow-btn.speaker { top: 28px; }
+.theme-wow .wow-btn.bubble { top: 56px; }
 .theme-wow .wow-btn.scroll-up { bottom: 56px; }
 .theme-wow .wow-btn.scroll-down { bottom: 28px; }
 .theme-wow .wow-btn.scroll-end { bottom: 0; }

@@ -48,7 +48,7 @@
   <img src="assets/readme/styles/kylen.webp" alt="Kylen Chat en mode de prova, amb mencions, subs, bits, bescanvis i raids destacats" width="400">
 </p>
 <p align="center">
-  <sub>El meu estil: Segoe UI a 20 px, text blanc amb contorn i fons negre suau, en mode de prova. Els estils de jocs són <a href="#estils-de-jocs">més avall</a>.</sub>
+  <sub>El meu estil damunt d'una partida de League of Legends: Segoe UI a 20 px, text blanc amb contorn i fons negre suau (en mode de prova). Els estils de jocs són <a href="#estils-de-jocs">més avall</a>.</sub>
 </p>
 
 ---
@@ -155,8 +155,10 @@ A la pestanya **Juegos** (Jocs) tries l'estil amb una previsualització de cadas
 A sota pots canviar el color del text, la mida, l'opacitat del fons, el text de l'etiqueta del canal i si es veuen els **detalls del joc** (botons i pestanyes). Són només decoratius: no es poden prémer i els clics continuen travessant el xat.
 
 <table align="center">
-  <tr><td align="center"><img src="assets/readme/styles/wow.webp" width="190" alt="Estil WoW"><br><sub>WoW</sub></td><td align="center"><img src="assets/readme/styles/lol.webp" width="190" alt="Estil LoL"><br><sub>LoL</sub></td><td align="center"><img src="assets/readme/styles/valorant.webp" width="190" alt="Estil Valorant"><br><sub>Valorant</sub></td><td align="center"><img src="assets/readme/styles/minecraft.webp" width="190" alt="Estil Minecraft"><br><sub>Minecraft</sub></td></tr>
-  <tr><td align="center"><img src="assets/readme/styles/cs2.webp" width="190" alt="Estil CS2"><br><sub>CS2</sub></td><td align="center"><img src="assets/readme/styles/overwatch.webp" width="190" alt="Estil Overwatch 2"><br><sub>Overwatch 2</sub></td><td align="center"><img src="assets/readme/styles/fortnite.webp" width="190" alt="Estil Fortnite"><br><sub>Fortnite</sub></td><td align="center"><img src="assets/readme/styles/rust.webp" width="190" alt="Estil Rust"><br><sub>Rust</sub></td></tr>
+  <tr><td align="center" width="50%"><img src="assets/readme/games/wow.png" height="30" alt=""> <b>WoW</b><br><img src="assets/readme/styles/wow.webp" width="400" alt="Estil WoW"></td><td align="center" width="50%"><img src="assets/readme/games/lol.png" height="30" alt=""> <b>LoL</b><br><img src="assets/readme/styles/lol.webp" width="400" alt="Estil LoL"></td></tr>
+  <tr><td align="center" width="50%"><img src="assets/readme/games/valorant.png" height="30" alt=""> <b>Valorant</b><br><img src="assets/readme/styles/valorant.webp" width="400" alt="Estil Valorant"></td><td align="center" width="50%"><img src="assets/readme/games/minecraft.png" height="30" alt=""> <b>Minecraft</b><br><img src="assets/readme/styles/minecraft.webp" width="400" alt="Estil Minecraft"></td></tr>
+  <tr><td align="center" width="50%"><img src="assets/readme/games/cs2.png" height="30" alt=""> <b>CS2</b><br><img src="assets/readme/styles/cs2.webp" width="400" alt="Estil CS2"></td><td align="center" width="50%"><img src="assets/readme/games/overwatch.png" height="30" alt=""> <b>Overwatch 2</b><br><img src="assets/readme/styles/overwatch.webp" width="400" alt="Estil Overwatch 2"></td></tr>
+  <tr><td align="center" width="50%"><img src="assets/readme/games/fortnite.png" height="30" alt=""> <b>Fortnite</b><br><img src="assets/readme/styles/fortnite.webp" width="400" alt="Estil Fortnite"></td><td align="center" width="50%"><img src="assets/readme/games/rust.png" height="30" alt=""> <b>Rust</b><br><img src="assets/readme/styles/rust.webp" width="400" alt="Estil Rust"></td></tr>
 </table>
 
 > Inspirats en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite i Rust. No estan afiliats als seus creadors (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): les fonts són lliures i semblants a les originals, i els detalls estan dibuixats per a l'app. Els logos de les targetes són marques dels seus propietaris (els SVG vénen de [Simple Icons](https://simpleicons.org/) i de Wikimedia Commons). A WoW es fa servir Arial Narrow si la tens instal·lada.

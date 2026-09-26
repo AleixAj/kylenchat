@@ -556,6 +556,9 @@
   // Novedades de cada versión, para el aviso que sale tras actualizar.
   const CHANGELOG = {
     es: {
+      '1.4.3': [
+        'WoW: el botón de amigos de arriba es cuadrado como los demás, y el número de espectadores va en una etiqueta en su esquina.',
+      ],
       '1.4.2': [
         '4 estilos rápidos nuevos: Sin fondo, Medianoche 🌙, Atardecer 🌅 y Lava 🔥.',
         'Estilos de juegos: más margen abajo y a la derecha, para que el texto no quede pegado al borde.',
@@ -619,6 +622,9 @@
       ],
     },
     en: {
+      '1.4.3': [
+        'WoW: the friends button at the top is square like the others, and the viewer count sits in a small tag in its corner.',
+      ],
       '1.4.2': [
         '4 new quick styles: No background, Midnight 🌙, Sunset 🌅 and Lava 🔥.',
         'Game styles: more space at the bottom and right, so text no longer sits against the edge.',

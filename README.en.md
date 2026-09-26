@@ -48,7 +48,7 @@
   <img src="assets/readme/styles/kylen.webp" alt="Kylen Chat in preview mode, with highlighted mentions, subs, bits, redemptions and raids" width="400">
 </p>
 <p align="center">
-  <sub>My style: Segoe UI at 20 px, white outlined text and a soft black background, in preview mode. The game styles are <a href="#game-styles">further down</a>.</sub>
+  <sub>My style on top of a League of Legends match: Segoe UI at 20 px, white outlined text and a soft black background (in preview mode). The game styles are <a href="#game-styles">further down</a>.</sub>
 </p>
 
 ---
@@ -155,8 +155,10 @@ In the **Games** tab you pick a style, with a preview of each one:
 Below you can change the text color, size, background opacity, the channel tag text and whether the **game details** (buttons and tabs) are shown. They're decorative only: they can't be clicked and clicks still go through the chat.
 
 <table align="center">
-  <tr><td align="center"><img src="assets/readme/styles/wow.webp" width="190" alt="Style WoW"><br><sub>WoW</sub></td><td align="center"><img src="assets/readme/styles/lol.webp" width="190" alt="Style LoL"><br><sub>LoL</sub></td><td align="center"><img src="assets/readme/styles/valorant.webp" width="190" alt="Style Valorant"><br><sub>Valorant</sub></td><td align="center"><img src="assets/readme/styles/minecraft.webp" width="190" alt="Style Minecraft"><br><sub>Minecraft</sub></td></tr>
-  <tr><td align="center"><img src="assets/readme/styles/cs2.webp" width="190" alt="Style CS2"><br><sub>CS2</sub></td><td align="center"><img src="assets/readme/styles/overwatch.webp" width="190" alt="Style Overwatch 2"><br><sub>Overwatch 2</sub></td><td align="center"><img src="assets/readme/styles/fortnite.webp" width="190" alt="Style Fortnite"><br><sub>Fortnite</sub></td><td align="center"><img src="assets/readme/styles/rust.webp" width="190" alt="Style Rust"><br><sub>Rust</sub></td></tr>
+  <tr><td align="center" width="50%"><img src="assets/readme/games/wow.png" height="30" alt=""> <b>WoW</b><br><img src="assets/readme/styles/wow.webp" width="400" alt="Style WoW"></td><td align="center" width="50%"><img src="assets/readme/games/lol.png" height="30" alt=""> <b>LoL</b><br><img src="assets/readme/styles/lol.webp" width="400" alt="Style LoL"></td></tr>
+  <tr><td align="center" width="50%"><img src="assets/readme/games/valorant.png" height="30" alt=""> <b>Valorant</b><br><img src="assets/readme/styles/valorant.webp" width="400" alt="Style Valorant"></td><td align="center" width="50%"><img src="assets/readme/games/minecraft.png" height="30" alt=""> <b>Minecraft</b><br><img src="assets/readme/styles/minecraft.webp" width="400" alt="Style Minecraft"></td></tr>
+  <tr><td align="center" width="50%"><img src="assets/readme/games/cs2.png" height="30" alt=""> <b>CS2</b><br><img src="assets/readme/styles/cs2.webp" width="400" alt="Style CS2"></td><td align="center" width="50%"><img src="assets/readme/games/overwatch.png" height="30" alt=""> <b>Overwatch 2</b><br><img src="assets/readme/styles/overwatch.webp" width="400" alt="Style Overwatch 2"></td></tr>
+  <tr><td align="center" width="50%"><img src="assets/readme/games/fortnite.png" height="30" alt=""> <b>Fortnite</b><br><img src="assets/readme/styles/fortnite.webp" width="400" alt="Style Fortnite"></td><td align="center" width="50%"><img src="assets/readme/games/rust.png" height="30" alt=""> <b>Rust</b><br><img src="assets/readme/styles/rust.webp" width="400" alt="Style Rust"></td></tr>
 </table>
 
 > Inspired by World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite and Rust. Not affiliated with their makers (Blizzard, Riot Games, Mojang, Valve, Epic Games or Facepunch): the fonts are free lookalikes and the details are drawn for the app. The logos on the cards are trademarks of their owners (the SVGs come from [Simple Icons](https://simpleicons.org/) and Wikimedia Commons). The WoW style uses Arial Narrow if you have it installed.
