@@ -48,7 +48,7 @@
   <img src="assets/readme/styles/kylen.webp" alt="Kylen Chat in preview mode, with highlighted mentions, subs, bits, redemptions and raids" width="400">
 </p>
 <p align="center">
-  <sub>My style on top of a League of Legends match: Segoe UI at 20 px, white outlined text and a soft black background (in preview mode).</sub>
+  <sub>My style on top of a League of Legends match: Segoe UI at 16 px, white outlined text and a soft black background (in preview mode).</sub>
 </p>
 
 ### Game styles
@@ -74,6 +74,15 @@ Below you can change the text color, size, background opacity, the channel tag t
 </table>
 
 > Inspired by World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite and Rust. Not affiliated with their makers (Blizzard, Riot Games, Mojang, Valve, Epic Games or Facepunch): the fonts are free lookalikes and the details are drawn for the app. The logos on the cards are trademarks of their owners (the SVGs come from [Simple Icons](https://simpleicons.org/) and Wikimedia Commons). The WoW style uses Arial Narrow if you have it installed.
+
+### What a live alert looks like
+
+<p align="center">
+  <img src="assets/readme/styles/alert.webp" alt="Live alert: LIVE, Kylen, Games with the community · League of Legends" width="420">
+</p>
+<p align="center">
+  <sub>When a channel on your list goes live, this box shows up on top of the game with their picture, title and game, and an alert sound plays. How to set it up: <a href="#live-alerts">Live alerts</a>.</sub>
+</p>
 
 ---
 

@@ -48,7 +48,7 @@
   <img src="assets/readme/styles/kylen.webp" alt="Kylen Chat en modo prueba, con menciones, subs, bits, canjes y raids destacados" width="400">
 </p>
 <p align="center">
-  <sub>Mi estilo encima de una partida de League of Legends: Segoe UI a 20 px, texto blanco con contorno y fondo negro suave (en modo prueba).</sub>
+  <sub>Mi estilo encima de una partida de League of Legends: Segoe UI a 16 px, texto blanco con contorno y fondo negro suave (en modo prueba).</sub>
 </p>
 
 ### Estilos de juegos
@@ -74,6 +74,15 @@ Debajo puedes cambiar el color del texto, el tamaño, la opacidad del fondo, el 
 </table>
 
 > Inspirados en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite y Rust. No están afiliados a sus creadores (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): las fuentes son libres y parecidas a las originales, y los detalles están dibujados para la app. Los logos de las tarjetas son marcas de sus dueños (los SVG vienen de [Simple Icons](https://simpleicons.org/) y de Wikimedia Commons). En WoW se usa Arial Narrow si la tienes instalada.
+
+### Así se ve un aviso de directo
+
+<p align="center">
+  <img src="assets/readme/styles/alert.webp" alt="Aviso de directo: EN DIRECTO, Kylen, Partidas con la comunidad · League of Legends" width="420">
+</p>
+<p align="center">
+  <sub>Cuando un canal de tu lista empieza directo, sale este recuadro encima del juego con su foto, el título y el juego, y suena un aviso. Cómo configurarlo, en <a href="#avisos-de-directo">Avisos de directo</a>.</sub>
+</p>
 
 ---
 

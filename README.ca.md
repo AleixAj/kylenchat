@@ -48,7 +48,7 @@
   <img src="assets/readme/styles/kylen.webp" alt="Kylen Chat en mode de prova, amb mencions, subs, bits, bescanvis i raids destacats" width="400">
 </p>
 <p align="center">
-  <sub>El meu estil damunt d'una partida de League of Legends: Segoe UI a 20 px, text blanc amb contorn i fons negre suau (en mode de prova).</sub>
+  <sub>El meu estil damunt d'una partida de League of Legends: Segoe UI a 16 px, text blanc amb contorn i fons negre suau (en mode de prova).</sub>
 </p>
 
 ### Estils de jocs
@@ -74,6 +74,15 @@ A sota pots canviar el color del text, la mida, l'opacitat del fons, el text de 
 </table>
 
 > Inspirats en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite i Rust. No estan afiliats als seus creadors (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): les fonts són lliures i semblants a les originals, i els detalls estan dibuixats per a l'app. Els logos de les targetes són marques dels seus propietaris (els SVG vénen de [Simple Icons](https://simpleicons.org/) i de Wikimedia Commons). A WoW es fa servir Arial Narrow si la tens instal·lada.
+
+### Així es veu un avís de directe
+
+<p align="center">
+  <img src="assets/readme/styles/alert.webp" alt="Avís de directe: EN DIRECTO, Kylen, Partidas con la comunidad · League of Legends" width="420">
+</p>
+<p align="center">
+  <sub>Quan un canal de la teva llista comença un directe, surt aquest requadre damunt del joc amb la seva foto, el títol i el joc, i sona un avís. Com configurar-ho, a <a href="#avisos-de-directe">Avisos de directe</a>.</sub>
+</p>
 
 ---
 
