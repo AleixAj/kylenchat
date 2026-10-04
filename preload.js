@@ -7,7 +7,7 @@ contextBridge.exposeInMainWorld('api', {
   getState: () => ipcRenderer.invoke('get-state'),
   setSettings: (patch) => ipcRenderer.send('set-settings', patch),
   resetLook: () => ipcRenderer.send('reset-look'),
-  saveProfile: (name) => ipcRenderer.send('save-profile', name),
+  saveProfile: (name, color) => ipcRenderer.send('save-profile', name, color),
   loadProfile: (name) => ipcRenderer.send('load-profile', name),
   deleteProfile: (name) => ipcRenderer.send('delete-profile', name),
   exportSettings: () => ipcRenderer.invoke('export-settings'),

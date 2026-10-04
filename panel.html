@@ -56,6 +56,7 @@
   .style-chip .del { padding: 0 10px 0 6px; font-size: 14px; line-height: 1; opacity: .75; }
   .style-chip .del:hover { opacity: 1; }
   .style-chip:hover { filter: brightness(1.15); }
+  .style-chip.active { box-shadow: 0 0 0 2px #1f1f23, 0 0 0 4px #efeff1; } /* el perfil que está puesto */
   .note { color: var(--muted); font-size: 12px; line-height: 1.5; }
   .status { font-size: 12px; margin: 0 0 8px; color: #8fe3a8; }
   .status.bad { color: #ff8a8a; }
@@ -399,13 +400,11 @@
     <section>
       <h2 data-i18n="sectionProfiles"></h2>
       <p class="note" id="profilesNote"></p>
-      <div class="row">
-        <select id="profileList"></select>
-        <button id="profileLoad" data-i18n="loadProfile"></button>
-        <button id="profileDelete" data-i18n="deleteProfile"></button>
-      </div>
+      <div class="presets" id="profileChips"></div>
+      <p class="note" id="profilesEmpty" data-i18n="noProfiles"></p>
       <div class="row">
         <input type="text" id="profileName" maxlength="30" data-i18n-placeholder="profileNamePlaceholder">
+        <input type="color" id="profileColor" value="#9146ff" data-i18n-title="styleColor">
         <button class="primary" id="profileSave" data-i18n="saveProfile"></button>
       </div>
     </section>

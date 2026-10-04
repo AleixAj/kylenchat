@@ -509,24 +509,32 @@ async function loadFonts() {
 
 // ---------- Perfiles ----------
 
+// Cada perfil es una etiqueta de su color, como "Mis estilos": un clic lo carga y la × lo borra.
 function renderProfiles() {
-  const list = $('profileList');
   const { profiles, activeProfile } = settings;
-  if (!profiles.length) {
-    const opt = document.createElement('option');
-    opt.textContent = tr('noProfiles');
-    list.replaceChildren(opt);
-  } else {
-    list.replaceChildren(...profiles.map((p) => {
-      const opt = document.createElement('option');
-      opt.value = opt.textContent = p.name;
-      return opt;
-    }));
-    if (activeProfile) list.value = activeProfile;
-  }
-  list.disabled = !profiles.length;
-  $('profileLoad').disabled = !profiles.length;
-  $('profileDelete').disabled = !profiles.length;
+  $('profileChips').replaceChildren(...profiles.map((p) => {
+    const color = p.color || '#9146ff';
+    const chip = document.createElement('span');
+    chip.className = 'style-chip';
+    chip.classList.toggle('active', p.name === activeProfile);
+    chip.style.background = color;
+    const load = document.createElement('button');
+    load.className = 'apply';
+    load.textContent = p.name;
+    load.style.color = readableOn(color);
+    load.title = tr('loadProfile');
+    load.addEventListener('click', () => api.loadProfile(p.name));
+    const del = document.createElement('button');
+    del.className = 'del';
+    del.textContent = '×';
+    del.style.color = readableOn(color);
+    del.title = `${tr('deleteProfile')}: ${p.name}`;
+    del.setAttribute('aria-label', del.title);
+    del.addEventListener('click', () => api.deleteProfile(p.name));
+    chip.append(load, del);
+    return chip;
+  }));
+  $('profilesEmpty').hidden = profiles.length > 0;
 }
 
 function saveProfile() {
@@ -535,7 +543,7 @@ function saveProfile() {
     $('profileName').focus();
     return;
   }
-  api.saveProfile(name);
+  api.saveProfile(name, $('profileColor').value);
   $('profileName').value = '';
 }
 
@@ -797,8 +805,6 @@ $('welcomeStart').addEventListener('click', () => {
 });
 $('profileSave').addEventListener('click', saveProfile);
 $('profileName').addEventListener('keydown', (e) => e.key === 'Enter' && saveProfile());
-$('profileLoad').addEventListener('click', () => api.loadProfile($('profileList').value));
-$('profileDelete').addEventListener('click', () => api.deleteProfile($('profileList').value));
 $('exportSettings').addEventListener('click', async () => {
   const result = await api.exportSettings();
   $('backupStatus').classList.toggle('bad', result === 'error');

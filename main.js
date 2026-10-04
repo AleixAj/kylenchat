@@ -151,12 +151,13 @@ function sanitize(patch) {
 
 const pick = (obj, keys) => Object.fromEntries(keys.filter((k) => k in obj).map((k) => [k, obj[k]]));
 const isProfileName = isText(30);
+const PROFILE_COLOR = '#9146ff'; // color de la etiqueta de los perfiles guardados antes de poder elegirlo
 
 function cleanProfiles(list) {
   return list
     .filter((p) => p && isProfileName(p.name) && p.name.trim())
     .slice(0, 10)
-    .map((p) => ({ name: p.name.trim(), data: pick(sanitize(p.data), PROFILE_KEYS) }));
+    .map((p) => ({ name: p.name.trim(), color: isHex(p.color) ? p.color : PROFILE_COLOR, data: pick(sanitize(p.data), PROFILE_KEYS) }));
 }
 
 // "Mis estilos": aspectos guardados por el usuario, con su nombre y el color de su botón.
@@ -1031,14 +1032,15 @@ function applyBounds(bounds) {
   settings.bounds = overlay.getBounds();
 }
 
-function saveProfile(name) {
+function saveProfile(name, color) {
   if (!isProfileName(name) || !name.trim()) return;
   name = name.trim();
+  if (!isHex(color)) color = PROFILE_COLOR;
   settings.bounds = overlay.getBounds();
   const data = pick(settings, PROFILE_KEYS);
   const existing = settings.profiles.find((p) => p.name === name);
-  if (existing) existing.data = data;
-  else if (settings.profiles.length < 10) settings.profiles.push({ name, data });
+  if (existing) Object.assign(existing, { color, data });
+  else if (settings.profiles.length < 10) settings.profiles.push({ name, color, data });
   else return;
   settings.activeProfile = name;
   afterProfileChange();
@@ -1130,7 +1132,7 @@ ipcMain.on('reset-look', () => {
   saveSettings();
   broadcastSettings();
 });
-ipcMain.on('save-profile', (_e, name) => saveProfile(name));
+ipcMain.on('save-profile', (_e, name, color) => saveProfile(name, color));
 ipcMain.on('load-profile', (_e, name) => loadProfile(name));
 ipcMain.on('delete-profile', (_e, name) => deleteProfile(name));
 ipcMain.handle('export-settings', exportSettings);
