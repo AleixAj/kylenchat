@@ -18,6 +18,13 @@ for (const file of files) {
   }
 }
 
+// Si la compilación falló, en dist/ quedan los archivos de la versión anterior: no se suben.
+const built = (fs.readFileSync(path.join(dist, 'latest.yml'), 'utf8').match(/^version:\s*(\S+)/m) || [])[1];
+if (built !== version) {
+  console.error(`dist/ tiene la versión ${built}, no la ${version}. Vuelve a ejecutar "npm run dist".`);
+  process.exit(1);
+}
+
 const notes = [
   `## Kylen Chat for Twitch ${version}`,
   '',
