@@ -229,10 +229,16 @@ npm start
 | Archivo | Qué es |
 | --- | --- |
 | `main.js` | Proceso principal: ventanas, bandeja, atajos, ajustes y actualizaciones |
-| `overlay.html` / `overlay.js` | La ventana transparente con el chat (conexión a Twitch y emotes) |
+| `main/` | Ajustes por defecto y sus comprobaciones (`settings-schema.js`) y la consulta de quién está en directo (`live-api.js`) |
+| `overlay.html` / `overlay.js` | La ventana transparente con el chat (conexión a Twitch y mensajes) |
+| `overlay/` | Partes del chat: lectura de mensajes, emotes, pinturas de 7TV, canjes de puntos, fotos de perfil y modo prueba |
+| `alert.html` / `alert.js` | El recuadro de los avisos de directo |
 | `panel.html` / `panel.js` | La ventana de ajustes |
+| `themes.js` / `themes.css` | Los estilos de juegos |
 | `i18n.js` | Textos en español e inglés |
 | `preload.js` | Puente seguro entre las ventanas y el proceso principal |
+| `colors.js` / `resize-grip.js` | Utilidades compartidas: colores y la esquina para cambiar el tamaño |
+| `scripts/release.js` | Sube una versión nueva a GitHub Releases |
 | `assets/` | Iconos, insignias, banderas y fuentes |
 | `fonts.css` | Fuentes incluidas en la app |
 

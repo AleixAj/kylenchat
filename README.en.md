@@ -229,10 +229,16 @@ npm start
 | File | What it is |
 | --- | --- |
 | `main.js` | Main process: windows, tray, shortcuts, settings and updates |
-| `overlay.html` / `overlay.js` | The transparent chat window (Twitch connection and emotes) |
+| `main/` | Default settings and their checks (`settings-schema.js`) and the live channels lookup (`live-api.js`) |
+| `overlay.html` / `overlay.js` | The transparent chat window (Twitch connection and messages) |
+| `overlay/` | Parts of the chat: reading messages, emotes, 7TV paints, channel points, profile pictures and preview mode |
+| `alert.html` / `alert.js` | The live alert box |
 | `panel.html` / `panel.js` | The settings window |
+| `themes.js` / `themes.css` | The game styles |
 | `i18n.js` | Spanish and English texts |
 | `preload.js` | Secure bridge between the windows and the main process |
+| `colors.js` / `resize-grip.js` | Shared helpers: colors and the corner to resize |
+| `scripts/release.js` | Uploads a new version to GitHub Releases |
 | `assets/` | Icons, badges, flags and fonts |
 | `fonts.css` | Fonts bundled with the app |
 

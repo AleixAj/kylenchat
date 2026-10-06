@@ -1,5 +1,5 @@
-# Crea el instalador para Mac en un Mac de GitHub y lo añade a la release.
-# Lo lanza scripts/release.js después de crear el borrador con la versión de Windows.
+# Builds the Mac installer on a GitHub Mac machine and adds it to the release.
+# scripts/release.js starts it after creating the draft with the Windows version.
 name: Mac
 
 on:

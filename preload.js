@@ -1,5 +1,8 @@
+// Bridge between the windows and the main process. The windows can't use Node or Electron
+// directly; they only get these functions, as window.api.
 const { contextBridge, ipcRenderer } = require('electron');
 
+// Turns a channel name into an "api.onSomething(callback)" listener.
 const on = (channel) => (cb) => ipcRenderer.on(channel, (_e, ...args) => cb(...args));
 
 contextBridge.exposeInMainWorld('api', {

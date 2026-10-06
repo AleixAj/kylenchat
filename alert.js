@@ -1,16 +1,15 @@
-// Recuadro de "Avisos de directo": una ventana aparte del chat, transparente y que deja pasar
-// los clics. Solo existe mientras hay algo que enseñar: cuando se vacía, avisa al proceso
-// principal y este la cierra para no gastar memoria.
+// "Live alerts" box: a window apart from the chat, transparent, that lets clicks go through.
+// It only exists while there is something to show: when it's empty it tells the main
+// process, which closes it so it doesn't use memory.
 
 const sound = document.getElementById('sound');
-const grip = document.getElementById('grip');
 const queue = [];
 let settings = null;
 let editing = false;
-let current = null; // tarjeta que se está viendo
-let currentInfo = null; // y sus datos, por si hay que volver a enseñarla
+let current = null; // card on screen right now
+let currentInfo = null; // and its data, in case we need to show it again
 let hideTimer = null;
-let received = 0; // avisos recibidos (el proceso principal lo compara antes de cerrar la ventana)
+let received = 0; // alerts received (the main process checks it before closing the window)
 
 const tr = (key, vars) => i18n.t(settings ? settings.language : 'es', key, vars);
 
@@ -54,7 +53,7 @@ function dismissCurrent(then) {
   currentInfo = null;
   if (!card) return then && then();
   card.classList.add('hide');
-  setTimeout(() => { card.remove(); if (then) then(); }, 600); // lo que dura la animación de salida
+  setTimeout(() => { card.remove(); if (then) then(); }, 600); // how long the exit animation lasts
 }
 
 function showNext() {
@@ -62,13 +61,13 @@ function showNext() {
   const info = queue.shift();
   if (!info) return maybeIdle();
   api.alertShow();
-  playSound(); // suena con cada aviso que aparece
+  playSound(); // plays with each alert that appears
   present(makeCard(info));
   currentInfo = info;
   hideTimer = setTimeout(() => dismissCurrent(showNext), settings.liveDuration * 1000);
 }
 
-// Nada en pantalla, nada en cola y el sonido ya ha terminado: la ventana se puede cerrar.
+// Nothing on screen, nothing waiting and the sound has finished: the window can be closed.
 function maybeIdle() {
   if (!current && !queue.length && !editing && sound.paused) api.alertIdle(received);
 }
@@ -90,8 +89,8 @@ function setEditing(on) {
   editing = on;
   document.body.classList.toggle('edit', on);
   if (on) {
-    // Un aviso de ejemplo que se queda fijo mientras se mueve y se ajusta el recuadro.
-    // Si se estaba viendo uno de verdad, vuelve a la cola y sale al fijar el recuadro.
+    // A sample alert stays on screen while the box is moved and resized.
+    // If a real one was showing, it goes back to the queue and shows when the box is locked.
     if (currentInfo) queue.unshift(currentInfo);
     dismissCurrent();
     for (const el of document.querySelectorAll('.card')) el.remove();
@@ -106,26 +105,12 @@ function setEditing(on) {
 
 sound.addEventListener('ended', maybeIdle);
 
-grip.addEventListener('pointerdown', (e) => {
-  e.preventDefault();
-  grip.setPointerCapture(e.pointerId);
-  const startX = e.screenX;
-  const startY = e.screenY;
-  api.resizeStart();
-  const move = (ev) => api.resizeMove(ev.screenX - startX, ev.screenY - startY);
-  const up = () => {
-    grip.removeEventListener('pointermove', move);
-    grip.removeEventListener('pointerup', up);
-    api.resizeEnd();
-  };
-  grip.addEventListener('pointermove', move);
-  grip.addEventListener('pointerup', up);
-});
+setupResizeGrip(document.getElementById('grip'));
 
 api.onSettings((s) => { settings = s; });
 api.onLiveAlert((info) => { if (settings) onAlert(info); });
 api.onAlertEdit(setEditing);
 api.getSettings().then((s) => {
   settings = s;
-  api.alertReady(); // ya puede recibir avisos
+  api.alertReady(); // it can receive alerts now
 });

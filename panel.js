@@ -1,3 +1,6 @@
+// Settings window: fills the controls with the saved settings and sends every change
+// to the main process, which saves it and passes it on to the chat windows.
+
 const $ = (id) => document.getElementById(id);
 
 let lang = 'es';
@@ -7,7 +10,7 @@ let welcomeShown = false;
 const tr = (key, vars) => i18n.t(lang, key, vars);
 const secondsOrNever = (v) => (Number(v) === 0 ? tr('never') : `${v} s`);
 
-// Cada ajuste: tipo de control y cómo se muestra su valor.
+// Each setting: type of control and how its value is shown next to it.
 const FIELDS = {
   fontSize: { type: 'range', show: (v) => `${v} px` },
   fontFamily: { type: 'select' },
@@ -42,12 +45,12 @@ const FIELDS = {
   autoStart: { type: 'check' },
 };
 
-// Estilos rápidos: cada uno fija todo el aspecto (fuente, colores, fondo...), así que se pueden
-// probar uno tras otro sin que queden restos del anterior. Las fuentes van incluidas en la app (fonts.css).
+// Quick styles: each one sets the whole look (font, colors, background...), so they can be
+// tried one after another without leftovers from the previous one. The fonts come with the app (fonts.css).
 const LOOK_BASE = {
   fontSize: 15, fontFamily: 'Segoe UI', bold: false, textColor: '#ffffff', userColors: true,
   bgColor: '#000000', bgOpacity: 25, barColor: '#9146ff', outline: true, opacity: 100, emoteScale: 1.6,
-  theme: '', themeTag: '', themeDecor: true, // sin estilo de juego
+  theme: '', themeTag: '', themeDecor: true, // no game style
 };
 const PRESETS = {
   default: { ...LOOK_BASE },
@@ -69,21 +72,21 @@ const PRESETS = {
   lava: { ...LOOK_BASE, fontFamily: 'Rajdhani', fontSize: 18, bold: true, textColor: '#ffe3d1', bgColor: '#2a0802', bgOpacity: 65, barColor: '#ff4d1a' },
 };
 
-// Cada botón de estilo se ve con su propia fuente y colores, como una muestra.
+// Each style button is drawn with its own font and colors, like a sample.
 function paintPresetButtons() {
   document.querySelectorAll('[data-preset]').forEach((b) => {
     const p = PRESETS[b.dataset.preset];
-    const n = parseInt(p.bgColor.slice(1), 16);
+    // A bit more solid than the real background, so the button text can be read.
     const alpha = p.bgOpacity ? Math.max(0.6, p.bgOpacity / 100) : 0;
     b.style.fontFamily = `"${p.fontFamily}", "Segoe UI", system-ui, sans-serif`;
     b.style.fontWeight = p.bold ? '700' : '400';
     b.style.color = p.textColor;
-    b.style.background = `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+    b.style.background = hexToRgba(p.bgColor, alpha);
     b.style.textShadow = p.outline ? '0 0 2px #000, 1px 1px 1px #000' : 'none';
   });
 }
 
-// ---------- Ventanas de chat (la principal y los otros chats) ----------
+// ---------- Chat windows (the main one and the other chats) ----------
 
 const EYE_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
 const EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.1 4M6.6 6.6A17.3 17.3 0 0 0 2 12s3.5 7 10 7a10 10 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
@@ -97,7 +100,7 @@ function renderChats() {
   if (key === chatsKey) return;
   chatsKey = key;
   const mainEye = $('mainEye');
-  mainEye.innerHTML = settings.chatVisible ? EYE_ON : EYE_OFF; // iconos fijos de la app
+  mainEye.innerHTML = settings.chatVisible ? EYE_ON : EYE_OFF; // fixed app icons
   mainEye.title = tr(settings.chatVisible ? 'chatHideMain' : 'chatShowMain');
   mainEye.setAttribute('aria-label', mainEye.title);
   mainEye.setAttribute('aria-pressed', String(!settings.chatVisible));
@@ -113,7 +116,7 @@ function renderChats() {
     name.append(kind);
     const eye = document.createElement('button');
     eye.className = 'eye';
-    eye.innerHTML = chat.visible ? EYE_ON : EYE_OFF; // iconos fijos de la app, sin datos de fuera
+    eye.innerHTML = chat.visible ? EYE_ON : EYE_OFF; // fixed app icons, no outside data
     eye.title = tr(chat.visible ? 'chatHide' : 'chatShow');
     eye.setAttribute('aria-label', eye.title);
     eye.setAttribute('aria-pressed', String(!chat.visible));
@@ -128,12 +131,12 @@ function renderChats() {
     li.append(remove);
     return li;
   }));
-  // Con el máximo de chats ya no se ofrece añadir más.
+  // With the maximum number of chats, we don't offer to add more.
   if (chats.length >= EXTRA_CHATS_MAX) showChatAdd(false);
   $('chatAddToggle').hidden = chats.length >= EXTRA_CHATS_MAX || !$('chatAddRow').hidden;
 }
 
-// La casilla para añadir otro chat solo aparece al pulsar "+".
+// The field to add another chat only shows after pressing "+".
 function showChatAdd(on) {
   $('chatAddRow').hidden = !on;
   $('chatAddToggle').hidden = on || (settings && (settings.extraChats || []).length >= EXTRA_CHATS_MAX);
@@ -156,26 +159,18 @@ function addChat() {
   showChatAdd(false);
 }
 
-// ---------- Estilos de juegos ----------
+// ---------- Game styles ----------
 
 const GAME_ORDER = ['wow', 'lol', 'valorant', 'minecraft', 'cs2', 'overwatch', 'fortnite', 'rust'];
 
-function hexToRgba(hex, alpha) {
-  const n = parseInt(hex.slice(1), 16);
-  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
-}
-
-// Líneas de ejemplo con la misma estructura que el chat de verdad, para que la vista previa sea real.
-// Colores de Twitch de los usuarios de ejemplo.
+// Sample lines with the same structure as the real chat, so the preview looks real.
+// Twitch colors of the sample users.
 const PREVIEW_COLORS = { kylen: '#FF3B3B', kurkya: '#1FE0C4', anita: '#FF69B4' };
 
 function previewLine(theme, [name, role, text]) {
   const el = document.createElement('div');
   el.className = 'msg';
-  const byRole = GameThemes.ROLE_TAG_THEMES.has(theme);
   const who = GameThemes.roleOf(new Set(role ? [role] : []));
-  if (byRole) el.classList.add(`ch-${who}`);
-  const tag = byRole ? `${GameThemes.WOW_CHANNEL_NUMBER[who]}. ${tr(`role_${who}`)}` : tr(`themeTag_${theme}`);
   const color = PREVIEW_COLORS[name.toLowerCase()] || GameThemes.colorFor(name.toLowerCase());
   if (GameThemes.TIME_THEMES.has(theme)) {
     const time = document.createElement('span');
@@ -183,11 +178,11 @@ function previewLine(theme, [name, role, text]) {
     time.textContent = `08:${String(21 + name.length).padStart(2, '0')}`;
     el.append(time);
   }
-  if (tag) {
+  // Channel tag, only in WoW: the role of who writes, like "[1. User]".
+  if (GameThemes.ROLE_TAG_THEMES.has(theme)) {
     const chan = document.createElement('span');
     chan.className = 'chan';
-    chan.textContent = tag;
-    if (GameThemes.TAG_LIKE_NAME_THEMES.has(theme)) chan.style.color = color;
+    chan.textContent = `${GameThemes.WOW_CHANNEL_NUMBER[who]}. ${tr(`role_${who}`)}`;
     el.append(chan);
   }
   const nameEl = document.createElement('span');
@@ -256,7 +251,7 @@ function renderGameCards() {
       frame.append(...tr('gamePreviewLines').split('|').map((line) => previewLine(theme, line.split('~'))), notice);
       const decor = document.createElement('div');
       decor.className = 'decor';
-      GameThemes.buildDecor(decor, theme, tr(`themeTag_${theme}`), tr);
+      GameThemes.buildDecor(decor, theme);
       preview.append(bar, frame, decor);
       const label = document.createElement('span');
       label.className = 'game-name';
@@ -282,7 +277,7 @@ function renderGameCards() {
   renderGameOptions();
 }
 
-// Opciones del estilo de juego activo: se guardan en los mismos ajustes que el resto del aspecto.
+// Options of the active game style: they are saved in the same settings as the rest of the look.
 function renderGameOptions() {
   const theme = settings && settings.theme;
   $('gameOptions').hidden = !theme;
@@ -294,24 +289,40 @@ function renderGameOptions() {
   set('gBgOpacity', settings.bgOpacity);
   set('gTag', settings.themeTag);
   $('gDecor').checked = settings.themeDecor !== false;
-  // La etiqueta del canal solo se ve en WoW
+  // The channel tag only shows in WoW
   $('gTag').closest('.row').style.display = GameThemes.ROLE_TAG_THEMES.has(theme) ? '' : 'none';
-  $('gTag').placeholder = GameThemes.ROLE_TAG_THEMES.has(theme) ? tr('gameTagRoles') : tr(`themeTag_${theme}`) || tr('gameTagNone');
+  $('gTag').placeholder = tr('gameTagRoles');
   $('gFontSizeVal').textContent = `${settings.fontSize} px`;
   $('gBgOpacityVal').textContent = `${settings.bgOpacity} %`;
 }
 
-// ---------- Mis estilos ----------
+// ---------- Colored chips ("My styles" and profiles) ----------
+
+// A rounded tag with its own color: clicking the name applies it and the × deletes it.
+function makeChip(name, color, onApply, deleteTitle, onDelete) {
+  const chip = document.createElement('span');
+  chip.className = 'style-chip';
+  chip.style.background = color;
+  const apply = document.createElement('button');
+  apply.className = 'apply';
+  apply.textContent = name;
+  apply.style.color = readableOn(color);
+  apply.addEventListener('click', onApply);
+  const del = document.createElement('button');
+  del.className = 'del';
+  del.textContent = '×';
+  del.style.color = readableOn(color);
+  del.title = deleteTitle;
+  del.setAttribute('aria-label', del.title);
+  del.addEventListener('click', onDelete);
+  chip.append(apply, del);
+  return chip;
+}
+
+// ---------- My styles ----------
 
 const LOOK_KEYS = Object.keys(LOOK_BASE);
 const STYLES_MAX = 20;
-
-// Texto blanco o negro según lo claro que sea el color del botón.
-function readableOn(hex) {
-  const n = parseInt(hex.slice(1), 16);
-  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-  return (r * 299 + g * 587 + b * 114) / 1000 > 150 ? '#111' : '#fff';
-}
 
 let stylesKey = '';
 
@@ -322,26 +333,17 @@ function renderCustomStyles() {
   if (key === stylesKey) return;
   stylesKey = key;
   $('customStyles').replaceChildren(...styles.map((style) => {
-    const chip = document.createElement('span');
-    chip.className = 'style-chip';
-    chip.style.background = style.color;
-    const apply = document.createElement('button');
-    apply.className = 'apply';
-    apply.textContent = style.name;
-    apply.style.color = readableOn(style.color);
+    const chip = makeChip(
+      style.name,
+      style.color,
+      () => api.setSettings({ ...LOOK_BASE, ...style.data }),
+      tr('styleDelete', { name: style.name }),
+      () => api.setSettings({ customStyles: (settings.customStyles || []).filter((s) => s.name !== style.name) }),
+    );
+    // The style name is written with the style's own font.
+    const apply = chip.querySelector('.apply');
     apply.style.fontFamily = `"${style.data.fontFamily || 'Segoe UI'}", "Segoe UI", system-ui, sans-serif`;
     apply.style.fontWeight = style.data.bold ? '700' : '400';
-    apply.addEventListener('click', () => api.setSettings({ ...LOOK_BASE, ...style.data }));
-    const del = document.createElement('button');
-    del.className = 'del';
-    del.textContent = '×';
-    del.style.color = readableOn(style.color);
-    del.title = tr('styleDelete', { name: style.name });
-    del.setAttribute('aria-label', del.title);
-    del.addEventListener('click', () => {
-      api.setSettings({ customStyles: (settings.customStyles || []).filter((s) => s.name !== style.name) });
-    });
-    chip.append(apply, del);
     return chip;
   }));
   $('customEmpty').hidden = styles.length > 0;
@@ -357,15 +359,15 @@ function saveCustomStyle() {
   $('styleError').textContent = error;
   if (error) return;
   const style = { name, color: $('styleColor').value, data: Object.fromEntries(LOOK_KEYS.map((k) => [k, settings[k]])) };
-  // Con el mismo nombre se actualiza el que ya había, en su sitio.
+  // With the same name, the old one is replaced in the same place.
   const next = existing ? styles.map((s) => (s === existing ? style : s)) : [...styles, style];
   api.setSettings({ customStyles: next });
   $('styleName').value = '';
 }
 
-// La lista de estilos rápidos se puede plegar; se recuerda en este PC.
+// The quick styles list can be folded; this PC remembers it.
 let presetsHidden = false;
-try { presetsHidden = localStorage.getItem('presetsHidden') === '1'; } catch { /* sin almacenamiento */ }
+try { presetsHidden = localStorage.getItem('presetsHidden') === '1'; } catch { /* no storage */ }
 
 function applyPresetsHidden() {
   $('presetList').hidden = presetsHidden;
@@ -390,9 +392,10 @@ function showValue(key) {
   if (f.show) $(`${key}Val`).textContent = f.show($(key).value);
 }
 
-// ---------- Idioma ----------
+// ---------- Language ----------
 
-// Traduce todos los textos marcados en el HTML y los que dependen del estado.
+// Translates every text marked in the HTML and the ones that depend on the state.
+// Keys ending in "Mac" (like autoStartMac) replace the normal key on a Mac.
 function applyLanguage(newLang) {
   lang = newLang;
   document.documentElement.lang = lang;
@@ -416,9 +419,9 @@ function applyLanguage(newLang) {
   if (lastState) applyState(lastState);
 }
 
-// ---------- Ajustes ----------
+// ---------- Settings ----------
 
-// Rellena los controles con los ajustes (al abrir, tras un perfil, una importación, etc.).
+// Fills the controls with the settings (when opening, after loading a profile, an import, etc.).
 function fillFields(newSettings) {
   settings = newSettings;
   if (settings.language !== lang) applyLanguage(settings.language);
@@ -426,14 +429,14 @@ function fillFields(newSettings) {
   ensureFontOption(settings.fontFamily);
   for (const [key, { type }] of Object.entries(FIELDS)) {
     const el = $(key);
-    if (el === document.activeElement && type === 'text') continue; // no pisar lo que se está escribiendo
+    if (el === document.activeElement && type === 'text') continue; // don't overwrite what the user is typing
     writeField(el, type, settings[key]);
     showValue(key);
   }
   renderProfiles();
   renderShortcuts();
-  // La guía sale solo la primera vez que se abre la app: se marca como vista al mostrarla,
-  // así no vuelve aunque se cierre la ventana sin pulsar "Empezar".
+  // The welcome guide only shows the first time the app opens. It's marked as seen when shown,
+  // so it doesn't come back even if the window is closed without pressing "Get started".
   if (!settings.onboarded && !welcomeShown) {
     welcomeShown = true;
     $('welcome').classList.add('show');
@@ -445,7 +448,7 @@ function fillFields(newSettings) {
   renderGameCards();
 }
 
-// Acepta "nombre", "#nombre", "@nombre" o el enlace completo de twitch.tv.
+// Accepts "name", "#name", "@name" or the full twitch.tv link.
 function normalizeChannel(value) {
   return value.trim()
     .replace(/^(https?:\/\/)?(www\.|m\.)?twitch\.tv\//i, '')
@@ -465,9 +468,9 @@ function connect() {
   api.setSettings({ channel });
 }
 
-// ---------- Fuentes instaladas ----------
+// ---------- Installed fonts ----------
 
-// Fuentes que trae la propia app: siempre salen en la lista, las tenga el PC o no.
+// Fonts that come with the app: always in the list, whether the PC has them or not.
 const BUNDLED_FONTS = ['Space Grotesk', 'Inter', 'Atkinson Hyperlegible', 'Lilita One', 'Cascadia Code', 'Exo 2', 'Alegreya', 'Comic Neue', 'Quicksand', 'Nunito', 'Patrick Hand', 'Press Start 2P'];
 const BASIC_FONTS = [...BUNDLED_FONTS, 'Segoe UI', 'Arial', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Georgia', 'Consolas', 'Impact', 'Comic Sans MS'];
 
@@ -493,7 +496,7 @@ function ensureFontOption(family) {
   }
 }
 
-// Pide a Windows la lista de fuentes; si no se puede, se queda con las básicas.
+// Asks the system for the font list; if it can't, it keeps the basic ones.
 async function loadFonts() {
   fillFontList(BASIC_FONTS);
   try {
@@ -503,35 +506,25 @@ async function loadFonts() {
       .sort((a, b) => a.localeCompare(b));
     if (families.length) fillFontList(families);
   } catch {
-    // sin permiso o sin soporte: lista básica
+    // no permission or no support: basic list
   }
 }
 
-// ---------- Perfiles ----------
+// ---------- Profiles ----------
 
-// Cada perfil es una etiqueta de su color, como "Mis estilos": un clic lo carga y la × lo borra.
+// Each profile is a tag with its color, like "My styles": one click loads it and the × deletes it.
 function renderProfiles() {
   const { profiles, activeProfile } = settings;
   $('profileChips').replaceChildren(...profiles.map((p) => {
-    const color = p.color || '#9146ff';
-    const chip = document.createElement('span');
-    chip.className = 'style-chip';
+    const chip = makeChip(
+      p.name,
+      p.color || '#9146ff',
+      () => api.loadProfile(p.name),
+      `${tr('deleteProfile')}: ${p.name}`,
+      () => api.deleteProfile(p.name),
+    );
     chip.classList.toggle('active', p.name === activeProfile);
-    chip.style.background = color;
-    const load = document.createElement('button');
-    load.className = 'apply';
-    load.textContent = p.name;
-    load.style.color = readableOn(color);
-    load.title = tr('loadProfile');
-    load.addEventListener('click', () => api.loadProfile(p.name));
-    const del = document.createElement('button');
-    del.className = 'del';
-    del.textContent = '×';
-    del.style.color = readableOn(color);
-    del.title = `${tr('deleteProfile')}: ${p.name}`;
-    del.setAttribute('aria-label', del.title);
-    del.addEventListener('click', () => api.deleteProfile(p.name));
-    chip.append(load, del);
+    chip.querySelector('.apply').title = tr('loadProfile');
     return chip;
   }));
   $('profilesEmpty').hidden = profiles.length > 0;
@@ -547,14 +540,14 @@ function saveProfile() {
   $('profileName').value = '';
 }
 
-// ---------- Estado (botones, versión, avisos) ----------
+// ---------- State (buttons, version, notices) ----------
 
 function applyState(state) {
   lastState = state;
   const { editMode, visible, testMode, bounds, maxSize, version, shortcutErrors, canAutoStart, whatsNew } = state;
   const keys = (action) => i18n.shortcutLabel(settings ? settings.shortcuts[action] : state.defaultShortcuts[action]);
   $('edit').textContent = tr(editMode ? 'editOn' : 'editOff', { keys: keys('edit') });
-  $('edit').classList.toggle('primary', editMode); // morado solo mientras se puede mover
+  $('edit').classList.toggle('primary', editMode); // purple only while it can be moved
   $('visible').textContent = tr(visible ? 'hideChat' : 'showChat', { keys: keys('hide') });
   $('profilesNote').textContent = tr('profilesNote', { keys: keys('profile') });
   $('liveMove').textContent = tr(state.alertEdit ? 'liveMoveOn' : 'liveMove');
@@ -587,10 +580,10 @@ function applyState(state) {
   $('shortcutWarn').textContent = shortcutErrors.length
     ? tr('shortcutWarn', { keys: shortcutErrors.join(tr('and')) })
     : '';
-  $('startupSection').hidden = !canAutoStart; // solo tiene sentido en la versión instalada
+  $('startupSection').hidden = !canAutoStart; // only makes sense in the installed app
 }
 
-// ---------- Actualización (solo se descarga si el usuario pulsa el botón) ----------
+// ---------- Update (it only downloads when the user presses the button) ----------
 
 function renderUpdate({ updateAvailable, updateProgress, updateError, updateReady }) {
   const banner = $('update');
@@ -608,11 +601,11 @@ function renderUpdate({ updateAvailable, updateProgress, updateError, updateRead
   }
 }
 
-// ---------- Atajos configurables ----------
-// Se hace clic en un atajo y se pulsa la combinación nueva. Mientras tanto, los atajos
-// actuales se sueltan para que no se disparen.
+// ---------- Shortcuts ----------
+// Click a shortcut and press the new combination. Meanwhile, the current shortcuts
+// are released so they don't fire.
 
-let recording = null; // acción cuyo atajo se está grabando
+let recording = null; // action whose shortcut is being recorded
 
 function renderShortcuts() {
   document.querySelectorAll('[data-shortcut]').forEach((b) => {
@@ -622,7 +615,7 @@ function renderShortcuts() {
   });
 }
 
-// Traduce la tecla pulsada al formato de Electron ("CommandOrControl+Shift+L").
+// Turns the pressed keys into Electron's format ("CommandOrControl+Shift+L").
 function shortcutFromEvent(e) {
   let key = null;
   if (/^Key[A-Z]$/.test(e.code)) key = e.code.slice(3);
@@ -630,7 +623,7 @@ function shortcutFromEvent(e) {
   else if (/^F([1-9]|1[0-9]|2[0-4])$/.test(e.code)) key = e.code;
   if (!key) return null;
   const isFKey = key.length > 1;
-  const cmd = i18n.isMac ? e.metaKey : e.ctrlKey; // en Mac, Cmd hace de Ctrl
+  const cmd = i18n.isMac ? e.metaKey : e.ctrlKey; // on Mac, Cmd works as Ctrl
   if (!isFKey && !cmd && !e.altKey) return 'invalid';
   const mods = [cmd && 'CommandOrControl', e.altKey && 'Alt', e.shiftKey && 'Shift'].filter(Boolean);
   return [...mods, key].join('+');
@@ -658,7 +651,7 @@ window.addEventListener('keydown', (e) => {
     stopRecording();
     return;
   }
-  if (['Control', 'Alt', 'Shift', 'Meta', 'AltGraph'].includes(e.key)) return; // falta la tecla principal
+  if (['Control', 'Alt', 'Shift', 'Meta', 'AltGraph'].includes(e.key)) return; // the main key is still missing
   const accelerator = shortcutFromEvent(e);
   if (!accelerator) return;
   if (accelerator === 'invalid') {
@@ -678,9 +671,9 @@ window.addEventListener('keydown', (e) => {
 });
 window.addEventListener('blur', stopRecording);
 
-// ---------- Avisos de directo ----------
-// La lista se guarda como texto ("canal1, canal2") y aquí se muestra como una lista
-// con un botón para quitar cada canal y un punto rojo en los que están en directo.
+// ---------- Live alerts ----------
+// The list is saved as text ("channel1, channel2") and here it's shown as a list
+// with a button to remove each channel and a red dot on the ones that are live.
 
 const LIVE_MAX = 100;
 
@@ -701,7 +694,7 @@ function renderLiveList() {
   const live = (lastState && lastState.liveNow) || {};
   const names = (lastState && lastState.channelNames) || {};
   const list = liveList();
-  // El estado llega muy a menudo (p. ej. al redimensionar): solo se redibuja si algo cambia.
+  // The state arrives very often (for example while resizing): only redraw if something changed.
   const key = JSON.stringify([lang, list, live, names]);
   if (key === liveListKey) return;
   liveListKey = key;
@@ -729,8 +722,8 @@ function renderLiveList() {
   $('liveEmpty').hidden = list.length > 0;
 }
 
-// Como lo escribe el propio streamer ("AlvaroStorm"). Si su nombre visible está en otro
-// alfabeto, se añade el nombre de usuario para que se sepa qué canal es.
+// As the streamer writes it ("AlvaroStorm"). If their display name uses another
+// alphabet, the user name is added so it's clear which channel it is.
 function channelLabel(channel, displayName) {
   if (!displayName) return channel;
   return displayName.toLowerCase() === channel ? displayName : `${displayName} (${channel})`;
@@ -752,7 +745,7 @@ function addLiveChannel() {
   input.focus();
 }
 
-// ---------- Pestañas ----------
+// ---------- Tabs ----------
 
 function showTab(name) {
   document.querySelectorAll('[data-tab]').forEach((b) => {
@@ -760,10 +753,10 @@ function showTab(name) {
     b.setAttribute('aria-selected', String(b.dataset.tab === name));
   });
   document.querySelectorAll('[data-panel]').forEach((p) => { p.hidden = p.dataset.panel !== name; });
-  try { localStorage.setItem('tab', name); } catch { /* sin almacenamiento: da igual */ }
+  try { localStorage.setItem('tab', name); } catch { /* no storage: not a problem */ }
 }
 
-// ---------- Eventos ----------
+// ---------- Events ----------
 
 for (const [key, { type }] of Object.entries(FIELDS)) {
   const el = $(key);
@@ -837,7 +830,7 @@ $('styleName').addEventListener('keydown', (e) => { if (e.key === 'Enter') saveC
 $('styleName').addEventListener('input', () => { $('styleError').textContent = ''; });
 $('presetsToggle').addEventListener('click', () => {
   presetsHidden = !presetsHidden;
-  try { localStorage.setItem('presetsHidden', presetsHidden ? '1' : '0'); } catch { /* da igual */ }
+  try { localStorage.setItem('presetsHidden', presetsHidden ? '1' : '0'); } catch { /* not a problem */ }
   applyPresetsHidden();
 });
 document.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
@@ -846,14 +839,14 @@ const sendSize = () => api.setSize(Number($('width').value), Number($('height').
 $('width').addEventListener('input', sendSize);
 $('height').addEventListener('input', sendSize);
 
-// ---------- Inicio ----------
+// ---------- Start ----------
 
 let savedTab = 'look';
-try { savedTab = localStorage.getItem('tab') || 'look'; } catch { /* sin almacenamiento */ }
+try { savedTab = localStorage.getItem('tab') || 'look'; } catch { /* no storage */ }
 showTab(document.querySelector(`[data-tab="${savedTab}"]`) ? savedTab : 'look');
 paintPresetButtons();
 applyPresetsHidden();
-applyLanguage(lang); // textos en español mientras llegan los ajustes guardados
+applyLanguage(lang); // Spanish texts while the saved settings arrive
 
 api.onSettings(fillFields);
 api.onState(applyState);

@@ -1,9 +1,9 @@
-// Textos de la app en cada idioma. Lo usan la ventana de ajustes, el chat y el
-// proceso principal (menú de la bandeja), así que funciona en navegador y en Node.
+// App texts in each language. The settings window, the chat and the main process
+// (tray menu) all use it, so it works both in the browser and in Node.
 (function (root) {
   const STRINGS = {
     es: {
-      // Ventana de ajustes
+      // Settings window
       panelTitle: 'Kylen Chat for Twitch · Ajustes',
       subtitle: 'El chat de Twitch encima del juego, con fondo transparente.',
       language: 'Idioma',
@@ -121,10 +121,6 @@
       game_overwatch: 'Overwatch 2',
       game_fortnite: 'Fortnite',
       game_rust: 'Rust',
-      themeTag_cs2: 'TODOS',
-      themeTag_overwatch: 'Partida',
-      themeTag_fortnite: '',
-      themeTag_rust: 'Global',
       valBroadcast: 'Transmisión',
       gameDecor: 'Detalles del juego',
       gameDecorNote: 'botones y pestañas',
@@ -134,19 +130,14 @@
       sectionGameOptions: 'Personalizar',
       gameNoneNote: 'Elige un estilo de juego para personalizarlo.',
       gameTag: 'Etiqueta del canal',
-      gameTagNone: 'sin etiqueta',
       gameOff: 'Quitar el estilo de juego',
       gamesDisclaimer: 'Inspirados en World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite y Rust. No están afiliados a sus creadores (Blizzard, Riot Games, Mojang, Valve, Epic Games ni Facepunch): las fuentes son libres y parecidas a las originales, los detalles están dibujados por la app y los logos son marcas de sus dueños.',
-      themeTag_wow: '',
       gameTagRoles: 'según quién escribe: Usuario, Sub, VIP, Mod',
       role_user: 'Usuario',
       role_subscriber: 'Sub',
       role_vip: 'VIP',
       role_moderator: 'Mod',
       role_broadcaster: 'Streamer',
-      themeTag_lol: 'Todos',
-      themeTag_valorant: 'Todos',
-      themeTag_minecraft: '',
       sectionPresets: 'Estilos rápidos',
       presetsHide: 'Ocultar ▴',
       presetsShow: 'Mostrar ▾',
@@ -235,7 +226,7 @@
       trayProfiles: 'Perfiles',
 
       // Chat
-      // Avisos de Twitch (subs, regalos, raids, rachas...), traducidos por la app
+      // Twitch notices (subs, gifts, raids, streaks...), translated by the app
       planPrime: 'Prime',
       planTier: 'Nivel {n}',
       noticeSub: '{name} se ha suscrito con {plan}.',
@@ -268,7 +259,7 @@
       deletedMessage: 'mensaje borrado',
       chatCleared: 'Un moderador ha borrado el chat.',
 
-      // Menú de la bandeja
+      // Tray menu
       traySettings: 'Ajustes',
       trayEditOff: 'Mover y cambiar tamaño',
       trayEditOn: 'Fijar posición',
@@ -397,10 +388,6 @@
       game_overwatch: 'Overwatch 2',
       game_fortnite: 'Fortnite',
       game_rust: 'Rust',
-      themeTag_cs2: 'ALL',
-      themeTag_overwatch: 'Match',
-      themeTag_fortnite: '',
-      themeTag_rust: 'Global',
       valBroadcast: 'Broadcast',
       gameDecor: 'Game details',
       gameDecorNote: 'buttons and tabs',
@@ -410,19 +397,14 @@
       sectionGameOptions: 'Customize',
       gameNoneNote: 'Pick a game style to customize it.',
       gameTag: 'Channel tag',
-      gameTagNone: 'no tag',
       gameOff: 'Remove the game style',
       gamesDisclaimer: 'Inspired by World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2, Overwatch 2, Fortnite and Rust. Not affiliated with their makers (Blizzard, Riot Games, Mojang, Valve, Epic Games or Facepunch): the fonts are free lookalikes, the details are drawn by the app and the logos are trademarks of their owners.',
-      themeTag_wow: '',
       gameTagRoles: 'by who writes: User, Sub, VIP, Mod',
       role_user: 'User',
       role_subscriber: 'Sub',
       role_vip: 'VIP',
       role_moderator: 'Mod',
       role_broadcaster: 'Streamer',
-      themeTag_lol: 'All',
-      themeTag_valorant: 'All',
-      themeTag_minecraft: '',
       sectionPresets: 'Quick styles',
       presetsHide: 'Hide ▴',
       presetsShow: 'Show ▾',
@@ -553,7 +535,7 @@
     },
   };
 
-  // Novedades de cada versión, para el aviso que sale tras actualizar.
+  // What's new in each version, for the notice shown after an update.
   const CHANGELOG = {
     es: {
       '1.4.5': [
@@ -703,8 +685,8 @@
     },
   };
 
-  // Mensajes de ejemplo del modo prueba.
-  // Formato: [nombre, color, texto, extras] o un aviso de sub/raid. {channel} se cambia por tu canal.
+  // Sample messages for test mode.
+  // Format: [name, color, text, extras] or a sub/raid notice. {channel} is replaced with your channel.
   const SAMPLES = {
     es: [
       ['Faker', '#FF4A80', '¡Qué jugada! Kappa', { badges: 'subscriber/12' }],
@@ -744,16 +726,15 @@
     ],
   };
 
-
   const LANGUAGES = Object.keys(STRINGS);
 
-  // Atajos de teclado: los de serie y cómo se enseñan ("CommandOrControl+Shift+L" -> "Ctrl+Shift+L").
+  // Keyboard shortcuts: the default ones and how they are shown ("CommandOrControl+Shift+L" -> "Ctrl+Shift+L").
   const DEFAULT_SHORTCUTS = {
     edit: 'CommandOrControl+Shift+L',
     hide: 'CommandOrControl+Shift+H',
     profile: 'CommandOrControl+Alt+P',
   };
-  // En Mac "CommandOrControl" es la tecla Cmd y "Alt" es Option.
+  // On Mac "CommandOrControl" is the Cmd key and "Alt" is Option.
   const isMac = typeof process !== 'undefined' && process.platform
     ? process.platform === 'darwin'
     : typeof navigator !== 'undefined' && /Mac/.test(navigator.platform);
@@ -762,6 +743,8 @@
     return isMac ? text.replace('CommandOrControl', 'Cmd').replace('Alt', 'Option') : text.replace('CommandOrControl', 'Ctrl');
   };
 
+  // Text for a key in a language, with {name} parts replaced by vars.
+  // Falls back to Spanish, and to the key itself if it doesn't exist.
   function t(lang, key, vars) {
     const table = STRINGS[lang] || STRINGS.es;
     let text = table[key] !== undefined ? table[key] : STRINGS.es[key];
@@ -770,6 +753,7 @@
     return text;
   }
 
+  // In Node (main process) it's a module; in the windows it becomes window.i18n.
   const api = { STRINGS, SAMPLES, CHANGELOG, LANGUAGES, DEFAULT_SHORTCUTS, shortcutLabel, t, isMac };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.i18n = api;

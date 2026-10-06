@@ -229,10 +229,16 @@ npm start
 | Fitxer | Què és |
 | --- | --- |
 | `main.js` | Procés principal: finestres, safata del sistema, dreceres, ajustos i actualitzacions |
-| `overlay.html` / `overlay.js` | La finestra transparent amb el xat (connexió a Twitch i emotes) |
+| `main/` | Ajustos per defecte i les seves comprovacions (`settings-schema.js`) i la consulta de qui està en directe (`live-api.js`) |
+| `overlay.html` / `overlay.js` | La finestra transparent amb el xat (connexió a Twitch i missatges) |
+| `overlay/` | Parts del xat: lectura de missatges, emotes, pintures de 7TV, bescanvis de punts, fotos de perfil i mode de prova |
+| `alert.html` / `alert.js` | El requadre dels avisos de directe |
 | `panel.html` / `panel.js` | La finestra d'ajustos |
+| `themes.js` / `themes.css` | Els estils de jocs |
 | `i18n.js` | Textos en castellà i anglès |
 | `preload.js` | Pont segur entre les finestres i el procés principal |
+| `colors.js` / `resize-grip.js` | Utilitats compartides: colors i la cantonada per canviar la mida |
+| `scripts/release.js` | Puja una versió nova a GitHub Releases |
 | `assets/` | Icones, insígnies, banderes i fonts |
 | `fonts.css` | Fonts incloses a l'app |
 

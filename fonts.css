@@ -1,5 +1,5 @@
-/* Fuentes incluidas en la app, para que los estilos rápidos se vean igual aunque el PC no
-   las tenga. Todas con licencia SIL Open Font License 1.1 (ver assets/fonts/OFL-*.txt). */
+/* Fonts that come with the app, so the quick styles and game styles look the same even if
+   the PC doesn't have them. All under the SIL Open Font License 1.1 (see assets/fonts/OFL-*.txt). */
 
 @font-face { font-family: "Space Grotesk"; src: url("assets/fonts/SpaceGrotesk.ttf") format("truetype"); font-weight: 300 700; font-display: swap; }
 @font-face { font-family: "Inter"; src: url("assets/fonts/Inter.ttf") format("truetype"); font-weight: 100 900; font-display: swap; }

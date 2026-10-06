@@ -56,19 +56,19 @@
   .style-chip .del { padding: 0 10px 0 6px; font-size: 14px; line-height: 1; opacity: .75; }
   .style-chip .del:hover { opacity: 1; }
   .style-chip:hover { filter: brightness(1.15); }
-  .style-chip.active { box-shadow: 0 0 0 2px #1f1f23, 0 0 0 4px #efeff1; } /* el perfil que está puesto */
+  .style-chip.active { box-shadow: 0 0 0 2px #1f1f23, 0 0 0 4px #efeff1; } /* the profile in use */
   .note { color: var(--muted); font-size: 12px; line-height: 1.5; }
   .status { font-size: 12px; margin: 0 0 8px; color: #8fe3a8; }
   .status.bad { color: #ff8a8a; }
   .status:empty { display: none; }
 
-  /* Pestañas */
+  /* Tabs */
   .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin: 0 -20px 14px; padding: 0 20px; }
   .tabs button { background: transparent; border-radius: 6px 6px 0 0; padding: 9px 9px; color: var(--muted); font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; }
   .tabs button:hover { color: #efeff1; background: transparent; }
   .tabs button.active { color: #efeff1; border-bottom-color: var(--accent); }
   .tab-panel[hidden] { display: none; }
-  /* Tarjetas de los estilos de juegos, cada una con una vista previa real del chat */
+  /* Game style cards, each one with a real preview of the chat */
   .game-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
   .game-card { min-width: 0; display: flex; flex-direction: column; gap: 6px; padding: 6px; background: #0e0e10; border: 2px solid var(--line); border-radius: 8px; text-align: left; }
   .game-card:hover { border-color: #53535f; background: #0e0e10; }
@@ -87,7 +87,7 @@
   .game-badge.wide img { width: 88%; height: 88%; }
   .game-preview {
     position: relative; height: 104px; overflow: hidden; border-radius: 4px; pointer-events: none;
-    background: linear-gradient(135deg, #2b3a2e, #1d2a3a 55%, #3a2a24); /* un "fondo de partida" para ver la transparencia */
+    background: linear-gradient(135deg, #2b3a2e, #1d2a3a 55%, #3a2a24); /* a "game background" to see the transparency */
     font-size: var(--fs); color: var(--color);
   }
   .game-preview .bar { position: absolute; top: 0; left: 0; right: 0; height: 20px !important; display: flex; align-items: center; gap: 6px; padding: 0 6px; box-sizing: border-box; font-size: 10px !important; }
@@ -96,7 +96,6 @@
   .game-preview .frame { position: absolute; left: 0; right: 0; bottom: 0; top: 20px; display: flex; flex-direction: column; justify-content: flex-end; box-sizing: border-box; overflow: hidden; }
   .game-preview .msg { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; align-self: stretch; }
   #gameOptions[hidden], #gameNone[hidden] { display: none; }
-  .disclaimer { margin-top: 10px; opacity: .8; }
   .chat-list { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
   .chat-list:empty { display: none; }
   button.icon { padding: 0; width: 34px; height: 34px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--muted); font-size: 20px; line-height: 1; }
@@ -111,7 +110,7 @@
   .chat-list .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
   .chat-list .kind { font-size: 11px; color: var(--muted); font-weight: 400; margin-left: 6px; }
   .chat-list button { width: 30px; height: 30px; padding: 0; display: inline-flex; align-items: center; justify-content: center; color: #fff; }
-  /* Ojo en morado y quitar en rojo, para distinguirlos de un vistazo */
+  /* Eye in purple and remove in red, to tell them apart at a glance */
   .chat-list .eye { background: var(--accent); }
   .chat-list .eye:hover { background: var(--accent-2); }
   .chat-list .remove-chat { background: #d93636; font-size: 18px; font-weight: 700; line-height: 1; }
@@ -141,7 +140,7 @@
   .warn { background: #3a2a12; border: 1px solid #b7791f; border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 10px; }
   .warn:empty { display: none; }
 
-  /* Guía de la primera vez */
+  /* First run guide */
   #welcome { position: fixed; inset: 0; z-index: 10; background: rgba(10, 10, 12, .82); display: none; align-items: center; justify-content: center; padding: 20px; }
   #welcome.show { display: flex; }
   .welcome-card { background: var(--panel); border: 1px solid #3a3a42; border-radius: 14px; padding: 24px 22px 20px; max-width: 380px; box-shadow: 0 20px 60px rgba(0, 0, 0, .5); }
@@ -156,10 +155,9 @@
   footer b { color: #efeff1; font-weight: 600; }
   footer a { color: #bf94ff; text-decoration: none; cursor: pointer; }
   footer a:hover { text-decoration: underline; }
-  .disclaimer { color: #7a7a85; font-size: 11px; margin: 8px 0 0; }
+  .disclaimer { color: #7a7a85; font-size: 11px; margin: 8px 0 0; opacity: .8; }
   button.shortcut { flex: 1; font: 13px Consolas, monospace; background: #0e0e10; border: 1px solid var(--line); }
   button.shortcut.recording { border-color: var(--accent); color: #d9c4ff; }
-  kbd { background: #2f2f35; border-radius: 4px; padding: 1px 5px; font: 12px Consolas, monospace; }
 </style>
 </head>
 <body>
@@ -207,7 +205,7 @@
     <button role="tab" data-tab="general" data-i18n="tabGeneral"></button>
   </nav>
 
-  <!-- ======================= APARIENCIA ======================= -->
+  <!-- ======================= LOOK ======================= -->
   <div class="tab-panel" data-panel="look">
     <section>
       <div class="section-head">
@@ -294,8 +292,7 @@
     </section>
   </div>
 
-  <!-- ======================= MENSAJES ======================= -->
-  <!-- ======================= ESTILOS DE JUEGOS ======================= -->
+  <!-- ======================= GAME STYLES ======================= -->
   <div class="tab-panel" data-panel="games" hidden>
     <section>
       <h2 data-i18n="sectionGames"></h2>
@@ -318,6 +315,7 @@
     <p class="note disclaimer" data-i18n="gamesDisclaimer"></p>
   </div>
 
+  <!-- ======================= MESSAGES ======================= -->
   <div class="tab-panel" data-panel="messages" hidden>
     <section>
       <h2 data-i18n="sectionEmotes"></h2>
@@ -349,7 +347,7 @@
     </section>
   </div>
 
-  <!-- ======================= AVISOS DE DIRECTO ======================= -->
+  <!-- ======================= LIVE ALERTS ======================= -->
   <div class="tab-panel" data-panel="alerts" hidden>
     <section>
       <h2 data-i18n="sectionLive"></h2>
@@ -465,6 +463,7 @@
 
   <script src="i18n.js"></script>
   <script src="themes.js"></script>
+  <script src="colors.js"></script>
   <script src="panel.js"></script>
 </body>
 </html>

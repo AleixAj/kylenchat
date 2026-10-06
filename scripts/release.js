@@ -1,13 +1,13 @@
-// Sube el instalador ya creado (npm run dist) a un borrador de GitHub Releases.
-// Se usa la CLI de GitHub (gh) en vez de electron-builder porque este a veces
-// reparte los archivos en dos borradores distintos.
+// Uploads the installer already built (npm run dist) to a draft on GitHub Releases.
+// It uses the GitHub CLI (gh) instead of electron-builder because electron-builder
+// sometimes splits the files between two different drafts.
 const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
 const { version } = require('../package.json');
 const dist = path.join(__dirname, '..', 'dist');
-// Nombres fijos (sin versión) para que el botón de descarga del README no cambie nunca.
+// Fixed names (without the version) so the download button in the README never changes.
 const installer = 'KylenChat-Setup.exe';
 const files = [installer, `${installer}.blockmap`, 'latest.yml', 'KylenChat-Portable.zip'].map((f) => path.join(dist, f));
 
@@ -18,7 +18,7 @@ for (const file of files) {
   }
 }
 
-// Si la compilación falló, en dist/ quedan los archivos de la versión anterior: no se suben.
+// If the build failed, dist/ still has the files of the previous version: don't upload them.
 const built = (fs.readFileSync(path.join(dist, 'latest.yml'), 'utf8').match(/^version:\s*(\S+)/m) || [])[1];
 if (built !== version) {
   console.error(`dist/ tiene la versión ${built}, no la ${version}. Vuelve a ejecutar "npm run dist".`);
@@ -42,7 +42,7 @@ execFileSync('gh', [
   '--draft', '--title', `Kylen Chat for Twitch ${version}`, '--notes', notes,
 ], { stdio: 'inherit' });
 
-// El instalador de Mac solo se puede crear en un Mac: lo hace GitHub Actions (.github/workflows/mac.yml).
+// The Mac installer can only be built on a Mac, so GitHub Actions does it (.github/workflows/mac.yml).
 execFileSync('gh', ['workflow', 'run', 'mac.yml', '-f', `tag=v${version}`], { stdio: 'inherit' });
 
 console.log(`\nBorrador v${version} creado. El de Mac se está compilando en GitHub (unos 10 min). Publícalo cuando esté.`);

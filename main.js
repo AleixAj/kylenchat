@@ -1,223 +1,51 @@
+// Main Electron process. It creates the windows (chat, settings and live alert),
+// the tray icon and the global shortcuts, keeps the settings on disk and checks
+// for updates and for channels that go live.
 const {
-  app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, screen, shell, session, powerMonitor, dialog, net,
+  app, BrowserWindow, ipcMain, globalShortcut, Tray, Menu, screen, shell, session, powerMonitor, dialog,
 } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
-const { t, LANGUAGES, DEFAULT_SHORTCUTS, shortcutLabel } = require('./i18n');
+const { t, DEFAULT_SHORTCUTS, shortcutLabel } = require('./i18n');
+const {
+  DEFAULTS, PROFILE_KEYS, LOCAL_KEYS, PROFILES_MAX, PROFILE_COLOR, EXTRA_CHATS_MAX,
+  isHex, isProfileName, pick, sanitize,
+} = require('./main/settings-schema');
+const { fetchLiveFromTwitch, fetchLiveFromIvr } = require('./main/live-api');
 
 const REPO_URL = 'https://github.com/AleixAj/kylenchat';
 const isMac = process.platform === 'darwin';
 
-const DEFAULTS = {
-  language: 'es',
-  channel: '',
-  fontSize: 15,
-  fontFamily: 'Segoe UI',
-  bold: false,
-  textColor: '#ffffff',
-  userColors: true,
-  bgColor: '#000000',
-  bgOpacity: 25,
-  barColor: '#9146ff',
-  showViewers: true,
-  outline: true,
-  opacity: 100,
-  maxMessages: 20,
-  fadeAfter: 0,
-  animatedEmotes: true,
-  hideBots: false,
-  highlightMentions: true,
-  keywords: '',
-  highlightFirst: true,
-  showRedemptions: true,
-  showBadges: true,
-  timestamps: false,
-  mutedUsers: '',
-  liveChannels: '',
-  liveDuration: 8,
-  liveSound: true,
-  liveVolume: 70,
-  alertBounds: null,
-  showDeleted: false,
-  shortcuts: { ...DEFAULT_SHORTCUTS },
-  align: 'left',
-  newestOnTop: false,
-  idleHide: 120,
-  emoteScale: 1.6,
-  autoStart: false,
-  bounds: null,
-  profiles: [],
-  customStyles: [],
-  theme: '', // estilo de juego: '', 'wow', 'lol', 'valorant' o 'minecraft'
-  themeTag: '', // texto de la etiqueta del canal; vacío = el del juego
-  themeDecor: true, // detalles decorativos del juego (botones y pestañas)
-  chatVisible: true, // la ventana del chat principal se ve (se puede ocultar y dejar solo los avisos)
-  extraChats: [], // otros chats en ventanas aparte: { id, channel, visible, bounds }
-  activeProfile: '',
-  onboarded: false,
-  lastVersion: '',
-};
-
-// Lo que guarda un perfil: el aspecto y la posición. El canal, el idioma y los filtros son comunes.
-const PROFILE_KEYS = [
-  'fontSize', 'fontFamily', 'bold', 'textColor', 'userColors', 'bgColor', 'bgOpacity', 'barColor', 'outline', 'opacity',
-  'maxMessages', 'fadeAfter', 'animatedEmotes', 'showBadges', 'timestamps', 'align', 'newestOnTop', 'idleHide',
-  'emoteScale', 'theme', 'themeTag', 'themeDecor', 'bounds',
-];
-// Lo que no se exporta ni se importa: depende de cada PC.
-const LOCAL_KEYS = ['autoStart', 'onboarded', 'lastVersion', 'chatVisible', 'extraChats'];
-
-// Qué valores acepta cada ajuste. Lo que no encaje se descarta, venga del disco o de las ventanas.
-const isBool = (v) => typeof v === 'boolean';
-const isHex = (v) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v);
-const inRange = (min, max) => (v) => Number.isFinite(v) && v >= min && v <= max;
-const isText = (max) => (v) => typeof v === 'string' && v.length <= max && !/[\u0000-\u001f]/.test(v);
-// Atajo válido: Ctrl y/o Alt (y opcional Shift) con una letra o número, o una tecla F1-F24 sola o combinada.
-const isAccelerator = (v) => {
-  const m = typeof v === 'string' && /^(CommandOrControl\+)?(Alt\+)?(Shift\+)?([A-Z0-9]|F(?:[1-9]|1[0-9]|2[0-4]))$/.exec(v);
-  return Boolean(m) && (Boolean(m[1] || m[2]) || m[4].length > 1);
-};
-const isShortcuts = (v) => v && typeof v === 'object'
-  && Object.keys(DEFAULT_SHORTCUTS).every((k) => isAccelerator(v[k]))
-  && new Set(Object.keys(DEFAULT_SHORTCUTS).map((k) => v[k])).size === Object.keys(DEFAULT_SHORTCUTS).length;
-const SCHEMA = {
-  language: (v) => LANGUAGES.includes(v),
-  channel: (v) => typeof v === 'string' && /^[a-z0-9_]{0,25}$/.test(v),
-  fontSize: inRange(10, 48),
-  // Cualquier fuente instalada, pero sin caracteres que puedan romper el CSS.
-  fontFamily: (v) => typeof v === 'string' && /^[^"'\\;{}<>\u0000-\u001f]{1,64}$/.test(v),
-  bold: isBool,
-  textColor: isHex,
-  userColors: isBool,
-  bgColor: isHex,
-  bgOpacity: inRange(0, 100),
-  barColor: isHex,
-  showViewers: isBool,
-  outline: isBool,
-  opacity: inRange(10, 100),
-  maxMessages: inRange(3, 100),
-  fadeAfter: inRange(0, 120),
-  animatedEmotes: isBool,
-  hideBots: isBool,
-  highlightMentions: isBool,
-  keywords: isText(300),
-  highlightFirst: isBool,
-  theme: (v) => ['', 'wow', 'lol', 'valorant', 'minecraft', 'cs2', 'overwatch', 'fortnite', 'rust'].includes(v),
-  themeDecor: isBool,
-  themeTag: isText(20),
-  chatVisible: isBool,
-  showRedemptions: isBool,
-  showBadges: isBool,
-  timestamps: isBool,
-  mutedUsers: isText(1000),
-  liveChannels: isText(2700), // 100 canales de hasta 25 letras, separados por comas
-  liveDuration: inRange(3, 30),
-  liveSound: isBool,
-  liveVolume: inRange(0, 100),
-  alertBounds: (v) => v === null || (v && ['x', 'y'].every((k) => Number.isFinite(v[k]))
-    && inRange(200, 4000)(v.width) && inRange(60, 2000)(v.height)),
-  showDeleted: isBool,
-  shortcuts: isShortcuts,
-  align: (v) => v === 'left' || v === 'right',
-  newestOnTop: isBool,
-  idleHide: inRange(0, 300),
-  emoteScale: inRange(1, 3),
-  autoStart: isBool,
-  activeProfile: isText(30),
-  onboarded: isBool,
-  lastVersion: isText(20),
-  bounds: (v) => v === null || (v && ['x', 'y', 'width', 'height'].every((k) => Number.isFinite(v[k]))),
-};
-
-function sanitize(patch) {
-  const clean = {};
-  if (!patch || typeof patch !== 'object') return clean;
-  for (const [key, value] of Object.entries(patch)) {
-    if (key === 'profiles') {
-      if (Array.isArray(value)) clean.profiles = cleanProfiles(value);
-    } else if (key === 'customStyles') {
-      if (Array.isArray(value)) clean.customStyles = cleanStyles(value);
-    } else if (key === 'extraChats') {
-      if (Array.isArray(value)) clean.extraChats = cleanChats(value);
-    } else if (key === 'shortcuts') {
-      if (isShortcuts(value)) clean.shortcuts = pick(value, Object.keys(DEFAULT_SHORTCUTS));
-    } else if (SCHEMA[key] && SCHEMA[key](value)) {
-      clean[key] = value;
-    }
-  }
-  return clean;
-}
-
-const pick = (obj, keys) => Object.fromEntries(keys.filter((k) => k in obj).map((k) => [k, obj[k]]));
-const isProfileName = isText(30);
-const PROFILE_COLOR = '#9146ff'; // color de la etiqueta de los perfiles guardados antes de poder elegirlo
-
-function cleanProfiles(list) {
-  return list
-    .filter((p) => p && isProfileName(p.name) && p.name.trim())
-    .slice(0, 10)
-    .map((p) => ({ name: p.name.trim(), color: isHex(p.color) ? p.color : PROFILE_COLOR, data: pick(sanitize(p.data), PROFILE_KEYS) }));
-}
-
-// "Mis estilos": aspectos guardados por el usuario, con su nombre y el color de su botón.
-// Solo guardan el aspecto (como los estilos rápidos), no la posición ni el tamaño.
-const LOOK_KEYS = ['fontSize', 'fontFamily', 'bold', 'textColor', 'userColors', 'bgColor', 'bgOpacity', 'barColor', 'outline', 'opacity', 'emoteScale', 'theme', 'themeTag', 'themeDecor'];
-const STYLES_MAX = 20;
-
-function cleanStyles(list) {
-  const seen = new Set();
-  return list
-    .filter((s) => s && isText(24)(s.name) && s.name.trim() && isHex(s.color) && s.data && typeof s.data === 'object')
-    .map((s) => ({ name: s.name.trim(), color: s.color, data: pick(sanitize(s.data), LOOK_KEYS) }))
-    .filter((s) => !seen.has(s.name.toLowerCase()) && seen.add(s.name.toLowerCase()))
-    .slice(0, STYLES_MAX);
-}
-
-// Otros chats en ventanas aparte (además del principal), para seguir varios canales a la vez.
-const EXTRA_CHATS_MAX = 3;
-const isBounds = (v) => v === null || (v && ['x', 'y', 'width', 'height'].every((k) => Number.isFinite(v[k])));
-
-function cleanChats(list) {
-  const ids = new Set();
-  return list
-    .filter((c) => c && typeof c.id === 'string' && /^[a-z0-9]{1,16}$/.test(c.id)
-      && typeof c.channel === 'string' && /^[a-z0-9_]{1,25}$/.test(c.channel))
-    .filter((c) => !ids.has(c.id) && ids.add(c.id))
-    .slice(0, EXTRA_CHATS_MAX)
-    .map((c) => ({ id: c.id, channel: c.channel, visible: c.visible !== false, bounds: isBounds(c.bounds) ? c.bounds || null : null }));
-}
-
 const APP_ICON = path.join(__dirname, 'assets', 'icon.ico');
-// Electron elige solo tray@2x.png en pantallas con escalado alto.
+// Electron picks tray@2x.png by itself on screens with high scaling.
 const TRAY_ICON = path.join(__dirname, 'assets', 'tray.png');
-
 
 let settings;
 let overlay;
 let panel;
 let tray;
 let editMode = false;
-let visible = true; // alguna ventana de chat se ve (se ajusta al cargar los ajustes)
+let visible = true; // some chat window is shown (set when the settings load)
 let testMode = false;
-let resizing = null; // { win, bounds, min } mientras se cambia el tamaño desde la esquina
-// Actualizaciones: primero solo se comprueba (un archivo de 1 KB); la descarga (~100 MB)
-// empieza únicamente cuando el usuario pulsa "Descargar", para no subirle el ping en partida.
-let updateAvailable = null; // versión nueva publicada, todavía sin descargar
-let updateProgress = null;  // 0-100 mientras se descarga; null si no se está descargando
-let updateError = false;    // la última descarga falló (se puede reintentar)
-let updateReady = null;     // versión ya descargada, lista para instalar
-let whatsNew = null; // versión recién actualizada cuyas novedades hay que enseñar
+let resizing = null; // { win, bounds, min } while a window is resized from its corner
+// Updates: first we only check (a 1 KB file). The download (~100 MB) starts only
+// when the user presses "Download", so it never raises their ping mid-game.
+let updateAvailable = null; // new version published, not downloaded yet
+let updateProgress = null;  // 0-100 while downloading; null when not downloading
+let updateError = false;    // the last download failed (it can be retried)
+let updateReady = null;     // version already downloaded, ready to install
+let whatsNew = null; // version we just updated to, whose changes we have to show
 const shortcutErrors = [];
 
-// El chat es solo texto: se pinta con la CPU para no quitarle tarjeta gráfica al juego.
+// The chat is just text: draw it with the CPU so we don't take the GPU away from the game.
 app.disableHardwareAcceleration();
-// Une el proceso gráfico al principal: unos 40 MB menos de RAM, mismo consumo de CPU (solo Windows).
+// Runs the GPU process inside the main one: about 40 MB less RAM, same CPU use (Windows only).
 if (!isMac) app.commandLine.appendSwitch('in-process-gpu');
 
-// ---------- Registro de errores ----------
-// Un error inesperado no debe sacar una ventana en mitad del directo: se apunta en
-// error.log (carpeta de datos de la app) para poder revisarlo, y la app sigue.
+// ---------- Error log ----------
+// An unexpected error must not pop up a window in the middle of a stream: it goes to
+// error.log (in the app data folder) so it can be checked later, and the app keeps going.
 const LOG_MAX_BYTES = 256 * 1024;
 
 function logError(message) {
@@ -226,27 +54,27 @@ function logError(message) {
     if (fs.existsSync(file) && fs.statSync(file).size > LOG_MAX_BYTES) fs.renameSync(file, `${file}.old`);
     fs.appendFileSync(file, `[${new Date().toISOString()}] v${app.getVersion()} ${message}\n`);
   } catch {
-    // si ni siquiera se puede escribir el registro, no hay nada más que hacer
+    // if we can't even write the log, there is nothing else to do
   }
 }
 
 process.on('uncaughtException', (err) => logError(err && err.stack ? err.stack : String(err)));
 process.on('unhandledRejection', (err) => logError(err && err.stack ? err.stack : String(err)));
 
-// ---------- Ajustes guardados en disco ----------
+// ---------- Settings saved on disk ----------
 
 const settingsFile = () => path.join(app.getPath('userData'), 'settings.json');
-// Ignora la marca invisible (BOM) que añaden algunos editores como el Bloc de notas.
-const readJSON = (file) => JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
+// Ignores the invisible mark (BOM) that some editors like Notepad add at the start.
+const readJSON = (file) => JSON.parse(fs.readFileSync(file, 'utf8').replace(/^﻿/, ''));
 
-// Primera vez: idioma según el de Windows. Castellano para España y sus otras lenguas
-// (catalán, gallego, euskera) y para Latinoamérica; inglés para el resto.
+// First run: language from the system. Spanish for Spain and its other languages
+// (Catalan, Galician, Basque) and for Latin America; English for everyone else.
 function systemLanguage() {
   const code = app.getLocale().toLowerCase().split('-')[0];
   return ['es', 'ca', 'gl', 'eu'].includes(code) ? 'es' : 'en';
 }
 
-// ¿La versión a es anterior a la b? ('' cuenta como muy antigua)
+// Is version a older than version b? ('' counts as very old)
 function isOlderThan(a, b) {
   const pa = String(a || '0').split('.').map(Number);
   const pb = b.split('.').map(Number);
@@ -265,12 +93,13 @@ function loadSettings() {
   }
 }
 
+// Many changes come in a row (for example while dragging a slider), so we wait a bit and save once.
 let saveTimer;
 function saveSettings() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(writeSettings, 300);
 }
-// Se escribe en un archivo aparte y luego se renombra: si el PC se apaga a medias, no se corrompe.
+// Write to a separate file and then rename it: if the PC turns off halfway, the settings don't get corrupted.
 function writeSettings() {
   const file = settingsFile();
   try {
@@ -283,8 +112,8 @@ function writeSettings() {
 
 function updateSettings(patch) {
   const clean = sanitize(patch);
-  delete clean.profiles; // los perfiles solo se tocan con sus propias acciones
-  delete clean.extraChats; // las ventanas de chat también tienen sus propias acciones
+  delete clean.profiles; // profiles only change through their own actions
+  delete clean.extraChats; // and so do the extra chat windows
   delete clean.chatVisible;
   if (!Object.keys(clean).length) return;
   Object.assign(settings, clean);
@@ -306,6 +135,14 @@ function broadcastSettings() {
   sendToAlert('settings', settings);
 }
 
+// Used after changing profiles, extra chats or imported settings.
+function afterSettingsChange() {
+  saveSettings();
+  broadcastSettings();
+  sendState();
+  updateTrayMenu();
+}
+
 const tr = (key, vars) => t(settings.language, key, vars);
 
 function applyLanguage() {
@@ -313,30 +150,18 @@ function applyLanguage() {
   if (panel && !panel.isDestroyed()) panel.setTitle(tr('panelTitle'));
 }
 
-// "Iniciar con Windows": arranca escondida en la bandeja, sin abrir los ajustes.
+// "Start with Windows": it starts hidden in the tray, without opening the settings.
 function applyAutoStart() {
   if (!app.isPackaged) return;
-  // En Mac no se pueden pasar argumentos: arranca con la ventana de ajustes abierta.
+  // On Mac we can't pass arguments, so it starts with the settings window open.
   app.setLoginItemSettings(isMac ? { openAtLogin: settings.autoStart } : { openAtLogin: settings.autoStart, args: ['--hidden'] });
 }
 
-// ---------- Ventana del chat (overlay) ----------
+// ---------- Transparent windows (chat and live alert) ----------
 
-function defaultBounds() {
-  const wa = screen.getPrimaryDisplay().workArea;
-  return { width: 380, height: 420, x: wa.x + 20, y: wa.y + Math.round((wa.height - 420) / 2) };
-}
-
-// Si la pantalla donde estaba guardado ya no existe, vuelve a la posición por defecto.
-function boundsOnScreen(b) {
-  if (!b) return null;
-  const visibleSomewhere = screen.getAllDisplays().some(({ workArea: wa }) =>
-    b.x < wa.x + wa.width && b.x + b.width > wa.x && b.y < wa.y + wa.height && b.y + b.height > wa.y);
-  return visibleSomewhere ? b : null;
-}
-
-// Crea una ventana de chat transparente. La principal no lleva "win"; las extra llevan su id.
-function makeChatWindow(bounds, winId, show) {
+// Creates a frameless, transparent window that stays on top of the game.
+// When it's not "interactive", clicks go through it to the game and it never takes the keyboard.
+function createTransparentWindow(bounds, interactive, extraPreferences) {
   const win = new BrowserWindow({
     ...bounds,
     frame: false,
@@ -348,23 +173,50 @@ function makeChatWindow(bounds, winId, show) {
     maximizable: false,
     minimizable: false,
     fullscreenable: false,
-    focusable: false, // nunca le quita el teclado al juego (salvo al moverla)
+    focusable: false, // never takes the keyboard away from the game (except while moving it)
     hasShadow: false,
     show: false,
-    webPreferences: { preload: path.join(__dirname, 'preload.js'), spellcheck: false },
+    webPreferences: { preload: path.join(__dirname, 'preload.js'), spellcheck: false, ...extraPreferences },
   });
   win.setAlwaysOnTop(true, 'screen-saver');
-  // En Mac, que se vea en todos los escritorios y encima de las apps a pantalla completa.
+  // On Mac, show it on every desktop and on top of full screen apps.
   if (isMac) win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  win.setIgnoreMouseEvents(!editMode); // los clics atraviesan el chat y llegan al juego
-  win.setFocusable(editMode); // y nunca le quita el teclado al juego (se reaplica tras lo anterior)
+  win.setIgnoreMouseEvents(!interactive);
+  // Must go after setIgnoreMouseEvents, which rewrites the window styles on Windows.
+  win.setFocusable(interactive);
+  return win;
+}
+
+// Shows a window without focusing it. Windows makes it focusable again when it appears,
+// so we set that back right after.
+function showWithoutFocus(win, focusable) {
+  win.showInactive();
+  win.setFocusable(focusable);
+}
+
+// ---------- Chat windows ----------
+
+function defaultBounds() {
+  const wa = screen.getPrimaryDisplay().workArea;
+  return { width: 380, height: 420, x: wa.x + 20, y: wa.y + Math.round((wa.height - 420) / 2) };
+}
+
+// If the screen where it was saved doesn't exist anymore, it goes back to the default position.
+function boundsOnScreen(b) {
+  if (!b) return null;
+  const visibleSomewhere = screen.getAllDisplays().some(({ workArea: wa }) =>
+    b.x < wa.x + wa.width && b.x + b.width > wa.x && b.y < wa.y + wa.height && b.y + b.height > wa.y);
+  return visibleSomewhere ? b : null;
+}
+
+// Creates a chat window. The main one has no winId; the extra ones get their id in the URL.
+function makeChatWindow(bounds, winId, show) {
+  const win = createTransparentWindow(bounds, editMode);
   win.loadFile('overlay.html', winId ? { query: { win: winId } } : undefined);
   win.once('ready-to-show', () => {
-    if (!show) return;
-    win.showInactive();
-    win.setFocusable(editMode); // al mostrarse por primera vez Windows lo reactiva
+    if (show) showWithoutFocus(win, editMode);
   });
-  // Si el proceso de la ventana se cae (muy raro), se recarga en vez de quedarse en blanco.
+  // If the window process crashes (very rare), reload it instead of leaving it blank.
   win.webContents.on('render-process-gone', (_e, details) => {
     logError(`Ventana del chat cerrada inesperadamente: ${details.reason}`);
     if (!win.isDestroyed()) win.reload();
@@ -381,22 +233,27 @@ function createOverlay() {
   overlay.on('moved', rememberBounds);
   for (const chat of settings.extraChats) if (chat.visible) openExtraChat(chat);
 
-  // Algunos juegos en modo "sin bordes" se ponen delante; lo volvemos a subir de vez en cuando.
+  // Some games in "borderless" mode jump in front, so we bring our windows back up from time to time.
   setInterval(() => {
     for (const win of chatWindows()) if (win.isVisible()) win.setAlwaysOnTop(true, 'screen-saver');
     if (alertWin && !alertWin.isDestroyed() && alertWin.isVisible()) alertWin.setAlwaysOnTop(true, 'screen-saver');
   }, 10000);
 }
 
-// ---------- Otros chats en ventanas aparte ----------
+function showMainChat(on) {
+  if (on) showWithoutFocus(overlay, editMode);
+  else overlay.hide();
+}
 
-const extraWindows = new Map(); // id -> ventana (solo las que se ven; las ocultas no gastan nada)
+// ---------- Extra chats in their own windows ----------
+
+const extraWindows = new Map(); // id -> window (only the shown ones; hidden ones don't use anything)
 
 function chatWindows() {
   return [overlay, ...extraWindows.values()].filter((w) => w && !w.isDestroyed());
 }
 
-// Una ventana nueva sale al lado de la principal (y de las anteriores), sin taparlas.
+// A new window opens next to the main one (and the previous ones), without covering them.
 function extraDefaultBounds(index) {
   const main = overlay.getBounds();
   const wa = screen.getDisplayMatching(main).workArea;
@@ -427,36 +284,26 @@ function rememberExtraBounds(id) {
   saveSettings();
 }
 
-function afterChatsChange() {
-  saveSettings();
-  broadcastSettings();
-  sendState();
-  updateTrayMenu();
-}
-
 function addExtraChat(channel) {
   if (typeof channel !== 'string' || !/^[a-z0-9_]{1,25}$/.test(channel)) return;
   if (settings.extraChats.length >= EXTRA_CHATS_MAX) return;
   const chat = { id: Date.now().toString(36), channel, visible: true, bounds: null };
   settings.extraChats.push(chat);
   openExtraChat(chat);
-  afterChatsChange();
+  afterSettingsChange();
 }
 
 function removeExtraChat(id) {
   closeExtraChat(id);
   settings.extraChats = settings.extraChats.filter((c) => c.id !== id);
-  afterChatsChange();
+  afterSettingsChange();
 }
 
-// Ocultar o mostrar una ventana concreta ("main" es la principal). Se recuerda al reiniciar.
+// Hides or shows one chat window ("main" is the main one). It's remembered after a restart.
 function setChatVisible(id, on) {
   if (id === 'main') {
     settings.chatVisible = on;
-    if (on) {
-      overlay.showInactive();
-      overlay.setFocusable(editMode);
-    } else overlay.hide();
+    showMainChat(on);
   } else {
     const chat = settings.extraChats.find((c) => c.id === id);
     if (!chat) return;
@@ -466,14 +313,14 @@ function setChatVisible(id, on) {
   }
   visible = anyChatVisible();
   if (!visible && editMode) setEditMode(false);
-  afterChatsChange();
+  afterSettingsChange();
 }
 
 function anyChatVisible() {
   return settings.chatVisible || settings.extraChats.some((c) => c.visible);
 }
 
-// Si se desconecta el monitor donde estaba el chat, se trae a la pantalla principal.
+// If the monitor with a window gets unplugged, the window comes back to the main screen.
 function keepOnScreen() {
   if (alertWin && !alertWin.isDestroyed() && !boundsOnScreen(alertWin.getBounds())) {
     alertWin.setBounds(defaultAlertBounds());
@@ -498,15 +345,15 @@ function rememberBounds() {
   sendState();
 }
 
-// Mover y cambiar el tamaño: se desbloquean a la vez todas las ventanas de chat que se ven.
+// Move and resize: every visible chat window is unlocked at the same time.
 function setEditMode(on) {
   if (on && !anyChatVisible()) setChatVisible('main', true);
   editMode = on;
   for (const win of chatWindows()) {
     win.setIgnoreMouseEvents(!on);
-    // Después de setIgnoreMouseEvents, que en Windows reescribe los estilos de la ventana.
+    // After setIgnoreMouseEvents, which rewrites the window styles on Windows.
     win.setFocusable(on);
-    // Al fijarla, devuelve el teclado a la ventana de detrás (normalmente el juego).
+    // When locking it, give the keyboard back to the window behind (usually the game).
     if (!on) win.blur();
     win.webContents.send('edit-mode', on);
   }
@@ -514,21 +361,18 @@ function setEditMode(on) {
   updateTrayMenu();
 }
 
-// El atajo de ocultar (y el botón "Ocultar chat") muestra u oculta todas las ventanas de chat.
+// The hide shortcut (and the "Hide chat" button) shows or hides every chat window.
 function setVisible(on) {
   if (!on && editMode) setEditMode(false);
   settings.chatVisible = on;
-  if (on) {
-    overlay.showInactive();
-    overlay.setFocusable(editMode);
-  } else overlay.hide();
+  showMainChat(on);
   for (const chat of settings.extraChats) {
     chat.visible = on;
     if (on) openExtraChat(chat);
     else closeExtraChat(chat.id);
   }
   visible = on;
-  afterChatsChange();
+  afterSettingsChange();
 }
 
 function setTestMode(on) {
@@ -540,7 +384,7 @@ function setTestMode(on) {
 
 const POSITIONS = ['top-left', 'top-center', 'top-right', 'middle-left', 'middle-center', 'middle-right', 'bottom-left', 'bottom-center', 'bottom-right'];
 
-// Coloca una ventana en una esquina, un borde o el centro de su pantalla, a 10 px del borde.
+// Places a window in a corner, on an edge or in the center of its screen, 10 px from the edge.
 function placedAt(b, pos) {
   const wa = screen.getDisplayMatching(b).workArea;
   const m = 10;
@@ -563,7 +407,7 @@ function setSize(width, height) {
   rememberBounds();
 }
 
-// ---------- Ventana de ajustes ----------
+// ---------- Settings window ----------
 
 function createPanel() {
   if (panel) {
@@ -582,20 +426,21 @@ function createPanel() {
     backgroundColor: '#18181b',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), spellcheck: false },
   });
-  panel.removeMenu(); // sin barra de menú (Alt ya no la hace aparecer al grabar atajos)
+  panel.removeMenu(); // no menu bar (so Alt doesn't show it while recording shortcuts)
   checkForUpdatesSoon();
   panel.loadFile('panel.html');
-  // Al cerrarla se destruye (no se esconde) para liberar memoria mientras se juega.
+  // When closed it's destroyed (not hidden) to free memory while playing.
   panel.on('closed', () => {
     panel = null;
     if (app.isQuitting) return;
-    // Al cerrar los ajustes se vuelve al chat real y se fija la posición.
+    // Closing the settings goes back to the real chat and locks the position.
     if (editMode) setEditMode(false);
     if (testMode) setTestMode(false);
     if (alertEdit) setAlertEdit(false);
   });
 }
 
+// Everything the settings window needs to draw its buttons and notices.
 function state() {
   const bounds = overlay.getBounds();
   const { workArea } = screen.getDisplayMatching(bounds);
@@ -614,14 +459,9 @@ function state() {
     defaultShortcuts: DEFAULT_SHORTCUTS,
     canAutoStart: app.isPackaged,
     whatsNew,
-    liveNow: Object.fromEntries(liveNow), // canal -> nombre visible
+    liveNow: Object.fromEntries(liveNow), // channel -> display name
     channelNames: Object.fromEntries(channelNames),
     alertEdit,
-    chats: [
-      { id: 'main', channel: settings.channel, visible: settings.chatVisible },
-      ...settings.extraChats.map((c) => ({ id: c.id, channel: c.channel, visible: c.visible })),
-    ],
-    extraChatsMax: EXTRA_CHATS_MAX,
   };
 }
 function sendState() {
@@ -649,9 +489,9 @@ function updateTrayMenu() {
   ]));
 }
 
-// ---------- Atajos de teclado (configurables) ----------
+// ---------- Keyboard shortcuts (can be changed) ----------
 
-// Registra los atajos elegidos. Si otro programa ya usa alguno, se avisa en los ajustes.
+// Registers the chosen shortcuts. If another program already uses one, the settings window shows a warning.
 function registerShortcuts() {
   globalShortcut.unregisterAll();
   shortcutErrors.length = 0;
@@ -668,22 +508,22 @@ function registerShortcuts() {
   }
 }
 
-// ---------- Actualizaciones automáticas (desde GitHub Releases) ----------
+// ---------- Automatic updates (from GitHub Releases) ----------
 
-// Busca versiones nuevas (un archivo de 1 KB). Se llama al arrancar, cada hora y al abrir los
-// ajustes, porque la app puede pasar días en la bandeja sin reiniciarse.
+// Looks for new versions (a 1 KB file). It runs at startup, every hour and when the
+// settings open, because the app can sit in the tray for days without restarting.
 let lastUpdateCheck = 0;
 function checkForUpdatesSoon() {
   if (!app.isPackaged || updateReady || updateProgress !== null) return;
-  if (Date.now() - lastUpdateCheck < 5 * 60 * 1000) return; // como mucho una vez cada 5 minutos
+  if (Date.now() - lastUpdateCheck < 5 * 60 * 1000) return; // at most once every 5 minutes
   lastUpdateCheck = Date.now();
   autoUpdater.checkForUpdates().catch(() => {});
 }
 
 function setupAutoUpdate() {
-  if (!app.isPackaged) return; // solo en la versión instalada, no al programar
-  autoUpdater.autoDownload = false;        // nada de descargas por sorpresa
-  autoUpdater.autoInstallOnAppQuit = true; // lo ya descargado se instala al cerrar la app
+  if (!app.isPackaged) return; // only in the installed app, not while developing
+  autoUpdater.autoDownload = false;        // no surprise downloads
+  autoUpdater.autoInstallOnAppQuit = true; // an update already downloaded installs when the app closes
   autoUpdater.on('update-available', (info) => {
     updateAvailable = info.version;
     afterUpdateChange();
@@ -691,7 +531,7 @@ function setupAutoUpdate() {
   let lastPercent = -1;
   autoUpdater.on('download-progress', (p) => {
     const percent = Math.floor(p.percent);
-    if (percent === lastPercent) return; // avisa a la ventana solo cuando cambia el número
+    if (percent === lastPercent) return; // only tell the window when the number changes
     lastPercent = percent;
     updateProgress = percent;
     sendState();
@@ -718,9 +558,9 @@ function afterUpdateChange() {
   updateTrayMenu();
 }
 
-// Solo cuando el usuario lo pide (botón "Descargar" o menú de la bandeja).
-// En Mac la app no tiene firma de Apple y macOS no deja que se actualice sola:
-// se abre la página de descarga para bajar el .dmg nuevo.
+// Only when the user asks for it ("Download" button or tray menu).
+// On Mac the app isn't signed by Apple and macOS won't let it update itself,
+// so we open the download page to get the new .dmg.
 function downloadUpdate() {
   if (isMac) {
     if (updateAvailable) shell.openExternal(`${REPO_URL}/releases/latest`);
@@ -730,32 +570,31 @@ function downloadUpdate() {
   updateProgress = 0;
   updateError = false;
   afterUpdateChange();
-  autoUpdater.downloadUpdate().catch(() => {}); // los fallos llegan por el evento 'error'
+  autoUpdater.downloadUpdate().catch(() => {}); // failures arrive through the 'error' event
 }
 
-// Si no se reinicia a mano, se instala sola al cerrar la app.
+// If the user doesn't restart by hand, it installs when the app closes.
 function installUpdate() {
   if (!updateReady) return;
   app.isQuitting = true;
   autoUpdater.quitAndInstall(true, true);
 }
 
-// ---------- Avisos de directo ----------
-// Cada minuto se pregunta qué canales de la lista están en directo: una sola petición
-// ligera para todos, sin iniciar sesión en Twitch.
-// El aviso sale en un recuadro propio encima del juego (no como notificación de Windows,
-// que además Windows suele esconder mientras se juega).
+// ---------- Live alerts ----------
+// Every minute we ask which channels of the list are live: one light request for
+// all of them, without logging in to Twitch.
+// The alert shows in its own box on top of the game (not as a Windows notification,
+// which Windows usually hides while you play).
 
 const LIVE_POLL_MS = 60 * 1000;
-const LIVE_RECENT_MS = 10 * 60 * 1000; // al arrancar solo se avisa de directos que acaban de empezar
-const LIVE_BATCH = 50; // canales por petición a api.ivr.fi (Twitch acepta los 100 de una vez)
+const LIVE_RECENT_MS = 10 * 60 * 1000; // at startup we only alert about streams that just started
 let liveTimer = null;
-let liveRound = 0; // si se cambia la lista a mitad de una comprobación, la vieja no programa otra
+let liveRound = 0; // if the list changes during a check, the old check doesn't schedule another one
 let liveErrorLogged = false;
-const liveSeen = new Map(); // canal -> id del directo visto la última vez (null si no estaba en directo)
-const liveNow = new Map(); // canal -> nombre visible, de los que están en directo ahora
-const channelNames = new Map(); // canal -> nombre tal como lo escribe el streamer ("AlvaroStorm")
-const liveNotified = new Set(); // directos (por id) ya avisados, por si la API parpadea
+const liveSeen = new Map(); // channel -> id of the stream seen last time (null if it wasn't live)
+const liveNow = new Map(); // channel -> display name, for the ones that are live now
+const channelNames = new Map(); // channel -> name as the streamer writes it ("AlvaroStorm")
+const liveNotified = new Set(); // streams (by id) we already alerted about, in case the API flickers
 
 function liveChannelList() {
   const channels = settings.liveChannels
@@ -781,55 +620,6 @@ function restartLiveWatch() {
   if (channels.length) checkLive(liveRound);
 }
 
-// Se pregunta a Twitch directamente, con la misma consulta pública que usa su web: se entera
-// de un directo nuevo en segundos. api.ivr.fi solo se usa si Twitch no responde, porque a
-// veces tarda varios minutos en ver un directo recién empezado.
-const TWITCH_GQL = 'https://gql.twitch.tv/gql';
-const TWITCH_WEB_CLIENT_ID = 'kimne78kx3ncx6brgo4mv6wki5h1ko'; // el de la web pública de Twitch
-const LIVE_QUERY = 'query($logins:[String!]){users(logins:$logins){login displayName profileImageURL(width:300) '
-  + 'broadcastSettings{title} stream{id createdAt type game{displayName}}}}';
-
-async function fetchLiveFromTwitch(channels) {
-  const res = await net.fetch(TWITCH_GQL, {
-    method: 'POST',
-    headers: { 'Client-Id': TWITCH_WEB_CLIENT_ID, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query: LIVE_QUERY, variables: { logins: channels } }),
-    signal: AbortSignal.timeout(10000),
-  });
-  if (!res.ok) throw new Error(`Twitch HTTP ${res.status}`);
-  const body = await res.json();
-  const users = body && body.data && body.data.users;
-  if (!Array.isArray(users)) throw new Error('respuesta inesperada de Twitch');
-  // Mismo formato que api.ivr.fi, para tratar igual las dos fuentes.
-  return users.filter(Boolean).map((u) => ({
-    login: u.login,
-    displayName: u.displayName,
-    logo: u.profileImageURL,
-    stream: u.stream && {
-      id: u.stream.id,
-      createdAt: u.stream.createdAt,
-      type: u.stream.type,
-      title: u.broadcastSettings && u.broadcastSettings.title,
-      game: u.stream.game,
-    },
-  }));
-}
-
-async function fetchLiveFromIvr(channels) {
-  const users = [];
-  for (let i = 0; i < channels.length; i += LIVE_BATCH) {
-    const batch = channels.slice(i, i + LIVE_BATCH);
-    const res = await net.fetch(`https://api.ivr.fi/v2/twitch/user?login=${batch.join(',')}`, {
-      signal: AbortSignal.timeout(15000),
-    });
-    if (!res.ok) throw new Error(`ivr HTTP ${res.status}`);
-    const part = await res.json();
-    if (!Array.isArray(part)) throw new Error('respuesta inesperada de ivr');
-    users.push(...part);
-  }
-  return users;
-}
-
 async function checkLive(round) {
   const channels = liveChannelList();
   try {
@@ -840,9 +630,9 @@ async function checkLive(round) {
       if (!liveErrorLogged) logError(`Avisos de directo (Twitch, se usa ivr): ${err.message}`);
       users = await fetchLiveFromIvr(channels);
     }
-    if (round !== liveRound) return; // la lista ha cambiado mientras tanto
+    if (round !== liveRound) return; // the list changed in the meantime
     for (const user of users) onLiveStatus(user);
-    // Un canal que ya no aparece (baneado, renombrado...) deja de marcarse en directo.
+    // A channel that doesn't show up anymore (banned, renamed...) is no longer marked as live.
     const answered = new Set(users.map((u) => String((u && u.login) || '').toLowerCase()));
     for (const channel of channels) {
       if (!answered.has(channel)) {
@@ -853,7 +643,7 @@ async function checkLive(round) {
     liveErrorLogged = false;
     sendState();
   } catch (err) {
-    // Sin internet o las dos fuentes caídas: se reintenta en la siguiente vuelta sin llenar el registro.
+    // No internet or both sources down: try again next round without filling the log.
     if (!liveErrorLogged) logError(`Avisos de directo: ${err.message}`);
     liveErrorLogged = true;
   }
@@ -873,12 +663,14 @@ function onLiveStatus(user) {
   else liveNow.delete(login);
 
   if (!stream || liveNotified.has(String(stream.id))) return;
-  if (firstLook ? !(Date.now() - Date.parse(stream.createdAt) < LIVE_RECENT_MS) : previous === String(stream.id)) {
-    liveNotified.add(String(stream.id)); // ya estaba en directo antes: no se avisa
-    return;
-  }
   liveNotified.add(String(stream.id));
-  announceLive({
+  // The first time we see a channel, only alert if the stream started a few minutes ago.
+  // After that, only alert if it's a different stream from last time.
+  const alreadyLive = firstLook
+    ? !(Date.now() - Date.parse(stream.createdAt) < LIVE_RECENT_MS)
+    : previous === String(stream.id);
+  if (alreadyLive) return;
+  queueAlert({
     login,
     name,
     logo: typeof user.logo === 'string' && user.logo.startsWith('https://static-cdn.jtvnw.net/') ? user.logo : '',
@@ -887,19 +679,15 @@ function onLiveStatus(user) {
   });
 }
 
-function announceLive(info) {
-  queueAlert(info);
-}
-
-// ---------- Recuadro del aviso de directo ----------
-// Ventana aparte del chat, igual de transparente y sin quitar nunca el teclado al juego.
-// Se crea al llegar un aviso (o al moverla) y se cierra en cuanto no tiene nada que enseñar.
+// ---------- Live alert box ----------
+// A window apart from the chat, just as transparent, and it never takes the keyboard from the game.
+// It's created when an alert arrives (or when moving it) and closed as soon as it has nothing to show.
 
 let alertWin = null;
-let alertReady = false; // la ventana ya ha cargado y tiene los ajustes
-let alertEdit = false; // se está moviendo y ajustando con el aviso de ejemplo
+let alertReady = false; // the window has loaded and has the settings
+let alertEdit = false; // it's being moved and resized with the sample alert
 const alertQueue = [];
-let alertSent = 0; // avisos enviados a la ventana actual (para no cerrarla con uno recién llegado)
+let alertSent = 0; // alerts sent to the current window (so we don't close it with a new one inside)
 
 function defaultAlertBounds() {
   const wa = screen.getPrimaryDisplay().workArea;
@@ -913,35 +701,13 @@ function ensureAlertWindow() {
   alertReady = false;
   alertSent = 0;
   const b = boundsOnScreen(settings.alertBounds) || defaultAlertBounds();
-  const win = new BrowserWindow({
-    ...b,
-    frame: false,
-    transparent: true,
-    backgroundColor: '#00000000',
-    alwaysOnTop: true,
-    skipTaskbar: true,
-    resizable: false,
-    maximizable: false,
-    minimizable: false,
-    fullscreenable: false,
-    focusable: false,
-    hasShadow: false,
-    show: false,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      spellcheck: false,
-      autoplayPolicy: 'no-user-gesture-required', // el sonido suena sin haber hecho clic antes
-    },
-  });
+  // The sound plays without a click first.
+  const win = createTransparentWindow(b, alertEdit, { autoplayPolicy: 'no-user-gesture-required' });
   alertWin = win;
-  win.setAlwaysOnTop(true, 'screen-saver');
-  if (isMac) win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  win.setIgnoreMouseEvents(!alertEdit);
-  win.setFocusable(alertEdit);
   win.loadFile('alert.html');
   win.on('moved', rememberAlertBounds);
   win.on('closed', () => {
-    if (alertWin !== win) return; // ya hay otra ventana nueva
+    if (alertWin !== win) return; // there is already a newer window
     alertWin = null;
     alertReady = false;
   });
@@ -989,7 +755,7 @@ function rememberAlertBounds() {
   saveSettings();
 }
 
-// Las flechas y el botón de restablecer enseñan el aviso de ejemplo para ver dónde queda.
+// The arrows and the reset button show the sample alert, so the user sees where it ends up.
 function setAlertBounds(b) {
   if (!alertEdit) setAlertEdit(true);
   alertWin.setBounds(b);
@@ -1008,15 +774,14 @@ ipcMain.on('alert-ready', (e) => {
   if (!fromAlert(e)) return;
   alertReady = true;
   if (alertEdit) sendToAlert('alert-edit', true);
-  else if (!alertQueue.length) return alertWin.destroy(); // se apagó "Mover" antes de que cargara
+  else if (!alertQueue.length) return alertWin.destroy(); // "Move" was turned off before it loaded
   flushAlerts();
 });
 ipcMain.on('alert-show', (e) => {
   if (!fromAlert(e) || alertWin.isVisible()) return;
-  alertWin.showInactive();
-  alertWin.setFocusable(alertEdit); // al mostrarse Windows lo reactiva
+  showWithoutFocus(alertWin, alertEdit);
 });
-// La ventana dice cuántos avisos ha recibido: si llegó otro mientras tanto, no se cierra.
+// The window tells us how many alerts it got: if another one arrived meanwhile, we don't close it.
 ipcMain.on('alert-idle', (e, received) => {
   if (fromAlert(e) && !alertEdit && !alertQueue.length && received === alertSent) alertWin.destroy();
 });
@@ -1024,7 +789,7 @@ ipcMain.on('toggle-alert-edit', () => setAlertEdit(!alertEdit));
 ipcMain.on('set-alert-position', (_e, pos) => setAlertPosition(pos));
 ipcMain.on('reset-alert-bounds', () => setAlertBounds(defaultAlertBounds()));
 
-// ---------- Perfiles (una configuración por juego) ----------
+// ---------- Profiles (one setup per game) ----------
 
 function applyBounds(bounds) {
   const b = boundsOnScreen(bounds);
@@ -1040,10 +805,10 @@ function saveProfile(name, color) {
   const data = pick(settings, PROFILE_KEYS);
   const existing = settings.profiles.find((p) => p.name === name);
   if (existing) Object.assign(existing, { color, data });
-  else if (settings.profiles.length < 10) settings.profiles.push({ name, color, data });
+  else if (settings.profiles.length < PROFILES_MAX) settings.profiles.push({ name, color, data });
   else return;
   settings.activeProfile = name;
-  afterProfileChange();
+  afterSettingsChange();
 }
 
 function loadProfile(name) {
@@ -1053,17 +818,17 @@ function loadProfile(name) {
   Object.assign(settings, look);
   if (bounds) applyBounds(bounds);
   settings.activeProfile = name;
-  afterProfileChange();
+  afterSettingsChange();
   overlay.webContents.send('toast', `${tr('profile')}: ${name}`);
 }
 
 function deleteProfile(name) {
   settings.profiles = settings.profiles.filter((p) => p.name !== name);
   if (settings.activeProfile === name) settings.activeProfile = '';
-  afterProfileChange();
+  afterSettingsChange();
 }
 
-// Atajo: pasa al siguiente perfil guardado.
+// Shortcut: switch to the next saved profile.
 function nextProfile() {
   const { profiles, activeProfile } = settings;
   if (!profiles.length) return;
@@ -1071,14 +836,7 @@ function nextProfile() {
   loadProfile(profiles[(i + 1) % profiles.length].name);
 }
 
-function afterProfileChange() {
-  saveSettings();
-  broadcastSettings();
-  sendState();
-  updateTrayMenu();
-}
-
-// ---------- Exportar e importar la configuración ----------
+// ---------- Export and import the settings ----------
 
 async function exportSettings() {
   const { canceled, filePath } = await dialog.showSaveDialog(panel, {
@@ -1114,19 +872,19 @@ async function importSettings() {
     if (bounds) applyBounds(bounds);
     if ('liveChannels' in rest) restartLiveWatch();
     applyLanguage();
-    afterProfileChange();
+    afterSettingsChange();
     return 'ok';
   } catch {
     return 'invalid';
   }
 }
 
-// ---------- Comunicación con las ventanas ----------
+// ---------- Messages from the windows ----------
 
 ipcMain.handle('get-settings', () => settings);
 ipcMain.handle('get-state', () => state());
 ipcMain.on('set-settings', (_e, patch) => updateSettings(patch));
-// Solo vuelve el aspecto a como venía; el canal, los filtros, los perfiles, etc. se mantienen.
+// Only resets the look; the channel, filters, profiles, etc. stay the same.
 ipcMain.on('reset-look', () => {
   Object.assign(settings, pick(DEFAULTS, PROFILE_KEYS.filter((k) => k !== 'bounds')));
   saveSettings();
@@ -1142,14 +900,14 @@ ipcMain.on('dismiss-whats-new', () => {
   sendState();
 });
 ipcMain.on('install-update', installUpdate);
-// Mientras se graba un atajo nuevo en los ajustes, los actuales se sueltan para no dispararse.
+// While a new shortcut is being recorded in the settings, the current ones are released so they don't fire.
 ipcMain.on('pause-shortcuts', () => globalShortcut.unregisterAll());
 ipcMain.on('resume-shortcuts', () => {
   registerShortcuts();
   sendState();
 });
 ipcMain.on('download-update', downloadUpdate);
-ipcMain.on('test-live-alert', () => announceLive({ login: '', name: 'Kylen Chat', title: tr('liveTestTitle'), game: '', logo: '' }));
+ipcMain.on('test-live-alert', () => queueAlert({ login: '', name: 'Kylen Chat', title: tr('liveTestTitle'), game: '', logo: '' }));
 ipcMain.on('open-repo', () => shell.openExternal(REPO_URL));
 ipcMain.on('toggle-edit', () => setEditMode(!editMode));
 ipcMain.on('toggle-visible', () => setVisible(!visible));
@@ -1159,7 +917,7 @@ ipcMain.on('remove-chat', (_e, id) => removeExtraChat(id));
 ipcMain.on('set-chat-visible', (_e, id, on) => { if (typeof on === 'boolean') setChatVisible(id, on); });
 ipcMain.on('set-position', (_e, pos) => setPosition(pos));
 ipcMain.on('set-size', (_e, w, h) => setSize(w, h));
-// Cambiar el tamaño desde la esquina: vale para el chat y para el recuadro del aviso.
+// Resizing from the corner: works for the chat windows and for the alert box.
 ipcMain.on('resize-start', (e) => {
   const chat = chatWindows().find((w) => w.webContents === e.sender);
   if (chat && editMode) resizing = { win: chat, bounds: chat.getBounds(), min: [160, 80] };
@@ -1184,18 +942,18 @@ ipcMain.on('resize-end', () => {
   else for (const [id, w] of extraWindows) if (w === win) rememberExtraBounds(id);
 });
 
-// ---------- Seguridad ----------
-// Las ventanas solo muestran archivos de la app: no pueden abrir webs, navegar ni pedir permisos.
+// ---------- Security ----------
+// The windows only show the app's own files: they can't open websites, navigate or ask for permissions.
 
 app.on('web-contents-created', (_e, contents) => {
   contents.setWindowOpenHandler(() => ({ action: 'deny' }));
   contents.on('will-navigate', (e) => e.preventDefault());
 });
 
-// ---------- Arranque ----------
+// ---------- Startup ----------
 
 app.setAppUserModelId('com.kylen.twitchchat');
-// En Mac vive solo en la barra de menú (arriba), sin icono en el Dock.
+// On Mac it only lives in the menu bar (top of the screen), with no Dock icon.
 if (isMac && app.dock) app.dock.hide();
 
 if (!app.requestSingleInstanceLock()) {
@@ -1204,17 +962,17 @@ if (!app.requestSingleInstanceLock()) {
   app.on('second-instance', createPanel);
 
   app.whenReady().then(() => {
-    // Solo se permite leer la lista de fuentes instaladas, y solo a la ventana de ajustes.
+    // Only reading the list of installed fonts is allowed, and only for the settings window.
     const allowFonts = (wc, perm) => perm === 'local-fonts' && Boolean(panel) && wc === panel.webContents;
     session.defaultSession.setPermissionRequestHandler((wc, perm, cb) => cb(allowFonts(wc, perm)));
     session.defaultSession.setPermissionCheckHandler((wc, perm) => allowFonts(wc, perm));
 
     const hadSettings = fs.existsSync(settingsFile());
     settings = loadSettings();
-    // Tras actualizar se enseñan las novedades una vez. En una instalación nueva, no.
+    // After an update, the changes are shown once. Not on a fresh install.
     if (hadSettings && settings.lastVersion !== app.getVersion()) whatsNew = app.getVersion();
-    // Hasta la 1.1.2 los emotes animados venían apagados; al pasar a la 1.1.3 se encienden
-    // una vez para todos. Después, cada uno puede volver a apagarlos y se respeta.
+    // Up to 1.1.2 animated emotes came turned off; when moving to 1.1.3 they are turned on
+    // once for everybody. After that, each user can turn them off again and we respect it.
     if (hadSettings && isOlderThan(settings.lastVersion, '1.1.3')) settings.animatedEmotes = true;
     settings.lastVersion = app.getVersion();
     saveSettings();
@@ -1224,7 +982,7 @@ if (!app.requestSingleInstanceLock()) {
     restartLiveWatch();
     if (!process.argv.includes('--hidden')) createPanel();
 
-    // Sin menú de aplicación, en Mac no funcionarían Cmd+C / Cmd+V en los campos de texto.
+    // Without an app menu, Cmd+C / Cmd+V wouldn't work in text fields on Mac.
     if (isMac) Menu.setApplicationMenu(Menu.buildFromTemplate([{ role: 'appMenu' }, { role: 'editMenu' }]));
 
     tray = new Tray(TRAY_ICON);
@@ -1234,7 +992,7 @@ if (!app.requestSingleInstanceLock()) {
 
     registerShortcuts();
 
-    // Al volver de suspensión la conexión suele quedar muerta: se reconecta al momento.
+    // After sleep the connection is usually dead, so the chats reconnect right away.
     powerMonitor.on('resume', () => { for (const win of chatWindows()) win.webContents.send('reconnect'); });
     screen.on('display-removed', keepOnScreen);
     screen.on('display-metrics-changed', keepOnScreen);
@@ -1253,5 +1011,5 @@ if (!app.requestSingleInstanceLock()) {
     if (settings) writeSettings();
   });
   app.on('will-quit', () => globalShortcut.unregisterAll());
-  app.on('window-all-closed', () => {}); // sigue viva en la bandeja
+  app.on('window-all-closed', () => {}); // keeps running in the tray
 }

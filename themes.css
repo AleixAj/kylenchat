@@ -1,70 +1,69 @@
-/* Estilos de juegos: el chat de Twitch con el aspecto del chat de cada juego.
-   Inspirados en World of Warcraft, League of Legends, Valorant y Minecraft; no están afiliados a
-   Blizzard, Riot Games ni Mojang. Las fuentes son libres (OFL) y parecidas a las de cada juego, y los
-   detalles (botones, pestañas) están dibujados con CSS y SVG propios: son
-   decorativos, no se pueden pulsar y los clics siguen atravesando el chat.
+/* Game styles: the Twitch chat with the look of each game's chat.
+   Inspired by World of Warcraft, League of Legends, Valorant, Minecraft, Counter-Strike 2,
+   Overwatch 2, Fortnite and Rust; not affiliated with their makers. The fonts are free (OFL)
+   lookalikes, and the details (buttons, tabs) are drawn with our own CSS and SVG: they are
+   only decoration, can't be clicked and clicks still go through the chat.
 
-   Se aplican con la clase theme-<juego> en <body> (chat) o en la vista previa del panel. En el chat,
-   "frame" es #chat, "bar" es #bar y "decor" es #decor; en la vista previa son .frame, .bar y .decor. */
+   They are turned on with the theme-<game> class on <body> (chat) or on the preview in the
+   settings window. In the chat, "frame" is #chat, "bar" is #bar and "decor" is #decor; in the
+   preview they are .frame, .bar and .decor. */
 
-/* ---------- Común a todos los estilos de juegos ---------- */
+/* ---------- Shared by every game style ---------- */
 .themed :is(#chat, .frame) { gap: 1px; }
 .themed .msg {
   border: 0; border-radius: 0; background: none; padding: 0 4px;
   line-height: 1.3;
-  flex-shrink: 0; /* con el chat lleno, las líneas no se encogen ni se montan */
+  flex-shrink: 0; /* when the chat is full, lines don't shrink or overlap */
 }
 .themed .msg.notice, .themed .msg.mention, .themed .msg.highlighted, .themed .msg.first,
 .themed .msg.bits, .themed .msg.notice.redeem-notice { background: none; }
 .themed.align-right .msg { border: 0; padding: 0 4px; }
 .themed .notice-title { font-size: 1em; }
-/* Las etiquetas (primer mensaje, bits, canje...) pasan a ser texto entre corchetes, como en los juegos */
+/* The labels (first message, bits, redemption...) become text in brackets, like in the games */
 .themed .pill {
   background: none; padding: 0; border-radius: 0; margin-right: 4px;
   font-size: 1em; font-weight: inherit; line-height: inherit; vertical-align: baseline; text-shadow: inherit;
 }
 .themed .pill::before { content: "["; }
 .themed .pill::after { content: "]"; }
+/* The channel tag only exists in WoW, where it's the user type */
 .themed .chan { margin-right: 4px; }
-/* La etiqueta del canal ("Todos", "Global"...) solo va en WoW, donde es el tipo de usuario: en el resto molesta */
-:is(.theme-lol, .theme-valorant, .theme-minecraft, .theme-cs2, .theme-overwatch, .theme-fortnite, .theme-rust) .chan { display: none; }
 .themed .time { opacity: .75; font-size: 1em; }
 .themed .time::before { content: "["; }
 .themed .time::after { content: "]"; }
 .themed .reply { font-size: .85em; }
-/* Las insignias de Twitch no existen en los juegos: en WoW el papel ya sale como canal */
+/* Twitch badges don't exist in the games: in WoW the role already shows as the channel */
 .themed .badge { display: none; }
-/* En los avisos con mensaje (suscripciones...) no va avatar: el aviso ya dice quién es */
+/* Notices with a message (subscriptions...) have no avatar: the notice already says who it is */
 .themed .msg.notice .avatar { display: none; }
 .themed .msg.notice > div { padding-left: 0; }
 
-/* Capa de detalles decorativos de cada juego (botones, barra de desplazamiento) */
+/* Layer with each game's decorative details (buttons, scroll bar) */
 :is(#decor, .decor) { position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: var(--opacity); transition: opacity .8s; }
 body.idle #decor { opacity: calc(var(--opacity) * .25); }
 :is(#decor, .decor):empty { display: none; }
 
 /* =====================================================================
-   WORLD OF WARCRAFT (interfaz actual)
-   - Chat en letra estrecha (Arial Narrow si está instalada) con sombra negra, sin burbujas.
-   - "[Usuario] [Nombre]: texto": el papel de quien escribe hace de canal; el nombre con color de clase.
-   - Pestañas con la parte de arriba redondeada: la activa marrón rojiza con borde cobrizo y texto
-     dorado; la otra (el canal) apagada.
-   - Columna de botones a la izquierda: amigos (con los espectadores como número), altavoz, bocadillo
-     y, abajo, los de desplazarse (subir, bajar e ir al final).
+   WORLD OF WARCRAFT (current interface)
+   - Chat in a narrow font (Arial Narrow if installed) with a black shadow, no bubbles.
+   - "[1. User] [Name]: text": the role of who writes works as the channel.
+   - Tabs with a rounded top: the active one reddish brown with a copper border and gold
+     text; the other one (the channel) faded.
+   - Column of buttons on the left: friends, speaker, chat bubble and, at the bottom,
+     the scroll ones (up, down and go to the end).
    ===================================================================== */
 .theme-wow { --ff: "Arial Narrow"; }
 .theme-wow :is(#chat, .frame) { background: var(--bg); padding: 3px 12px 10px 6px; left: 30px; }
-.theme-wow #chat { left: 30px; }
-/* El color del texto se elige en el panel (por defecto, el rosa del canal General) */
+/* The text color is picked in the settings (by default, the pink of the General channel) */
 .theme-wow .msg {
   color: var(--color);
   font-family: "Arial Narrow", "Archivo Narrow", sans-serif; font-stretch: condensed; font-weight: 400;
   text-shadow: 1px 1px 0 #000, 0 0 1px #000;
-  /* Cuando una línea no cabe, la continuación va con sangría, como en el juego */
+  /* When a line doesn't fit, the rest goes indented, like in the game */
   padding-left: calc(4px + 1.1em); text-indent: -1.1em;
 }
-.theme-wow .msg * { text-indent: 0; } /* la sangría es solo de la línea, no de etiquetas ni emotes */
-/* La hora de WoW ("11:46") va sin corchetes y del color de la línea */
+.theme-wow .msg * { text-indent: 0; } /* the indent is only for the line, not for tags or emotes */
+/* The WoW time ("11:46") has no brackets and uses the line color */
 .theme-wow .time { opacity: 1; color: inherit; margin-right: 5px; }
 .theme-wow .time::before, .theme-wow .time::after { content: none; }
 .theme-wow .chan::before { content: "["; }
@@ -72,24 +71,23 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-wow .name { font-weight: 400; }
 .theme-wow .name::before { content: "["; }
 .theme-wow .name::after { content: "]"; }
-/* Susurro: las menciones se leen en el rosa de los susurros */
+/* Whisper: mentions use the pink of whispers */
 .theme-wow .msg.mention, .theme-wow .msg.mention .text { color: #FF80FF; }
-/* Mensajes del sistema en amarillo, como "Experiencia obtenida" */
+/* System messages in yellow, like "Experience gained" */
 .theme-wow .msg.notice { color: #FFFF00; }
-.theme-wow .notice-title { font-weight: 400; } /* los avisos de WoW no van en negrita */
-.theme-wow .msg.notice.redeem-notice { color: #8080FF; } /* como "Tu reputación ha aumentado" */
+.theme-wow .notice-title { font-weight: 400; } /* WoW notices are not bold */
+.theme-wow .msg.notice.redeem-notice { color: #8080FF; } /* like "Your reputation has increased" */
 .theme-wow .msg.system { color: #FFFF00; opacity: .9; }
 .theme-wow .pill-first { color: #40FF40; }
 .theme-wow .pill-bits { color: #FF7F00; }
 .theme-wow .pill-highlighted { color: #FFD100; }
 .theme-wow .pill-redeem { color: #FF7F00; }
-/* Pestañas */
+/* Tabs */
 .theme-wow :is(#bar, .bar) {
   display: flex; align-items: flex-end; gap: 3px; left: 30px; padding: 0 0 0 4px;
   background: none; border-radius: 0;
   font: 400 12px "Marcellus", serif; letter-spacing: .01em; text-shadow: 1px 1px 0 #000;
 }
-.theme-wow #bar { left: 30px; }
 .theme-wow :is(#barBrand, .bar-brand), .theme-wow :is(#barChannel, .bar-tab) {
   height: 21px; box-sizing: border-box; padding: 0 12px; display: flex; align-items: center; gap: 5px;
   border: 1px solid; border-bottom: 0; border-radius: 7px 7px 0 0; white-space: nowrap;
@@ -105,10 +103,10 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
   justify-self: auto; overflow: hidden; text-overflow: ellipsis;
 }
 .theme-wow #barChannel:empty { display: none; }
-/* Espectadores a la derecha de las pestañas, como en el estilo normal */
+/* Viewers on the right of the tabs, like in the normal style */
 .theme-wow #barViewers { order: 2; margin-left: auto; align-self: center; padding-right: 6px; color: #FFFFFF; font: 400 12px "Arial Narrow", "Archivo Narrow", sans-serif; }
 .theme-wow :is(#bar, .bar) img { width: 14px; height: 14px; }
-/* Columna de botones de la izquierda */
+/* Column of buttons on the left */
 .theme-wow .wow-buttons { position: absolute; left: 2px; top: 0; bottom: 2px; width: 24px; }
 .theme-wow .wow-btn {
   position: absolute; left: 0; width: 24px; height: 24px; box-sizing: border-box;
@@ -126,8 +124,8 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-wow .wow-btn.scroll-down { bottom: 28px; }
 .theme-wow .wow-btn.scroll-end { bottom: 0; }
 .theme-wow .wow-btn :is(svg) { overflow: visible; }
-/* En la vista previa del panel hay menos alto: solo el altavoz y los de desplazarse */
-.decor.theme-wow .wow-btn, .theme-wow .decor .wow-btn { transform: scale(.8); transform-origin: top left; }
+/* The preview in the settings window is shorter: only the speaker, the bubble and "go to the end" */
+.theme-wow .decor .wow-btn { transform: scale(.8); transform-origin: top left; }
 .theme-wow .decor .wow-btn.friends { display: none; }
 .theme-wow .decor .wow-btn.speaker { top: 2px; }
 .theme-wow .decor .wow-btn.bubble { top: 26px; }
@@ -135,11 +133,11 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-wow .decor .wow-btn.scroll-end { bottom: -2px; }
 
 /* =====================================================================
-   LEAGUE OF LEGENDS (en partida)
-   - Fondo oscuro translúcido, sin bordes. Cada línea empieza con la hora ("08:23").
-   - "[Todos] Nombre (Sub): texto": etiqueta, nombre y papel (donde el juego pone el campeón) en
-     el color del equipo (azul aliados, rojo enemigos) y el mensaje en blanco crema.
-   - Avisos del juego en naranja.
+   LEAGUE OF LEGENDS (in a match)
+   - Dark see-through background, no borders. Each line starts with the time ("08:23").
+   - "Name (Sub): text": the role goes where the game shows the champion, and the
+     message is creamy white.
+   - Game notices in orange.
    ===================================================================== */
 .theme-lol { --ff: "Inter"; }
 .theme-lol :is(#chat, .frame) { background: var(--bg); padding: 4px 12px 10px 8px; gap: 0; }
@@ -147,13 +145,11 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
   font-family: "Inter", "Segoe UI", sans-serif; font-weight: 500; letter-spacing: .005em; line-height: 1.35;
   color: var(--color); text-shadow: 0 1px 1px rgba(0, 0, 0, .95), 0 0 2px rgba(0, 0, 0, .8);
 }
-/* La hora de LoL va sin corchetes */
+/* The LoL time has no brackets */
 .theme-lol .time { opacity: 1; color: var(--color); margin-right: 6px; }
 .theme-lol .time::before, .theme-lol .time::after { content: none; }
-.theme-lol .chan::before { content: "["; }
-.theme-lol .chan::after { content: "]"; }
 .theme-lol .name { font-weight: 500; }
-/* Donde el juego pone el campeón va el papel de quien escribe: (Usuario), (Sub), (VIP), (Mod)... */
+/* Where the game shows the champion we show the role of who writes: (User), (Sub), (VIP), (Mod)... */
 .theme-lol .name::after { content: "\00a0(" attr(data-role) ")"; }
 .theme-lol .msg.mention { background: linear-gradient(90deg, rgba(235, 160, 59, .22), transparent 75%); }
 .theme-lol .msg.notice, .theme-lol .msg.system { color: #EBA03B; }
@@ -168,9 +164,9 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-lol :is(#bar, .bar) img { filter: sepia(1) saturate(1.5) hue-rotate(5deg) brightness(.9); }
 
 /* =====================================================================
-   VALORANT (chat abierto)
-   - Recuadro gris azulado oscuro con esquinas rectas y barra de desplazamiento blanca y fina.
-   - "(All) Nombre: texto" en letra tipo DIN; nombres en turquesa (aliados) y rojo (enemigos).
+   VALORANT (chat open)
+   - Dark blue-grey box with square corners and a thin white scroll bar.
+   - "Name (Sub): text" in a DIN-like font.
    ===================================================================== */
 .theme-valorant { --ff: "D-DIN"; }
 .theme-valorant :is(#chat, .frame) { background: var(--bg); padding: 4px 16px 10px 8px; }
@@ -178,14 +174,11 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
   font-family: "D-DIN", "DIN Next", "Segoe UI", sans-serif; font-weight: 400; letter-spacing: .01em;
   color: var(--color); text-shadow: 0 1px 2px rgba(0, 0, 0, .7);
 }
-.theme-valorant .chan { color: var(--color); } /* se pinta del color del nombre: "(Equipo) Nombre:" */
-.theme-valorant .chan::before { content: "("; }
-.theme-valorant .chan::after { content: ")"; }
 .theme-valorant .name { font-weight: 400; }
-/* Donde el juego pone el agente va el papel de quien escribe: "Nombre (Sub)" */
+/* Where the game shows the agent we show the role of who writes: "Name (Sub)" */
 .theme-valorant .name::after { content: "\00a0(" attr(data-role) ")"; }
 .theme-valorant .msg.mention { background: linear-gradient(90deg, rgba(255, 70, 85, .28), transparent 75%); }
-/* Los avisos del juego van en amarillo claro con "(Transmisión)" delante */
+/* Game notices are light yellow with "(Broadcast)" in front */
 .theme-valorant .msg.notice { color: #EDE3A3; }
 .theme-valorant .msg.notice .notice-title { font-weight: 400; }
 .theme-valorant .msg.notice .notice-title::before { content: var(--val-broadcast, "(Broadcast) "); }
@@ -203,9 +196,8 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 
 /* =====================================================================
    MINECRAFT
-   - Cada línea con su franja negra translúcida que ocupa todo el ancho, sin huecos.
-   - "<Nombre> texto" en letra pixelada con la sombra dura desplazada del juego.
-   - Barra de escribir negra de lado a lado con el cursor "_".
+   - Each line has its own see-through black strip across the whole width, with no gaps.
+   - "<Name> text" in a pixel font with the game's hard, offset shadow.
    ===================================================================== */
 .theme-minecraft { --ff: "Monocraft"; }
 .theme-minecraft :is(#chat, .frame) { gap: 0; padding: 0 6px 8px 4px; }
@@ -220,7 +212,7 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-minecraft .name { font-weight: 400; }
 .theme-minecraft .name::before { content: "<"; }
 .theme-minecraft .name::after { content: ">"; }
-/* "<Nombre> texto": sin los dos puntos */
+/* "<Name> text": without the colon */
 .theme-minecraft .sep { font-size: 0; }
 .theme-minecraft .sep::after { content: "\00a0"; font-size: var(--fs); }
 .theme-minecraft .msg.mention .text { color: #FFFF55; text-shadow: .12em .12em 0 #3F3F15; }
@@ -231,9 +223,6 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-minecraft .pill-bits { color: #FF55FF; }
 .theme-minecraft .pill-highlighted { color: #FFAA00; }
 .theme-minecraft .pill-redeem { color: #55FFFF; }
-.theme-minecraft .chan { color: #AAAAAA; }
-.theme-minecraft .chan::before { content: "["; }
-.theme-minecraft .chan::after { content: "]"; }
 .theme-minecraft :is(#bar, .bar) {
   background: rgba(0, 0, 0, .4); border-radius: 0;
   font: 400 11px "Monocraft", monospace; letter-spacing: 0; color: #FFFF55; text-shadow: .12em .12em 0 #3F3F15;
@@ -243,9 +232,9 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 
 /* =====================================================================
    COUNTER-STRIKE 2
-   - Recuadro negro translúcido con un marco algo más claro alrededor.
-   - "[TODOS] Nombre @Sub: texto" en letra negrita cuadrada; nombres en azul (CT) y amarillo (T),
-     el papel en verde donde el juego pone la ubicación, avisos del sistema en dorado.
+   - See-through black box with a slightly lighter frame around it.
+   - "Name @Sub: text" in a square bold font; the role in green where the game shows
+     the location, system notices in gold.
    ===================================================================== */
 .theme-cs2 { --ff: "Rajdhani"; }
 .theme-cs2 :is(#chat, .frame) {
@@ -257,11 +246,8 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
   font-family: "Rajdhani", "Segoe UI", sans-serif; font-weight: 700; letter-spacing: .01em;
   color: var(--color); text-shadow: 0 1px 1px rgba(0, 0, 0, .8);
 }
-.theme-cs2 .chan { color: #FFFFFF; text-transform: uppercase; }
-.theme-cs2 .chan::before { content: "["; }
-.theme-cs2 .chan::after { content: "]"; }
 .theme-cs2 .name { font-weight: 700; }
-/* Donde el juego pone la ubicación (en verde) va el papel de quien escribe: "Nombre @Mod" */
+/* Where the game shows the location (in green) we show the role of who writes: "Name @Mod" */
 .theme-cs2 .name::after { content: "\00a0@" attr(data-role); color: #6BE36B; }
 .theme-cs2 .name.painted::after { -webkit-text-fill-color: #6BE36B; }
 .theme-cs2 .msg.mention { background: linear-gradient(90deg, rgba(232, 184, 74, .25), transparent 75%); }
@@ -276,9 +262,9 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 
 /* =====================================================================
    OVERWATCH 2
-   - Recuadro azul marino con esquinas redondeadas y barra de desplazamiento blanca redondeada.
-   - Cada línea empieza con un rombo naranja (chat de partida) y va en naranja: "[Nombre]: texto".
-   - Avisos del sistema en amarillo con un icono "i".
+   - Navy blue box with rounded corners and a rounded white scroll bar.
+   - Each line starts with an orange diamond (match chat) and is orange: "[Name]: text".
+   - System notices in yellow with an "i" icon.
    ===================================================================== */
 .theme-overwatch { --ff: "Jost"; }
 .theme-overwatch :is(#chat, .frame) { background: var(--bg); border-radius: 6px; padding: 5px 18px 10px 8px; gap: 3px; }
@@ -308,8 +294,8 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 
 /* =====================================================================
    FORTNITE
-   - Panel gris oscuro con esquinas muy redondeadas; pestañas en forma de píldora arriba.
-   - Cada línea con un avatar redondo de color (con la inicial) y "Nombre: texto" en blanco.
+   - Dark grey panel with very rounded corners.
+   - Each line with a round colored avatar (with the first letter) and "Name: text" in white.
    ===================================================================== */
 .theme-fortnite { --ff: "Inter"; }
 .theme-fortnite :is(#chat, .frame) { background: var(--bg); border-radius: 12px; padding: 8px 12px 12px 10px; gap: 5px; }
@@ -325,7 +311,6 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
   box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .6);
 }
 .theme-fortnite .name { font-weight: 700; }
-.theme-fortnite .chan { display: none; }
 .theme-fortnite .msg.notice, .theme-fortnite .msg.system { color: #B9C3D6; padding-left: 4px; font-weight: 500; }
 .theme-fortnite .msg.mention { background: linear-gradient(90deg, rgba(255, 216, 74, .22), transparent 75%); border-radius: 6px; }
 .theme-fortnite .pill { color: #FFD84A; }
@@ -337,9 +322,8 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 
 /* =====================================================================
    RUST
-   - Sin recuadro: texto blanco en negrita estrecha con contorno negro marcado.
-   - Avatar cuadrado negro con la inicial y "[Global] Nombre: texto" con etiqueta y nombre en color.
-   - Barra verde oliva translúcida para escribir, con "[Global]" y el icono de persona.
+   - No box: white text in a narrow bold font with a strong black outline.
+   - Square black avatar with the first letter and "Name: text".
    ===================================================================== */
 .theme-rust { --ff: "Roboto Condensed"; }
 .theme-rust :is(#chat, .frame) { background: var(--bg); padding: 4px 12px 10px 6px; gap: 6px; }
@@ -355,12 +339,6 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
   background: #000; color: #fff; font: 700 .95em/1 "Roboto Condensed", sans-serif; text-shadow: none;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, .15);
 }
-.theme-rust .chan::before { content: "["; }
-.theme-rust .chan::after { content: "]"; }
-/* La etiqueta del canal va del mismo color que el nombre, como "[Team] Nombre" en el juego */
-.theme-rust .chan { color: #6CB4FF; }
-.theme-rust .msg.r-broadcaster .chan { color: #AAFF55; }
-.theme-rust .msg.r-moderator .chan { color: #FFC857; }
 .theme-rust .msg.notice { color: #FF4B4B; padding-left: 0; min-height: 0; }
 .theme-rust .msg.system { color: #DDDDDD; padding-left: 0; min-height: 0; }
 .theme-rust .pill { color: #A9D16D; }
@@ -372,17 +350,16 @@ body.idle #decor { opacity: calc(var(--opacity) * .25); }
 .theme-rust #barViewers::before { border-radius: 0; box-shadow: none; }
 
 
-/* ---------- "Detalles del juego" apagado: sin botones, el chat usa todo el espacio ---------- */
+/* ---------- "Game details" turned off: no buttons, the chat uses all the space ---------- */
 .no-decor #decor { display: none; }
-.no-decor.themed #chat { bottom: 0; }
 .theme-wow.no-decor #chat, .theme-wow.no-decor #bar { left: 0; }
 
-/* Foto de perfil de Twitch en el avatar (Fortnite, Rust): cuando llega, sustituye a la inicial */
+/* Twitch profile picture in the avatar (Fortnite, Rust): when it arrives, it replaces the letter */
 .themed .avatar { background-size: cover; background-position: center; }
 .themed .avatar.has-img { color: transparent; text-shadow: none; }
 
-/* Rango delante del nombre: "[VIP] <Nombre>" en Minecraft (como en los servidores) y "[Mod] Nombre"
-   como etiqueta de clan en Rust */
+/* Rank before the name: "[VIP] <Name>" in Minecraft (like on servers) and "[Mod] Name"
+   like a clan tag in Rust */
 .themed .rank { margin-right: 4px; }
 .themed .rank::before { content: "["; }
 .themed .rank::after { content: "]"; }
