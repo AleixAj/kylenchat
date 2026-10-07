@@ -695,7 +695,7 @@ function renderLiveList() {
   const names = (lastState && lastState.channelNames) || {};
   const list = liveList();
   // The state arrives very often (for example while resizing): only redraw if something changed.
-  const key = JSON.stringify([lang, list, live, names]);
+  const key = JSON.stringify([lang, list, live, names, settings.channel]);
   if (key === liveListKey) return;
   liveListKey = key;
   const ul = $('liveList');
@@ -710,13 +710,23 @@ function renderLiveList() {
     const tag = document.createElement('span');
     tag.className = 'tag';
     tag.textContent = tr('liveOn');
+    // Opens this channel's chat in the main window, like typing it above and pressing Connect.
+    const join = document.createElement('button');
+    join.className = 'join';
+    const current = channel === settings.channel;
+    join.textContent = tr(current ? 'liveJoined' : 'liveJoin');
+    join.disabled = current;
+    join.addEventListener('click', () => {
+      $('channel').value = channel;
+      connect();
+    });
     const remove = document.createElement('button');
     remove.className = 'remove';
     remove.textContent = '×';
     remove.title = tr('liveRemove', { name: channelLabel(channel, names[channel] || live[channel]) });
     remove.setAttribute('aria-label', remove.title);
     remove.addEventListener('click', () => saveLiveList(liveList().filter((c) => c !== channel)));
-    li.append(dot, name, tag, remove);
+    li.append(dot, name, tag, join, remove);
     return li;
   }));
   $('liveEmpty').hidden = list.length > 0;

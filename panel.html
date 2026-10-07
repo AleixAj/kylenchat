@@ -123,6 +123,9 @@
   .live-list .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
   .live-list .tag { font-size: 12px; color: #ff8a8a; font-weight: 600; }
   .live-list li:not(.on) .tag { display: none; }
+  .live-list .join { padding: 4px 10px; font-size: 12px; background: var(--accent); color: #fff; }
+  .live-list .join:hover { background: var(--accent-2); }
+  .live-list .join:disabled { background: transparent; color: var(--muted); opacity: 1; }
   .live-list .remove { padding: 4px 9px; background: transparent; color: var(--muted); font-size: 16px; line-height: 1; }
   .live-list .remove:hover { background: #3a3a42; color: #efeff1; }
   #liveEmpty[hidden] { display: none; }
