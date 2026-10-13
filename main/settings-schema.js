@@ -33,6 +33,25 @@ const DEFAULTS = {
   liveSound: true,
   liveVolume: 70,
   alertBounds: null,
+  showPredictions: true,
+  predictionMatchChat: true, // the prediction box copies the chat's colors, font and game style
+  predictionColor: '#a970ff', // its own colors when it doesn't
+  predictionTextColor: '#ffffff',
+  predictionBgColor: '#0c0c12',
+  predictionBar1: '#387aff', // first and second answer (Twitch's blue and pink)
+  predictionBar2: '#f5009b',
+  pollBar1: '#387aff', // poll answers, up to 5
+  pollBar2: '#f5009b',
+  pollBar3: '#00c7ac',
+  pollBar4: '#ffb31a',
+  pollBar5: '#a970ff',
+  predictionOpacity: 100,
+  predictionBgOpacity: 90,
+  predictionEffects: true, // glows and moving lights
+  predictionResultTime: 15, // seconds the result stays on screen
+  predictionBounds: null,
+  showPolls: true,
+  pollBounds: null, // the poll box has its own place and size, but the same look
   showDeleted: false,
   shortcuts: { ...DEFAULT_SHORTCUTS },
   align: 'left',
@@ -76,6 +95,9 @@ const inRange = (min, max) => (v) => Number.isFinite(v) && v >= min && v <= max;
 const isText = (max) => (v) => typeof v === 'string' && v.length <= max && !/[\u0000-\u001f]/.test(v);
 const isBounds = (v) => v === null || (v && ['x', 'y', 'width', 'height'].every((k) => Number.isFinite(v[k])));
 const isProfileName = isText(30);
+// Place and size of the prediction and poll boxes.
+const isBoxBounds = (v) => v === null || (v && ['x', 'y'].every((k) => Number.isFinite(v[k]))
+  && inRange(220, 4000)(v.width) && inRange(120, 2000)(v.height));
 
 // A valid shortcut is Ctrl and/or Alt (Shift optional) plus a letter or number,
 // or an F1-F24 key on its own or with modifiers.
@@ -125,6 +147,25 @@ const SCHEMA = {
   liveVolume: inRange(0, 100),
   alertBounds: (v) => v === null || (v && ['x', 'y'].every((k) => Number.isFinite(v[k]))
     && inRange(200, 4000)(v.width) && inRange(60, 2000)(v.height)),
+  showPredictions: isBool,
+  predictionMatchChat: isBool,
+  predictionColor: isHex,
+  predictionTextColor: isHex,
+  predictionBgColor: isHex,
+  predictionBar1: isHex,
+  predictionBar2: isHex,
+  pollBar1: isHex,
+  pollBar2: isHex,
+  pollBar3: isHex,
+  pollBar4: isHex,
+  pollBar5: isHex,
+  predictionOpacity: inRange(20, 100),
+  predictionBgOpacity: inRange(0, 100),
+  predictionEffects: isBool,
+  predictionResultTime: inRange(5, 60),
+  predictionBounds: isBoxBounds,
+  showPolls: isBool,
+  pollBounds: isBoxBounds,
   showDeleted: isBool,
   shortcuts: isShortcuts,
   align: (v) => v === 'left' || v === 'right',

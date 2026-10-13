@@ -25,6 +25,15 @@ contextBridge.exposeInMainWorld('api', {
   alertReady: () => ipcRenderer.send('alert-ready'),
   alertShow: () => ipcRenderer.send('alert-show'),
   alertIdle: (received) => ipcRenderer.send('alert-idle', received),
+  // Predictions and polls: kind is 'prediction' or 'poll'.
+  vote: (kind, v) => ipcRenderer.send('vote', kind, v),
+  testVote: (kind) => ipcRenderer.send('test-vote', kind),
+  toggleVoteEdit: (kind) => ipcRenderer.send('toggle-vote-edit', kind),
+  setVotePosition: (kind, pos) => ipcRenderer.send('set-vote-position', kind, pos),
+  resetVoteBounds: (kind) => ipcRenderer.send('reset-vote-bounds', kind),
+  voteReady: () => ipcRenderer.send('vote-ready'),
+  voteShow: () => ipcRenderer.send('vote-show'),
+  voteIdle: () => ipcRenderer.send('vote-idle'),
   pauseShortcuts: () => ipcRenderer.send('pause-shortcuts'),
   resumeShortcuts: () => ipcRenderer.send('resume-shortcuts'),
   openRepo: () => ipcRenderer.send('open-repo'),
@@ -47,4 +56,7 @@ contextBridge.exposeInMainWorld('api', {
   onToast: on('toast'),
   onLiveAlert: on('live-alert'),
   onAlertEdit: on('alert-edit'),
+  onVote: on('vote'),
+  onVoteEdit: on('vote-edit'),
+  onVoteTest: on('vote-test'),
 });

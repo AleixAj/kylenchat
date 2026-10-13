@@ -100,6 +100,7 @@ Debajo puedes cambiar el color del texto, el tamaño, la opacidad del fondo, el 
 - **Insignias** de streamer, moderador, VIP y suscriptor.
 - Destaca **subs, regalos, raids, bits, canjes de puntos (también los que no llevan mensaje, con el nombre de la recompensa) y mensajes destacados**, y muestra a quién responde cada mensaje.
 - **Avisos de directo**: apunta los canales que sigues y te avisa en cuanto empiezan directo, con un recuadro encima del juego y sonido.
+- **Predicciones y encuestas** del canal en directo, en recuadros encima del juego: los votos en tiempo real, la cuenta atrás y, al final, la opción ganadora. Copian el estilo del chat o usan tus propios colores.
 - En **chat compartido**, cada mensaje muestra el icono del canal del que viene.
 - Los nombres con **pintura de 7TV** (degradados) se ven con sus colores.
 
@@ -170,7 +171,17 @@ Cuando uno empieza directo te avisa con:
 - Un **recuadro encima del juego** con la foto del canal, el título y el juego. Pulsa **Mover y ajustar el aviso** para colocarlo y cambiar su tamaño con un aviso de ejemplo. También eliges cuántos segundos se queda en pantalla.
 - Un **sonido**, que puedes quitar o bajar de volumen.
 
-Al abrir la app solo te avisa de los directos que empezaron hace menos de 10 minutos, para no llenarte de avisos de golpe. Con **Probar aviso** ves y oyes cómo queda.
+Al abrir la app solo te avisa de los directos que empezaron hace menos de 10 minutos, para no llenarte de avisos de golpe. Con **Probar aviso** ves y oyes cómo queda. El botón **Ver chat** de cada canal conecta el chat principal a ese canal.
+
+### Predicciones y encuestas
+
+Cuando el canal del chat principal lanza una **predicción** (de 2 a 10 opciones) o una **encuesta** (hasta 5), sale un recuadro encima del juego con la pregunta, una barra por opción con su porcentaje, los puntos o votos, la gente que ha votado y el tiempo que queda. Al terminar, la opción ganadora brilla unos segundos y el recuadro se quita solo. Si abres la app con una ya en marcha, también la muestra. No hace falta iniciar sesión en Twitch.
+
+Todo se ajusta en la pestaña **Votaciones**:
+
+- Predicciones y encuestas tienen **cada una su recuadro**: pulsa **Mover y cambiar tamaño** para colocarlo donde quieras y ajustar su tamaño (el texto crece o se encoge para que siempre quepa), o usa las flechas. **Probar** simula una entera en unos 20 segundos.
+- Por defecto copian el **estilo del chat**: su color, su letra y el estilo de juego elegido. Quita **Mismo estilo que el chat** para elegir el color del marco, del fondo, del texto y de cada barra.
+- También puedes cambiar la **opacidad**, la **opacidad del fondo**, cuánto tiempo se queda el resultado y quitar los **efectos** (brillos y luces en movimiento) si lo prefieres más sobrio.
 
 ### Atajos
 
@@ -231,8 +242,9 @@ npm start
 | `main.js` | Proceso principal: ventanas, bandeja, atajos, ajustes y actualizaciones |
 | `main/` | Ajustes por defecto y sus comprobaciones (`settings-schema.js`) y la consulta de quién está en directo (`live-api.js`) |
 | `overlay.html` / `overlay.js` | La ventana transparente con el chat (conexión a Twitch y mensajes) |
-| `overlay/` | Partes del chat: lectura de mensajes, emotes, pinturas de 7TV, canjes de puntos, fotos de perfil y modo prueba |
+| `overlay/` | Partes del chat: lectura de mensajes, emotes, pinturas de 7TV, canjes de puntos, predicciones, encuestas, fotos de perfil y modo prueba |
 | `alert.html` / `alert.js` | El recuadro de los avisos de directo |
+| `prediction.html` / `prediction.js` | Los recuadros de las predicciones y las encuestas |
 | `panel.html` / `panel.js` | La ventana de ajustes |
 | `themes.js` / `themes.css` | Los estilos de juegos |
 | `i18n.js` | Textos en español e inglés |

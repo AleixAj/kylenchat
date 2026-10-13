@@ -100,6 +100,7 @@ A sota pots canviar el color del text, la mida, l'opacitat del fons, el text de 
 - **Insígnies** de streamer, moderador, VIP i subscriptor.
 - Destaca **subs, regals, raids, bits, bescanvis de punts (també els que no porten missatge, amb el nom de la recompensa) i missatges destacats**, i mostra a qui respon cada missatge.
 - **Avisos de directe**: apunta els canals que segueixes i t'avisa tan bon punt comencen directe, amb un requadre damunt del joc i so.
+- **Prediccions i enquestes** del canal en directe, en requadres damunt del joc: els vots en temps real, el compte enrere i, al final, l'opció guanyadora. Copien l'estil del xat o fan servir els teus colors.
 - En el **xat compartit**, cada missatge mostra la icona del canal d'on ve.
 - Els noms amb **pintura de 7TV** (degradats) es veuen amb els seus colors.
 
@@ -170,7 +171,17 @@ Quan un comença directe t'avisa amb:
 - Un **requadre damunt del joc** amb la foto del canal, el títol i el joc. Prem **Mover y ajustar el aviso** (Mou i ajusta l'avís) per col·locar-lo i canviar-ne la mida amb un avís d'exemple. També tries quants segons es queda a la pantalla.
 - Un **so**, que pots treure o abaixar de volum.
 
-En obrir l'app només t'avisa dels directes que han començat fa menys de 10 minuts, per no omplir-te d'avisos de cop. Amb **Probar aviso** (Prova l'avís) veus i sents com queda.
+En obrir l'app només t'avisa dels directes que han començat fa menys de 10 minuts, per no omplir-te d'avisos de cop. Amb **Probar aviso** (Prova l'avís) veus i sents com queda. El botó **Ver chat** (Veure xat) de cada canal connecta el xat principal a aquell canal.
+
+### Prediccions i enquestes
+
+Quan el canal del xat principal llança una **predicció** (de 2 a 10 opcions) o una **enquesta** (fins a 5), surt un requadre damunt del joc amb la pregunta, una barra per opció amb el seu percentatge, els punts o vots, la gent que ha votat i el temps que queda. En acabar, l'opció guanyadora brilla uns segons i el requadre desapareix sol. Si obres l'app amb una ja en marxa, també la mostra. No cal iniciar sessió a Twitch.
+
+Tot s'ajusta a la pestanya **Votaciones** (Votacions):
+
+- Prediccions i enquestes tenen **cadascuna el seu requadre**: prem **Mover y cambiar tamaño** (Moure i canviar la mida) per col·locar-lo on vulguis i ajustar-ne la mida (el text creix o s'encongeix perquè sempre hi càpiga), o fes servir les fletxes. **Probar** (Provar) en simula una de sencera en uns 20 segons.
+- Per defecte copien l'**estil del xat**: el seu color, la seva lletra i l'estil de joc triat. Treu **Mismo estilo que el chat** (Mateix estil que el xat) per triar el color del marc, del fons, del text i de cada barra.
+- També pots canviar l'**opacitat**, l'**opacitat del fons**, quant de temps es queda el resultat i treure els **efectes** (brillantors i llums en moviment) si el prefereixes més sobri.
 
 ### Dreceres
 
@@ -231,8 +242,9 @@ npm start
 | `main.js` | Procés principal: finestres, safata del sistema, dreceres, ajustos i actualitzacions |
 | `main/` | Ajustos per defecte i les seves comprovacions (`settings-schema.js`) i la consulta de qui està en directe (`live-api.js`) |
 | `overlay.html` / `overlay.js` | La finestra transparent amb el xat (connexió a Twitch i missatges) |
-| `overlay/` | Parts del xat: lectura de missatges, emotes, pintures de 7TV, bescanvis de punts, fotos de perfil i mode de prova |
+| `overlay/` | Parts del xat: lectura de missatges, emotes, pintures de 7TV, bescanvis de punts, prediccions, enquestes, fotos de perfil i mode de prova |
 | `alert.html` / `alert.js` | El requadre dels avisos de directe |
+| `prediction.html` / `prediction.js` | Els requadres de les prediccions i les enquestes |
 | `panel.html` / `panel.js` | La finestra d'ajustos |
 | `themes.js` / `themes.css` | Els estils de jocs |
 | `i18n.js` | Textos en castellà i anglès |

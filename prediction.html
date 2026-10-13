@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+<title>Kylen Chat — predicción</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+  /* prediction.js sets these from the settings: the chat's look or the box's own color. */
+  :root {
+    --accent: #a970ff;      /* frame, tag, timer */
+    --accent-text: #c9a6ff; /* the accent made readable on the dark background */
+    --base: #0c0c12;        /* background, tinted with the accent */
+    --text: #fff;
+    --ff: "Exo 2";          /* titles and answers */
+    --hud: "Rajdhani";      /* tag, countdown and numbers */
+    --cut: .9em;            /* size of the cut corners */
+    --radius: 0px;
+    --box-opacity: 1;       /* whole box */
+    --bg: 90;               /* background opacity, 0-100 */
+  }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; user-select: none; }
+  /* The font size is set by prediction.js so the whole box fits the window: making the window
+     bigger makes everything grow. Everything else is measured in em. */
+  body { font-family: var(--ff), "Segoe UI", system-ui, sans-serif; color: var(--text); font-size: 16px; }
+
+  /* Holds the box. The "Opacity" setting goes here so it doesn't fight the box's animations. */
+  #stage { position: absolute; inset: 0; opacity: var(--box-opacity); }
+
+  /* The frame is the outer layer (a thin accent border) and .inner the panel on top. Both have
+     the top-left and bottom-right corners cut, like a game HUD. */
+  .card {
+    --shape: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+    position: absolute; top: 6px; left: 6px; right: 6px;
+    padding: 1px; border-radius: var(--radius); clip-path: var(--shape);
+    background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 25%, transparent) 45%, color-mix(in srgb, var(--accent) 60%, transparent));
+    opacity: 0;
+  }
+  .inner {
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; gap: .5em;
+    padding: .75em .9em .95em;
+    border-radius: calc(var(--radius) - 1px); clip-path: var(--shape);
+    background:
+      radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 3px),
+      linear-gradient(170deg, color-mix(in srgb, var(--base) calc(var(--bg) * 1%), transparent), color-mix(in srgb, var(--base) calc(var(--bg) * .9%), transparent));
+  }
+  /* HUD brackets in the two corners that aren't cut */
+  .inner::before, .inner::after {
+    content: ""; position: absolute; width: .9em; height: .9em; border: 2px solid var(--accent); pointer-events: none; opacity: .9;
+  }
+  .inner::before { top: 4px; right: 4px; border-left: 0; border-bottom: 0; }
+  .inner::after { bottom: 4px; left: 4px; border-right: 0; border-top: 0; }
+
+  .card.show { animation: card-in .55s cubic-bezier(.2, 1, .3, 1) forwards; }
+  .card.hide { animation: card-out .45s ease-in forwards; }
+  /* A scan line crosses the box when it appears */
+  .scan { position: absolute; left: 0; right: 0; top: 0; height: 2.5em; pointer-events: none; opacity: 0;
+    background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--accent) 35%, transparent), transparent); }
+  .card.show .scan { animation: scan 1s .1s ease-out; }
+  @keyframes card-in { from { opacity: 0; transform: translateY(-12%); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+  @keyframes card-out { from { opacity: 1; } to { opacity: 0; transform: translateY(-8%); filter: blur(4px); } }
+  @keyframes scan { 0% { top: -2.5em; opacity: 1; } 100% { top: 100%; opacity: 0; } }
+
+  .head {
+    display: flex; align-items: center; justify-content: space-between; gap: .6em;
+    padding-bottom: .45em; margin-right: .6em;
+    border-bottom: 1px solid transparent;
+    border-image: linear-gradient(90deg, var(--accent), transparent 85%) 1;
+    font-family: var(--hud), var(--ff), sans-serif;
+  }
+  .tag { display: flex; align-items: center; gap: .5em; font-size: .78em; font-weight: 700; letter-spacing: .2em; color: var(--accent-text); white-space: nowrap; }
+  .tag::before { content: ""; width: .55em; height: .55em; background: var(--accent); transform: rotate(45deg); box-shadow: 0 0 .6em var(--accent); }
+  .card.ACTIVE .tag::before { animation: blink 1.4s ease-in-out infinite; }
+  .status {
+    font-size: .75em; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+    font-variant-numeric: tabular-nums; color: var(--text);
+    padding: .15em .65em; border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+  .status.urgent { border-color: #ff4d5e; background: rgba(255, 77, 94, .2); animation: blink .8s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity: .45; } }
+
+  .title {
+    font-size: 1.05em; font-weight: 700; line-height: 1.22;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+
+  .outcomes { display: flex; flex-direction: column; gap: .45em; }
+  .outcome { --c: #387aff; display: flex; flex-direction: column; gap: .15em; transition: opacity .5s; }
+  .bar {
+    position: relative; height: 1.8em; overflow: hidden;
+    display: flex; align-items: center; justify-content: space-between; gap: .5em; padding: 0 .6em;
+    background:
+      repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), rgba(255, 255, 255, .07) calc(10% - 1px) 10%),
+      rgba(255, 255, 255, .06);
+    border-left: 3px solid var(--c);
+  }
+  .fill {
+    position: absolute; inset: 0 auto 0 0; width: 0;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--c) 25%, transparent), color-mix(in srgb, var(--c) 62%, transparent));
+    box-shadow: inset -2px 0 0 var(--c), .4em 0 1em -.3em var(--c);
+    transition: width .8s cubic-bezier(.3, .9, .3, 1);
+  }
+  /* A light that runs through the bars while people can vote */
+  .card.ACTIVE .fill::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, .28) 50%, transparent 70%);
+    background-size: 250% 100%; animation: sweep 2.6s linear infinite;
+  }
+  @keyframes sweep { from { background-position: 150% 0; } to { background-position: -100% 0; } }
+  /* Dark outline so the text reads on top of any bar color, even yellow or white */
+  .bar > span { position: relative; text-shadow: 0 0 3px rgba(0, 0, 0, .85), 0 1px 2px rgba(0, 0, 0, .9); }
+  .name { font-size: .9em; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pct { font-family: var(--hud), var(--ff), sans-serif; font-size: 1.05em; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stats {
+    font-family: var(--hud), var(--ff), sans-serif; font-size: .74em; font-weight: 600; letter-spacing: .04em;
+    color: color-mix(in srgb, var(--text) 62%, transparent); padding-left: .2em;
+    font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* Result: the winner shines, the rest step back */
+  .card.done .outcome:not(.win), .card.CANCELED .outcome { opacity: .38; }
+  .outcome.win .bar { box-shadow: 0 0 0 1px var(--c), 0 0 1.1em color-mix(in srgb, var(--c) 60%, transparent); }
+  .outcome.win .name::before { content: "🏆 "; }
+
+  /* Time left to vote, with a glowing tip */
+  .time {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 3px; transform-origin: left; transition: transform .3s linear;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 40%, transparent), var(--accent));
+    box-shadow: 0 0 8px var(--accent);
+  }
+  .card:not(.ACTIVE) .time { display: none; }
+
+  /* ---------- Game styles (when the box follows the chat's style) ---------- */
+  .theme-minecraft { --cut: 0px; }
+  .theme-minecraft .inner { background: rgba(16, 16, 16, .88); }
+  .theme-minecraft .card { padding: 2px; background: #555; }
+  .theme-minecraft .inner::before, .theme-minecraft .inner::after, .theme-minecraft .fill::after, .theme-minecraft .scan { display: none; }
+  .theme-minecraft .fill { background: color-mix(in srgb, var(--c) 60%, transparent); box-shadow: inset 0 -.2em 0 rgba(0, 0, 0, .3); }
+  .theme-minecraft .head { border-image: none; border-bottom: 2px solid #555; }
+  .theme-wow .card, .theme-lol .card { background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 45%, #000)); }
+  .theme-wow { --cut: .35em; }
+  .theme-wow .title { font-family: "Marcellus", var(--ff), serif; font-weight: 400; }
+  .theme-lol { --cut: .45em; }
+  .theme-lol .inner { box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--base) 90%, transparent), inset 0 0 0 4px color-mix(in srgb, var(--accent) 45%, transparent); }
+  .theme-valorant { --cut: 1.2em; }
+  .theme-valorant .title, .theme-rust .title, .theme-cs2 .title { text-transform: uppercase; letter-spacing: .03em; }
+  .theme-overwatch .bar { transform: skewX(-12deg); margin: 0 .3em; }
+  .theme-overwatch .bar > span { transform: skewX(12deg); }
+  .theme-fortnite { --cut: 0px; --radius: .7em; }
+  .theme-fortnite .bar { border-radius: .4em; }
+  .theme-fortnite .inner::before, .theme-fortnite .inner::after { display: none; }
+  .theme-rust, .theme-cs2 { --cut: 0px; }
+  .theme-rust .inner::before, .theme-rust .inner::after { opacity: .5; }
+
+  /* "Effects" turned off: no glows or moving lights, just the panel */
+  .no-fx .scan, .no-fx .card .fill::after { display: none; }
+  .no-fx .tag::before, .no-fx .status.urgent { animation: none !important; }
+  .no-fx .tag::before, .no-fx .time { box-shadow: none; }
+  .no-fx .fill { box-shadow: inset -2px 0 0 var(--c); }
+  .no-fx .outcome.win .bar { box-shadow: 0 0 0 1px var(--c); }
+
+  /* While it's being moved and resized */
+  body.edit { -webkit-app-region: drag; cursor: move; outline: 2px dashed #a970ff; outline-offset: -2px; background: rgba(20, 20, 30, .35); }
+  #grip {
+    display: none; position: absolute; right: 0; bottom: 0; width: 18px; height: 18px; z-index: 1;
+    -webkit-app-region: no-drag; cursor: nwse-resize;
+    background: linear-gradient(135deg, transparent 50%, #a970ff 50%);
+  }
+  body.edit #grip { display: block; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card.show, .card.show *, .card *::before, .card *::after { animation: none !important; }
+    .card.show { opacity: 1; }
+    .card.hide { animation: none; opacity: 0; }
+    .fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <div id="stage"></div>
+  <div id="grip"></div>
+  <script src="i18n.js"></script>
+  <script src="colors.js"></script>
+  <script src="resize-grip.js"></script>
+  <script src="prediction.js"></script>
+</body>
+</html>

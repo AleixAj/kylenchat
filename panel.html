@@ -34,6 +34,7 @@
   button { background: #2f2f35; color: inherit; border: 0; border-radius: 6px; padding: 8px 12px; font: inherit; cursor: pointer; }
   button:hover { background: #3a3a42; }
   button:disabled { opacity: .45; cursor: default; }
+  .row.off { opacity: .45; }
   button.primary { background: var(--accent); color: #fff; }
   button.primary:hover { background: var(--accent-2); }
   button.wide { width: 100%; margin-bottom: 8px; }
@@ -205,6 +206,7 @@
     <button role="tab" data-tab="games" data-i18n="tabGames"></button>
     <button role="tab" data-tab="messages" data-i18n="tabMessages"></button>
     <button role="tab" data-tab="alerts" data-i18n="tabAlerts"></button>
+    <button role="tab" data-tab="predictions" data-i18n="tabPredictions"></button>
     <button role="tab" data-tab="general" data-i18n="tabGeneral"></button>
   </nav>
 
@@ -393,6 +395,75 @@
       <div class="row"><label for="liveSound" data-i18n="liveSound"></label><input type="checkbox" id="liveSound"></div>
       <div class="row"><label for="liveVolume" data-i18n="liveVolume"></label><input type="range" id="liveVolume" min="0" max="100" step="5"><span class="val" id="liveVolumeVal"></span></div>
       <button class="wide" id="liveTest" data-i18n="liveTest"></button>
+    </section>
+
+  </div>
+
+  <!-- ======================= PREDICTIONS AND POLLS ======================= -->
+  <div class="tab-panel" data-panel="predictions" hidden>
+    <section data-vote="prediction">
+      <h2 data-i18n="sectionPredictions"></h2>
+      <p class="note" data-i18n="predictionsNote"></p>
+      <div class="row"><label for="showPredictions" data-i18n="showPredictions"></label><input type="checkbox" id="showPredictions"></div>
+      <div class="actions">
+        <button data-vote-move></button>
+        <button data-vote-test data-i18n="voteTest"></button>
+      </div>
+      <div class="row">
+        <label data-i18n="placeAt"></label>
+        <div class="grid">
+          <button data-vote-pos="top-left" data-i18n-title="posTopLeft">↖</button>
+          <button data-vote-pos="top-center" data-i18n-title="posTopCenter">↑</button>
+          <button data-vote-pos="top-right" data-i18n-title="posTopRight">↗</button>
+          <button data-vote-pos="middle-left" data-i18n-title="posMiddleLeft">←</button>
+          <button data-vote-pos="middle-center" data-i18n-title="posMiddleCenter">•</button>
+          <button data-vote-pos="middle-right" data-i18n-title="posMiddleRight">→</button>
+          <button data-vote-pos="bottom-left" data-i18n-title="posBottomLeft">↙</button>
+          <button data-vote-pos="bottom-center" data-i18n-title="posBottomCenter">↓</button>
+          <button data-vote-pos="bottom-right" data-i18n-title="posBottomRight">↘</button>
+        </div>
+      </div>
+      <button class="wide" data-vote-reset data-i18n="liveReset"></button>
+    </section>
+
+    <section data-vote="poll">
+      <h2 data-i18n="sectionPolls"></h2>
+      <p class="note" data-i18n="pollsNote"></p>
+      <div class="row"><label for="showPolls" data-i18n="showPolls"></label><input type="checkbox" id="showPolls"></div>
+      <div class="actions">
+        <button data-vote-move></button>
+        <button data-vote-test data-i18n="voteTest"></button>
+      </div>
+      <div class="row">
+        <label data-i18n="placeAt"></label>
+        <div class="grid">
+          <button data-vote-pos="top-left" data-i18n-title="posTopLeft">↖</button>
+          <button data-vote-pos="top-center" data-i18n-title="posTopCenter">↑</button>
+          <button data-vote-pos="top-right" data-i18n-title="posTopRight">↗</button>
+          <button data-vote-pos="middle-left" data-i18n-title="posMiddleLeft">←</button>
+          <button data-vote-pos="middle-center" data-i18n-title="posMiddleCenter">•</button>
+          <button data-vote-pos="middle-right" data-i18n-title="posMiddleRight">→</button>
+          <button data-vote-pos="bottom-left" data-i18n-title="posBottomLeft">↙</button>
+          <button data-vote-pos="bottom-center" data-i18n-title="posBottomCenter">↓</button>
+          <button data-vote-pos="bottom-right" data-i18n-title="posBottomRight">↘</button>
+        </div>
+      </div>
+      <button class="wide" data-vote-reset data-i18n="liveReset"></button>
+    </section>
+
+    <section>
+      <h2 data-i18n="sectionPredictionLook"></h2>
+      <p class="note" data-i18n="predictionPreviewNote"></p>
+      <div class="row"><label for="predictionMatchChat" data-i18n="predictionMatchChat"></label><input type="checkbox" id="predictionMatchChat"><span class="note" data-i18n="predictionMatchChatNote"></span></div>
+      <div class="row own-look"><label for="predictionColor" data-i18n="predictionColor"></label><input type="color" id="predictionColor"></div>
+      <div class="row own-look"><label for="predictionTextColor" data-i18n="textColor"></label><input type="color" id="predictionTextColor"></div>
+      <div class="row own-look"><label for="predictionBgColor" data-i18n="predictionBgColor"></label><input type="color" id="predictionBgColor"></div>
+      <div class="row own-look"><label for="predictionBar1" data-i18n="predictionBars"></label><input type="color" id="predictionBar1"><input type="color" id="predictionBar2"><span class="note" data-i18n="predictionBarsNote"></span></div>
+      <div class="row own-look"><label for="pollBar1" data-i18n="pollBars"></label><input type="color" id="pollBar1"><input type="color" id="pollBar2"><input type="color" id="pollBar3"><input type="color" id="pollBar4"><input type="color" id="pollBar5"></div>
+      <div class="row"><label for="predictionOpacity" data-i18n="predictionOpacity"></label><input type="range" id="predictionOpacity" min="20" max="100" step="5"><span class="val" id="predictionOpacityVal"></span></div>
+      <div class="row"><label for="predictionBgOpacity" data-i18n="bgOpacity"></label><input type="range" id="predictionBgOpacity" min="0" max="100" step="5"><span class="val" id="predictionBgOpacityVal"></span></div>
+      <div class="row"><label for="predictionResultTime" data-i18n="predictionResultTime"></label><input type="range" id="predictionResultTime" min="5" max="60" step="5"><span class="val" id="predictionResultTimeVal"></span></div>
+      <div class="row"><label for="predictionEffects" data-i18n="predictionEffects"></label><input type="checkbox" id="predictionEffects"><span class="note" data-i18n="predictionEffectsNote"></span></div>
     </section>
   </div>
 

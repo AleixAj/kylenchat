@@ -98,6 +98,8 @@ function connect(channel) {
     emotesRoomId = null;
     channelEmotesLoaded = false;
     retries = 0;
+    forgetPrediction();
+    forgetPoll();
   }
   joined = channel;
   document.getElementById('barChannel').textContent = channel ? `#${channel}` : '';

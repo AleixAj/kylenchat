@@ -1,4 +1,4 @@
-// Main Electron process. It creates the windows (chat, settings and live alert),
+// Main Electron process. It creates the windows (chat, settings, live alert, prediction and poll),
 // the tray icon and the global shortcuts, keeps the settings on disk and checks
 // for updates and for channels that go live.
 const {
@@ -127,12 +127,14 @@ function updateSettings(patch) {
   }
   saveSettings();
   broadcastSettings();
+  afterVoteSettings(clean);
 }
 
 function broadcastSettings() {
   for (const win of chatWindows()) win.webContents.send('settings', settings);
   if (panel && !panel.isDestroyed()) panel.webContents.send('settings', settings);
   sendToAlert('settings', settings);
+  for (const box of voteBoxList()) sendToVote(box, 'settings', settings);
 }
 
 // Used after changing profiles, extra chats or imported settings.
@@ -236,7 +238,9 @@ function createOverlay() {
   // Some games in "borderless" mode jump in front, so we bring our windows back up from time to time.
   setInterval(() => {
     for (const win of chatWindows()) if (win.isVisible()) win.setAlwaysOnTop(true, 'screen-saver');
-    if (alertWin && !alertWin.isDestroyed() && alertWin.isVisible()) alertWin.setAlwaysOnTop(true, 'screen-saver');
+    for (const win of [alertWin, ...voteBoxList().map((b) => b.win)]) {
+      if (win && !win.isDestroyed() && win.isVisible()) win.setAlwaysOnTop(true, 'screen-saver');
+    }
   }, 10000);
 }
 
@@ -325,6 +329,12 @@ function keepOnScreen() {
   if (alertWin && !alertWin.isDestroyed() && !boundsOnScreen(alertWin.getBounds())) {
     alertWin.setBounds(defaultAlertBounds());
     rememberAlertBounds();
+  }
+  for (const box of voteBoxList()) {
+    if (box.win && !box.win.isDestroyed() && !boundsOnScreen(box.win.getBounds())) {
+      box.win.setBounds(defaultVoteBounds(box));
+      rememberVoteBounds(box);
+    }
   }
   for (const [id, win] of extraWindows) {
     if (!win.isDestroyed() && !boundsOnScreen(win.getBounds())) {
@@ -437,6 +447,7 @@ function createPanel() {
     if (editMode) setEditMode(false);
     if (testMode) setTestMode(false);
     if (alertEdit) setAlertEdit(false);
+    for (const box of voteBoxList()) if (box.edit) setVoteEdit(box, false);
   });
 }
 
@@ -462,6 +473,8 @@ function state() {
     liveNow: Object.fromEntries(liveNow), // channel -> display name
     channelNames: Object.fromEntries(channelNames),
     alertEdit,
+    predictionEdit: voteBoxes.prediction.edit,
+    pollEdit: voteBoxes.poll.edit,
   };
 }
 function sendState() {
@@ -789,6 +802,185 @@ ipcMain.on('toggle-alert-edit', () => setAlertEdit(!alertEdit));
 ipcMain.on('set-alert-position', (_e, pos) => setAlertPosition(pos));
 ipcMain.on('reset-alert-bounds', () => setAlertBounds(defaultAlertBounds()));
 
+// ---------- Prediction and poll boxes ----------
+// When the main chat's channel starts a prediction or a poll, it shows in its own box on top
+// of the game with the votes as they come in. Both boxes share the look settings, but each one
+// has its own place and size. The main chat window sends each change; a box closes by itself
+// a few seconds after the result.
+
+const VOTE_KINDS = {
+  prediction: { showKey: 'showPredictions', boundsKey: 'predictionBounds', size: [360, 200], y: 80 },
+  poll: { showKey: 'showPolls', boundsKey: 'pollBounds', size: [360, 250], y: 300 },
+};
+const voteBoxes = {};
+for (const kind of Object.keys(VOTE_KINDS)) {
+  voteBoxes[kind] = {
+    kind,
+    ...VOTE_KINDS[kind],
+    win: null,
+    ready: false, // the window has loaded and has the settings
+    edit: false, // it's being moved and resized with a sample
+    now: null, // what to show (null if there's nothing)
+    testPending: false,
+  };
+}
+const voteBoxList = () => Object.values(voteBoxes);
+const isVoteKind = (kind) => typeof kind === 'string' && Object.hasOwn(voteBoxes, kind);
+const voteOver = (v) => v.status === 'RESOLVED' || v.status === 'CANCELED';
+
+function defaultVoteBounds(box) {
+  const wa = screen.getPrimaryDisplay().workArea;
+  const [width, height] = box.size;
+  return { width, height, x: wa.x + wa.width - width - 20, y: wa.y + box.y };
+}
+
+function ensureVoteWindow(box) {
+  if (box.win && !box.win.isDestroyed()) return;
+  box.ready = false;
+  const b = boundsOnScreen(settings[box.boundsKey]) || defaultVoteBounds(box);
+  const win = createTransparentWindow(b, box.edit);
+  box.win = win;
+  win.loadFile('prediction.html', { query: { kind: box.kind } });
+  win.on('moved', () => rememberVoteBounds(box));
+  win.on('closed', () => {
+    if (box.win !== win) return; // there is already a newer window
+    box.win = null;
+    box.ready = false;
+  });
+  win.webContents.on('render-process-gone', (_e, details) => {
+    logError(`Ventana de ${box.kind} cerrada inesperadamente: ${details.reason}`);
+    if (!win.isDestroyed()) win.destroy();
+  });
+}
+
+function sendToVote(box, channel, ...args) {
+  if (box.ready && box.win && !box.win.isDestroyed()) box.win.webContents.send(channel, ...args);
+}
+
+function closeVoteWindow(box) {
+  if (box.win && !box.win.isDestroyed() && !box.edit) box.win.destroy();
+}
+
+// Only plain, short data reaches the boxes. Predictions have up to 10 answers and polls up to 5.
+const VOTE_STATUS = ['ACTIVE', 'LOCKED', 'RESOLVED', 'CANCELED'];
+function cleanVote(v) {
+  if (!v || typeof v !== 'object' || typeof v.id !== 'string' || !VOTE_STATUS.includes(v.status)) return null;
+  const num = (n) => (Number.isFinite(n) && n >= 0 ? n : 0);
+  const outcomes = (Array.isArray(v.outcomes) ? v.outcomes : []).slice(0, 10).map((o) => ({
+    id: String(o && o.id).slice(0, 64),
+    title: String(o && o.title).slice(0, 60),
+    points: num(o && o.points),
+    users: num(o && o.users),
+  }));
+  if (outcomes.length < 2) return null;
+  return {
+    id: v.id.slice(0, 64),
+    title: String(v.title).slice(0, 120),
+    status: v.status,
+    createdAt: num(v.createdAt),
+    windowSeconds: num(v.windowSeconds),
+    winner: typeof v.winner === 'string' ? v.winner.slice(0, 64) : '',
+    outcomes,
+  };
+}
+
+function onVote(box, v) {
+  box.now = cleanVote(v);
+  if (!settings[box.showKey]) return;
+  if (box.now) ensureVoteWindow(box);
+  sendToVote(box, 'vote', box.now);
+}
+
+function testVote(box) {
+  box.testPending = true;
+  ensureVoteWindow(box);
+  if (box.ready) {
+    box.testPending = false;
+    sendToVote(box, 'vote-test');
+  }
+}
+
+function setVoteEdit(box, on) {
+  box.edit = on;
+  if (on) ensureVoteWindow(box);
+  if (box.win && !box.win.isDestroyed()) {
+    box.win.setIgnoreMouseEvents(!on);
+    box.win.setFocusable(on);
+    if (!on) {
+      box.win.blur();
+      rememberVoteBounds(box);
+    }
+  }
+  sendToVote(box, 'vote-edit', on);
+  sendState();
+}
+
+function rememberVoteBounds(box) {
+  if (!box.win || box.win.isDestroyed()) return;
+  settings[box.boundsKey] = box.win.getBounds();
+  saveSettings();
+}
+
+// The arrows and the reset button show the sample, so the user sees where it ends up.
+function setVoteBounds(box, b) {
+  if (!box.edit) setVoteEdit(box, true);
+  box.win.setBounds(b);
+  rememberVoteBounds(box);
+}
+
+function setVotePosition(box, pos) {
+  if (!POSITIONS.includes(pos)) return;
+  const current = (box.win && !box.win.isDestroyed() && box.win.getBounds())
+    || boundsOnScreen(settings[box.boundsKey]) || defaultVoteBounds(box);
+  setVoteBounds(box, placedAt(current, pos));
+}
+
+// "Show predictions" or "Show polls" changed: the box closes, or shows what's running now.
+function afterVoteSettings(clean) {
+  for (const box of voteBoxList()) {
+    if (clean[box.showKey] === false) closeVoteWindow(box);
+    if (clean[box.showKey] && box.now) onVote(box, box.now);
+  }
+}
+
+const voteBoxOf = (e) => voteBoxList().find((b) => b.win && !b.win.isDestroyed() && e.sender === b.win.webContents);
+
+// Only the main chat window sends predictions and polls (the extra chats don't listen to them).
+ipcMain.on('vote', (e, kind, v) => {
+  if (isVoteKind(kind) && overlay && !overlay.isDestroyed() && e.sender === overlay.webContents) onVote(voteBoxes[kind], v);
+});
+ipcMain.on('vote-ready', (e) => {
+  const box = voteBoxOf(e);
+  if (!box) return;
+  box.ready = true;
+  const showing = box.now && settings[box.showKey];
+  if (box.edit) sendToVote(box, 'vote-edit', true);
+  if (showing) sendToVote(box, 'vote', box.now);
+  if (box.testPending) {
+    box.testPending = false;
+    sendToVote(box, 'vote-test');
+  } else if (!box.edit && !showing) {
+    box.win.destroy(); // nothing to show anymore
+  }
+});
+ipcMain.on('vote-show', (e) => {
+  const box = voteBoxOf(e);
+  if (box && !box.win.isVisible()) showWithoutFocus(box.win, box.edit);
+});
+// The box has nothing on screen. If the vote is over, it's forgotten (so it doesn't show again).
+ipcMain.on('vote-idle', (e) => {
+  const box = voteBoxOf(e);
+  if (!box) return;
+  if (box.now && voteOver(box.now)) box.now = null;
+  if (!box.now) closeVoteWindow(box);
+});
+ipcMain.on('test-vote', (_e, kind) => { if (isVoteKind(kind)) testVote(voteBoxes[kind]); });
+ipcMain.on('toggle-vote-edit', (_e, kind) => { if (isVoteKind(kind)) setVoteEdit(voteBoxes[kind], !voteBoxes[kind].edit); });
+ipcMain.on('set-vote-position', (_e, kind, pos) => { if (isVoteKind(kind)) setVotePosition(voteBoxes[kind], pos); });
+ipcMain.on('reset-vote-bounds', (_e, kind) => {
+  if (isVoteKind(kind)) setVoteBounds(voteBoxes[kind], defaultVoteBounds(voteBoxes[kind]));
+});
+
 // ---------- Profiles (one setup per game) ----------
 
 function applyBounds(bounds) {
@@ -917,11 +1109,12 @@ ipcMain.on('remove-chat', (_e, id) => removeExtraChat(id));
 ipcMain.on('set-chat-visible', (_e, id, on) => { if (typeof on === 'boolean') setChatVisible(id, on); });
 ipcMain.on('set-position', (_e, pos) => setPosition(pos));
 ipcMain.on('set-size', (_e, w, h) => setSize(w, h));
-// Resizing from the corner: works for the chat windows and for the alert box.
+// Resizing from the corner: works for the chat windows, the alert box and the prediction and poll boxes.
 ipcMain.on('resize-start', (e) => {
   const chat = chatWindows().find((w) => w.webContents === e.sender);
   if (chat && editMode) resizing = { win: chat, bounds: chat.getBounds(), min: [160, 80] };
   else if (fromAlert(e) && alertEdit) resizing = { win: alertWin, bounds: alertWin.getBounds(), min: [200, 60] };
+  else if (voteBoxOf(e) && voteBoxOf(e).edit) resizing = { win: voteBoxOf(e).win, bounds: voteBoxOf(e).win.getBounds(), min: [220, 120] };
 });
 ipcMain.on('resize-move', (_e, dx, dy) => {
   if (!resizing || resizing.win.isDestroyed() || !Number.isFinite(dx) || !Number.isFinite(dy)) return;
@@ -939,6 +1132,7 @@ ipcMain.on('resize-end', () => {
   resizing = null;
   if (win === overlay) rememberBounds();
   else if (win === alertWin) rememberAlertBounds();
+  else if (voteBoxList().some((b) => b.win === win)) rememberVoteBounds(voteBoxList().find((b) => b.win === win));
   else for (const [id, w] of extraWindows) if (w === win) rememberExtraBounds(id);
 });
 

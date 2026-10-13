@@ -2,6 +2,7 @@
 // Twitch only sends through the chat the redemptions that come with a written message.
 // The others ("hydrate", "pick my champion"...) arrive by listening to the channel's public
 // events, like Twitch's website does, without logging in. They are small and rare messages.
+// The same connection also brings the channel predictions (predictions.js) and polls (polls.js).
 
 const POINTS_URL = 'wss://hermes.twitch.tv/v1?clientId=kimne78kx3ncx6brgo4mv6wki5h1ko';
 let pointsSocket = null;
@@ -18,7 +19,11 @@ function connectPoints(roomId) {
     pointsSocket.onclose = null;
     pointsSocket.close();
   }
-  if (pointsRoom !== roomId) rewardTitles.clear();
+  if (pointsRoom !== roomId) {
+    rewardTitles.clear();
+    forgetPrediction();
+    forgetPoll();
+  }
   pointsRoom = roomId;
   const sock = new WebSocket(POINTS_URL);
   pointsSocket = sock;
@@ -29,14 +34,27 @@ function connectPoints(roomId) {
     try { m = JSON.parse(e.data); } catch { return; }
     if (m.type === 'welcome') {
       pointsRetry = 0;
-      sock.send(JSON.stringify({
-        type: 'subscribe',
-        id: 'points',
-        subscribe: { id: 'points', type: 'pubsub', pubsub: { topic: `community-points-channel-v1.${roomId}` } },
-        timestamp: new Date().toISOString(),
-      }));
+      loadPrediction(roomId);
+      loadPoll(roomId);
+      const topics = { points: `community-points-channel-v1.${roomId}` };
+      if (!WIN_ID) { // only the main chat shows predictions and polls
+        topics.predictions = `predictions-channel-v1.${roomId}`;
+        topics.polls = `polls.${roomId}`;
+      }
+      for (const [id, topic] of Object.entries(topics)) {
+        sock.send(JSON.stringify({
+          type: 'subscribe',
+          id,
+          subscribe: { id, type: 'pubsub', pubsub: { topic } },
+          timestamp: new Date().toISOString(),
+        }));
+      }
     } else if (m.type === 'notification' && m.notification && typeof m.notification.pubsub === 'string') {
-      try { onPointsEvent(JSON.parse(m.notification.pubsub)); } catch { /* strange event: ignore it */ }
+      let event;
+      try { event = JSON.parse(m.notification.pubsub); } catch { return; } // strange event: ignore it
+      onPointsEvent(event);
+      onPredictionEvent(event);
+      onPollEvent(event);
     }
   };
   // If it drops, try again with longer and longer waits.

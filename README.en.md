@@ -100,6 +100,7 @@ Below you can change the text color, size, background opacity, the channel tag t
 - **Badges** for streamer, moderator, VIP and subscriber.
 - Highlights **subs, gifts, raids, bits, channel point redemptions (including ones without a message, with the reward's name) and highlighted messages**, and shows who each message is replying to.
 - **Live alerts**: add the channels you follow and get notified as soon as they go live, with an alert box on top of your game and a sound.
+- The channel's **predictions and polls**, in boxes on top of your game: live votes, the countdown and, at the end, the winning answer. They copy the chat's style or use your own colors.
 - In **shared chat**, each message shows the icon of the channel it comes from.
 - Names with a **7TV paint** (gradients) show their colors.
 
@@ -170,7 +171,17 @@ When one of them goes live, you get:
 - An **alert box on top of your game** with the channel's picture, title and game. Click **Move and resize the alert** to place it and change its size with a sample alert. You also choose how many seconds it stays on screen.
 - A **sound**, which you can mute or turn down.
 
-When the app starts, it only alerts you about streams that started less than 10 minutes ago, so you don't get a flood of alerts at once. **Test alert** lets you see and hear how it looks.
+When the app starts, it only alerts you about streams that started less than 10 minutes ago, so you don't get a flood of alerts at once. **Test alert** lets you see and hear how it looks. Each channel's **Open chat** button connects the main chat to that channel.
+
+### Predictions and polls
+
+When the main chat's channel starts a **prediction** (2 to 10 answers) or a **poll** (up to 5), a box shows on top of your game with the question, a bar for each answer with its percentage, the points or votes, how many people voted and the time left. When it ends, the winning answer glows for a few seconds and the box goes away by itself. If you open the app while one is running, it shows it too. No Twitch login needed.
+
+Everything is in the **Votes** tab:
+
+- Predictions and polls have **a box each**: press **Move and resize** to put it wherever you want and change its size (the text grows or shrinks so it always fits), or use the arrows. **Test** plays a whole one in about 20 seconds.
+- By default they copy the **chat's style**: its color, its font and the game style you picked. Turn off **Same style as the chat** to pick the frame, background, text and bar colors.
+- You can also change the **opacity**, the **background opacity**, how long the result stays, and turn off the **effects** (glows and moving lights) for a plainer look.
 
 ### Shortcuts
 
@@ -231,8 +242,9 @@ npm start
 | `main.js` | Main process: windows, tray, shortcuts, settings and updates |
 | `main/` | Default settings and their checks (`settings-schema.js`) and the live channels lookup (`live-api.js`) |
 | `overlay.html` / `overlay.js` | The transparent chat window (Twitch connection and messages) |
-| `overlay/` | Parts of the chat: reading messages, emotes, 7TV paints, channel points, profile pictures and preview mode |
+| `overlay/` | Parts of the chat: reading messages, emotes, 7TV paints, channel points, predictions, polls, profile pictures and preview mode |
 | `alert.html` / `alert.js` | The live alert box |
+| `prediction.html` / `prediction.js` | The prediction and poll boxes |
 | `panel.html` / `panel.js` | The settings window |
 | `themes.js` / `themes.css` | The game styles |
 | `i18n.js` | Spanish and English texts |

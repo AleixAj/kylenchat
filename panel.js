@@ -37,6 +37,23 @@ const FIELDS = {
   liveDuration: { type: 'range', show: (v) => `${v} s` },
   liveSound: { type: 'check' },
   liveVolume: { type: 'range', show: (v) => `${v} %` },
+  showPredictions: { type: 'check' },
+  showPolls: { type: 'check' },
+  predictionMatchChat: { type: 'check' },
+  predictionColor: { type: 'color' },
+  predictionTextColor: { type: 'color' },
+  predictionBgColor: { type: 'color' },
+  predictionBar1: { type: 'color' },
+  predictionBar2: { type: 'color' },
+  pollBar1: { type: 'color' },
+  pollBar2: { type: 'color' },
+  pollBar3: { type: 'color' },
+  pollBar4: { type: 'color' },
+  pollBar5: { type: 'color' },
+  predictionOpacity: { type: 'range', show: (v) => `${v} %` },
+  predictionBgOpacity: { type: 'range', show: (v) => `${v} %` },
+  predictionEffects: { type: 'check' },
+  predictionResultTime: { type: 'range', show: (v) => `${v} s` },
   showDeleted: { type: 'check' },
   maxMessages: { type: 'range', show: (v) => String(v) },
   fadeAfter: { type: 'range', show: secondsOrNever },
@@ -443,6 +460,11 @@ function fillFields(newSettings) {
     api.setSettings({ onboarded: true });
   }
   renderLiveList();
+  // The box's own colors only count when it doesn't copy the chat.
+  document.querySelectorAll('.own-look').forEach((row) => {
+    row.classList.toggle('off', settings.predictionMatchChat);
+    for (const input of row.querySelectorAll('input')) input.disabled = settings.predictionMatchChat;
+  });
   renderCustomStyles();
   renderChats();
   renderGameCards();
@@ -552,6 +574,12 @@ function applyState(state) {
   $('profilesNote').textContent = tr('profilesNote', { keys: keys('profile') });
   $('liveMove').textContent = tr(state.alertEdit ? 'liveMoveOn' : 'liveMove');
   $('liveMove').classList.toggle('primary', Boolean(state.alertEdit));
+  for (const section of document.querySelectorAll('[data-vote]')) {
+    const editing = Boolean(state[`${section.dataset.vote}Edit`]);
+    const move = section.querySelector('[data-vote-move]');
+    move.textContent = tr(editing ? 'predictionMoveOn' : 'predictionMove');
+    move.classList.toggle('primary', editing);
+  }
   renderLiveList();
   $('test').textContent = tr(testMode ? 'testOn' : 'testOff');
   $('test').classList.toggle('primary', testMode);
@@ -782,6 +810,14 @@ $('liveTest').addEventListener('click', () => api.testLiveAlert());
 $('liveMove').addEventListener('click', () => api.toggleAlertEdit());
 $('liveReset').addEventListener('click', () => api.resetAlertBounds());
 document.querySelectorAll('[data-alert-pos]').forEach((b) => b.addEventListener('click', () => api.setAlertPosition(b.dataset.alertPos)));
+// Prediction and poll boxes: each section has the same buttons and says which box they are for.
+for (const section of document.querySelectorAll('[data-vote]')) {
+  const kind = section.dataset.vote;
+  section.querySelector('[data-vote-test]').addEventListener('click', () => api.testVote(kind));
+  section.querySelector('[data-vote-move]').addEventListener('click', () => api.toggleVoteEdit(kind));
+  section.querySelector('[data-vote-reset]').addEventListener('click', () => api.resetVoteBounds(kind));
+  section.querySelectorAll('[data-vote-pos]').forEach((b) => b.addEventListener('click', () => api.setVotePosition(kind, b.dataset.votePos)));
+}
 $('liveAddBtn').addEventListener('click', addLiveChannel);
 $('liveAdd').addEventListener('keydown', (e) => { if (e.key === 'Enter') addLiveChannel(); });
 $('liveAdd').addEventListener('input', () => { $('liveAddError').textContent = ''; });
